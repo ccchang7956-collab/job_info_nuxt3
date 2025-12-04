@@ -66,17 +66,16 @@ class JobService:
             filters.append("title LIKE :title")
             params["title"] = f"%{title}%"
         if sysnam:
-            sysnam_list = sysnam.split(",")
-            sysnam_filters = [f"sysnam LIKE :sysnam_{i}" for i in range(len(sysnam_list))]
-            filters.append(f"({' OR '.join(sysnam_filters)})")
-            for i, s in enumerate(sysnam_list):
-                params[f"sysnam_{i}"] = f"%{s.strip()}%"
+            sysnam_list = [s.strip() for s in sysnam.split(",")]
+            # Use IN clause for better performance (uses index)
+            filters.append("sysnam IN :sysnam_list")
+            params["sysnam_list"] = tuple(sysnam_list) # SQLAlchemy requires tuple for IN
+
         if places:
-            place_list = places.split(",")
-            place_filters = [f"work_place_type LIKE :place_{i}" for i in range(len(place_list))]
-            filters.append(f"({' OR '.join(place_filters)})")
-            for i, place in enumerate(place_list):
-                params[f"place_{i}"] = f"%{place.strip()}%"
+            place_list = [p.strip() for p in places.split(",")]
+            # Use IN clause for better performance (uses index)
+            filters.append("work_place_type IN :place_list")
+            params["place_list"] = tuple(place_list)
 
         # 職等過濾
         if min_rank is not None or max_rank is not None:

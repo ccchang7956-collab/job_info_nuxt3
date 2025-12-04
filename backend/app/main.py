@@ -52,9 +52,13 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan
 # Since we moved Main.py to backend/app/Main.py, parent is backend/app.
 app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
 
+from fastapi.middleware.gzip import GZipMiddleware
 from app.Core.Security import RateLimitMiddleware
 
-# Middleware 1: Rate Limiting
+# Middleware 1: Gzip Compression (High priority for performance)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Middleware 2: Rate Limiting
 app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
 
 # Middleware 2: Inject update_date

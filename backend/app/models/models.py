@@ -103,7 +103,8 @@ class JobOpenings(Base):
         Index('idx_org_workitem', 'org_name', 'work_item'),
         Index('idx_sysnam', 'sysnam'),
         Index('idx_title', 'title'),
-        Index('idx_work_place_type', 'work_place_type')
+        Index('idx_work_place_type', 'work_place_type'),
+        Index('idx_announce_date', 'announce_date') # Added index
     )
 
     id: Mapped[int] = mapped_column(INTEGER(11), primary_key=True)
