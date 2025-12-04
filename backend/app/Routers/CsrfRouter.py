@@ -1,19 +1,7 @@
-#csrf_service.py
-import os
 from fastapi import APIRouter, Depends
 from fastapi_csrf_protect import CsrfProtect
-from pydantic import BaseModel
 from fastapi.responses import JSONResponse
-
-
-class CsrfSettings(BaseModel):
-    secret_key: str = os.getenv("CSRF_SECRET_KEY", "my_static_secret_key_for_testing_purposes")
-
-
-@CsrfProtect.load_config
-def get_csrf_config():
-    return CsrfSettings()
-
+from app.Services.CsrfService import get_csrf_config # Ensure config is loaded
 
 router = APIRouter()
 

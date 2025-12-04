@@ -1,5 +1,5 @@
 from sqlalchemy import text
-from app.database import AsyncSessionLocal
+from app.Core.Database import AsyncSessionLocal
 from datetime import datetime
 import asyncio
 

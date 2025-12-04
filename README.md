@@ -53,9 +53,13 @@ job_info_vue_refactor/
 └── README.md               # 本文件
 ```
 
-## 安裝與執行
+## 🚀 快速啟動 (Quick Start)
 
-### 後端 (Backend)
+本專案採用前後端分離架構，開發時需 **同時開啟兩個終端機 (Terminal)** 分別執行後端與前端。
+
+### 1. 啟動後端 (Backend)
+
+請開啟第一個終端機視窗，執行以下指令：
 
 1.  進入後端目錄：
     ```bash
@@ -63,6 +67,7 @@ job_info_vue_refactor/
     ```
 2.  建立並啟用虛擬環境 (若尚未建立)：
     ```bash
+    # macOS / Linux
     python3 -m venv venv
     source venv/bin/activate
     ```
@@ -74,9 +79,11 @@ job_info_vue_refactor/
     ```bash
     ./venv/bin/python run.py
     ```
-    後端服務將於 `http://localhost:8000` 啟動。
+    > 後端服務將於 `http://localhost:8000` 啟動。
 
-### 前端 (Frontend)
+### 2. 啟動前端 (Frontend)
+
+請開啟 **第二個** 終端機視窗，執行以下指令：
 
 1.  進入前端目錄：
     ```bash
@@ -90,7 +97,11 @@ job_info_vue_refactor/
     ```bash
     npm run dev
     ```
-    應用程式將於 `http://localhost:3000` 啟動。
+    > 應用程式將於 `http://localhost:3000` 啟動。
+
+### 3. 開啟瀏覽器
+
+完成上述步驟後，請在瀏覽器輸入 `http://localhost:3000` 即可開始使用。
 
 ## 近期重構亮點
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.utils.get_latest_update_date import get_latest_update_date
+from app.Utils.DateUtils import get_latest_update_date
 
 router = APIRouter()
 

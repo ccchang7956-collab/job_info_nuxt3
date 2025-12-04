@@ -26,8 +26,9 @@ export const useComments = (jobId: number, emitRefresh: () => void) => {
             try {
                 const container = document.getElementById('recaptcha-container')
                 if (container && !container.hasChildNodes()) {
+                    const config = useRuntimeConfig()
                     widgetId = window.grecaptcha.render('recaptcha-container', {
-                        'sitekey': '6LeEYrMqAAAAAOwsV1pF_EoPxSJjvE49tz2nIQbC'
+                        'sitekey': config.public.recaptchaSiteKey as string
                     })
                 }
             } catch (e) {

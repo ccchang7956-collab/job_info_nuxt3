@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from app.database import get_db  # 引入資料庫連線依賴
+from app.Core.Database import get_db
 
 router = APIRouter()
 

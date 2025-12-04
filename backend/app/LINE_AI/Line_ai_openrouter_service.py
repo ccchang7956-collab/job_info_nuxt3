@@ -17,72 +17,7 @@ OPENROUTER_API_BASE = "https://openrouter.ai/api/v1"
 OPENROUTER_SITE_URL = os.getenv("OPENROUTER_SITE_URL")
 OPENROUTER_SITE_NAME = os.getenv("OPENROUTER_SITE_NAME", "LINE-AI-Job-Bot")
 
-# --- START OF JOB SERIES AND LOCATION LISTS ---
-VALID_JOB_SERIES = [
-    # 行政職系
-    "綜合行政", "人事行政", "經建行政", "會計審計", "文教行政", "社勞行政",
-    "地政", "衛生行政", "法制", "交通行政", "社會工作", "司法行政",
-    "廉政", "統計", "環保行政", "海巡行政", "新聞傳播",
-    # 技術職系
-    "土木工程", "電機工程", "資訊處理", "財稅金融", "農業技術", "測量製圖",
-    "建築工程", "交通技術", "獸醫", "衛生技術", "機械工程", "都市計畫",
-    "動物技術", "景觀設計", "環資技術", "工業工程", "自然保育",
-    "圖書史料檔案", "地質礦治", "職業安全衛生", "醫學工程", "林業技術",
-    "消防技術", "技藝"
-]
-
-VALID_LOCATIONS_TAIWAN = [ # 這是給 AI 參考的台灣主要縣市，用於引導，AI 仍需從使用者輸入提取
-    "臺北市", "新北市", "基隆市", "桃園市", "新竹縣", "新竹市", "苗栗縣",
-    "臺中市", "彰化縣", "南投縣", "雲林縣", "嘉義縣", "嘉義市", "臺南市",
-    "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "臺東縣", "澎湖縣", "金門縣", "連江縣"
-]
-
-# --- START OF REGIONAL EXPANSION MAPPING ---
-# This mapping helps the AI understand regional terms and expand them.
-REGIONAL_EXPANSIONS = {
-    # General Major Regions
-    "北部": ["臺北市", "新北市", "基隆市", "桃園市", "新竹縣", "新竹市", "苗栗縣"],
-    "中部": ["臺中市", "彰化縣", "南投縣"],  # Per user: 中部 often means 中彰投
-    "南部": ["雲林縣", "嘉義縣", "嘉義市", "臺南市", "高雄市", "屏東縣"], # Covers 雲嘉南 and 高屏
-    "東部": ["宜蘭縣", "花蓮縣", "臺東縣"],
-    "離島": ["澎湖縣", "金門縣", "連江縣"],
-
-    # Common Synonyms for Major Regions
-    "北臺灣": ["臺北市", "新北市", "基隆市", "桃園市", "新竹縣", "新竹市", "苗栗縣"],
-    "中臺灣": ["臺中市", "彰化縣", "南投縣"],
-    "南臺灣": ["雲林縣", "嘉義縣", "嘉義市", "臺南市", "高雄市", "屏東縣"],
-    "東臺灣": ["宜蘭縣", "花蓮縣", "臺東縣"],
-
-    # Sub-regions and Common Groupings
-    "北北基": ["臺北市", "新北市", "基隆市"],
-    "北北基地區": ["臺北市", "新北市", "基隆市"],
-    "北北基桃": ["臺北市", "新北市", "基隆市", "桃園市"],
-    "雙北": ["臺北市", "新北市"], # Common term for Taipei and New Taipei
-    "北基": ["臺北市", "基隆市"],
-
-    "桃竹苗": ["桃園市", "新竹縣", "新竹市", "苗栗縣"],
-    "桃竹苗地區": ["桃園市", "新竹縣", "新竹市", "苗栗縣"],
-    "竹苗": ["新竹縣", "新竹市", "苗栗縣"],
-    "竹科地區": ["新竹市", "新竹縣"], # For "竹科" often implying the surrounding cities for job search
-
-    "中彰投": ["臺中市", "彰化縣", "南投縣"],
-    "中彰投地區": ["臺中市", "彰化縣", "南投縣"],
-
-    "雲嘉南": ["雲林縣", "嘉義縣", "嘉義市", "臺南市"],
-    "雲嘉南地區": ["雲林縣", "嘉義縣", "嘉義市", "臺南市"],
-    "嘉南": ["嘉義縣", "嘉義市", "臺南市"],
-
-    "高屏": ["高雄市", "屏東縣"],
-    "高屏地區": ["高雄市", "屏東縣"],
-    "高高屏": ["高雄市", "屏東縣"], # Historically relevant, now essentially same as 高屏
-
-    "宜花東": ["宜蘭縣", "花蓮縣", "臺東縣"],
-    "宜花東地區": ["宜蘭縣", "花蓮縣", "臺東縣"],
-
-    "澎金馬": ["澎湖縣", "金門縣", "連江縣"] # Common term for the main outlying islands
-}
-# --- END OF REGIONAL EXPANSION MAPPING ---
-# --- END OF JOB SERIES AND LOCATION LISTS ---
+from app.Core.Constants import VALID_JOB_SERIES, VALID_LOCATIONS_TAIWAN, REGIONAL_EXPANSIONS
 
 # --- START OF HELPER FUNCTION FOR LOCATION NORMALIZATION ---
 def _normalize_locations_in_list(locations: Optional[List[str]]) -> Optional[List[str]]:

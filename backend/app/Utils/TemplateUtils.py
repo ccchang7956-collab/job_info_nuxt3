@@ -1,9 +1,9 @@
 
 from fastapi.templating import Jinja2Templates
-from app.utils.format_utils import format_place, format_roc_date, convert_to_gregorian_date_iso
+from app.Utils.FormatUtils import format_place, format_roc_date, convert_to_gregorian_date_iso
 
 # Initialize Jinja2Templates (async disabled for compatibility)
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates", autoescape=True)
 
 # Register custom filters
 templates.env.filters["format_place"] = format_place

@@ -3,12 +3,20 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  css: ['~/assets/main.css'],
+
   modules: [
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
     '@nuxtjs/tailwindcss',
     'nuxt-security'
   ],
+
+  runtimeConfig: {
+    public: {
+      recaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LeEYrMqAAAAAOwsV1pF_EoPxSJjvE49tz2nIQbC'
+    }
+  },
 
   security: {
     headers: {
@@ -28,7 +36,8 @@ export default defineNuxtConfig({
           "data:",
           "https:",
           "blob:"
-        ]
+        ],
+        'upgrade-insecure-requests': true
       },
       crossOriginEmbedderPolicy: false, // Often causes issues with external resources
     }
