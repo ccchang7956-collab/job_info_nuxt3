@@ -1,0 +1,81 @@
+<script setup>
+import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
+
+const route = useRoute()
+const router = useRouter()
+
+const jobId = route.params.id
+
+// SSR Data Fetching
+const { data, error: fetchError } = await useFetch(`/api/Active_job_openings/${jobId}`)
+
+const job = computed(() => data.value?.job)
+const comments = computed(() => data.value?.comments || [])
+const duplicates = computed(() => data.value?.duplicates || [])
+
+// Error Handling
+const error = ref(null)
+if (fetchError.value) {
+  const err = fetchError.value
+  if (err.statusCode) {
+    error.value = `無法取得職缺詳細資料 (${err.statusCode}): ${err.statusMessage || err.message}`
+  } else {
+    error.value = `無法取得職缺詳細資料: ${err.message}`
+  }
+}
+
+// SEO
+useSeoMeta({
+  title: () => job.value ? `${job.value.title} - ${job.value.org_name} - 開放事求人` : '職缺詳細資料 - 開放事求人',
+  description: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。工作地點：${job.value.work_place}。` : '公務人員職缺詳細資訊',
+  ogTitle: () => job.value ? `${job.value.title} - ${job.value.org_name}` : '職缺詳細資料',
+  ogDescription: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。` : '公務人員職缺詳細資訊',
+})
+
+// Refresh function for comments
+const refreshJobDetails = async () => {
+  await refreshNuxtData()
+}
+</script>
+
+<template>
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- Loading State (Client-side only if hydration takes time, but SSR should handle it) -->
+    <div v-if="!job && !error" class="flex flex-col items-center justify-center py-20 text-slate-400">
+      <div class="w-10 h-10 border-4 border-slate-200 border-l-primary-500 rounded-full animate-spin mb-4"></div>
+      <p class="font-medium">正在載入職缺詳細資料...</p>
+    </div>
+    
+    <div v-else-if="error" class="bg-red-50 border border-red-100 text-red-600 p-8 rounded-xl text-center">
+      <p class="mb-4 text-lg font-medium">{{ error }}</p>
+      <button 
+        @click="router.back()" 
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+      >
+        <ArrowLeftIcon class="w-4 h-4" />
+        返回列表
+      </button>
+    </div>
+
+    <div v-else-if="job">
+      <JobInfoCard :job="job" :duplicates="duplicates">
+        <template #header-actions>
+          <button 
+            @click="router.back()" 
+            class="inline-flex items-center gap-1.5 text-slate-500 hover:text-primary-600 transition-colors text-sm font-medium mb-6 group"
+          >
+            <ArrowLeftIcon class="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+            返回列表
+          </button>
+        </template>
+      </JobInfoCard>
+
+      <!-- Comment Section -->
+      <CommentSection 
+        :comments="comments" 
+        :job-id="job.id" 
+        @refresh="refreshJobDetails" 
+      />
+    </div>
+  </div>
+</template>
