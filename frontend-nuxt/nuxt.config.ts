@@ -66,11 +66,14 @@ export default defineNuxtConfig({
   },
 
   pwa: {
+    registerType: 'autoUpdate',
     manifest: {
       name: '開放事求人',
       short_name: '開放事求人',
       description: '公務人員職缺查詢系統',
       theme_color: '#2563eb',
+      background_color: '#ffffff',
+      display: 'standalone',
       icons: [
         {
           src: 'pwa-192x192.png',
