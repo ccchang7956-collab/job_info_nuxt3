@@ -48,7 +48,7 @@ const confirmSelection = () => {
 const { adminSysnams, techSysnams } = useJobConstants()
 
 onMounted(() => {
-  console.log('SysnamModal mounted')
+
 })
 </script>
 

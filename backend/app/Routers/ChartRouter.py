@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.Core.Database import get_async_db
 from app.Services.ChartService import ChartService
+import logging
 
 router = APIRouter()
 
@@ -12,7 +13,7 @@ async def get_job_openings_chart(request: Request, month: str = Query(None, rege
         return await ChartService.get_top_orgs(db, month)
     except Exception as e:
         # Log the error but do not expose traceback to the client
-        print(f"Error in get_job_openings_chart: {e}")
+        logging.error(f"Error in get_job_openings_chart: {e}")
         return JSONResponse(status_code=500, content={"error": "Internal Server Error"})
 
 @router.get("/job_openings_chart_by_sysnam", response_class=JSONResponse)
