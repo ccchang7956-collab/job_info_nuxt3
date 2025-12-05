@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick } from 'vue'
+// Nuxt 3 auto-imports ref and nextTick
 import CommentItem from './CommentItem.vue'
 import { XMarkIcon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import { useComments } from '../composables/useComments'
@@ -123,7 +123,7 @@ const handleSubmit = async () => {
         </div>
 
         <button 
-          @click="submitComment" 
+          @click="handleSubmit" 
           :disabled="submitting"
           class="w-full sm:w-auto px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mx-auto"
         >

@@ -10,12 +10,11 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 # --- End Logger 初始化 ---
 
-# --- 從 format_utils 匯入 ---
+# --- 從 FormatUtils 匯入 ---
 try:
-    # 假設您的 utils 資料夾與 LINE_AI 資料夾在同一個專案根目錄下
-    from app.utils.format_utils import format_place, normalize_place
+    from app.Utils.FormatUtils import format_place, normalize_place
 except ImportError:
-    logger.error("Failed to import format_utils. Ensure 'utils' directory is accessible from the project root in PYTHONPATH.")
+    logger.error("Failed to import FormatUtils. Ensure 'Utils' directory is accessible from the project root in PYTHONPATH.")
     # 提供一個假的 format_place 和 normalize_place 以避免執行時崩潰，但功能會不完整
     def format_place(place_str: str) -> str:
         logger.warning("Using mock format_place due to import error.")
@@ -23,7 +22,7 @@ except ImportError:
     def normalize_place(input_str: str) -> str:
         logger.warning("Using mock normalize_place due to import error.")
         return input_str
-# --- End 從 format_utils 匯入 ---
+# --- End 從 FormatUtils 匯入 ---
 
 
 # --- Helper Functions ---

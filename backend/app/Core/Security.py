@@ -11,6 +11,23 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
         self.request_counts = defaultdict(list)
+        self.last_cleanup = time.time()
+        self.cleanup_interval = 300  # Cleanup every 5 minutes
+
+    def _cleanup_old_ips(self, now: float):
+        """Remove IPs that haven't made requests within the window."""
+        if now - self.last_cleanup < self.cleanup_interval:
+            return
+        
+        # Find and remove IPs with no recent activity
+        ips_to_remove = [
+            ip for ip, timestamps in self.request_counts.items()
+            if not timestamps or (now - max(timestamps) > self.window_seconds * 2)
+        ]
+        for ip in ips_to_remove:
+            del self.request_counts[ip]
+        
+        self.last_cleanup = now
 
     async def dispatch(self, request: Request, call_next):
         # Get client IP
@@ -18,6 +35,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         
         # Current time
         now = time.time()
+        
+        # Periodic cleanup to prevent memory leak
+        self._cleanup_old_ips(now)
         
         # Filter out old requests from the window
         self.request_counts[client_ip] = [
