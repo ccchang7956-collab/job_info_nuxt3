@@ -11,7 +11,7 @@ from app.Schemas.Schemas import CommentCreate, CommentResponse
 
 router = APIRouter()
 
-@router.post("/", response_model=CommentResponse)
+@router.post("", response_model=CommentResponse)
 async def submit_comment(
     comment: CommentCreate, 
     request: Request, 
