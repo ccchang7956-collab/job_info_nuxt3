@@ -137,7 +137,6 @@ class JobOpenings(Base):
     is_transfer: Mapped[Optional[str]] = mapped_column(CHAR(1))
 
     comments: Mapped[List['Comments']] = relationship('Comments', foreign_keys='[Comments.job_opening_id]', back_populates='job_opening')
-    comments_: Mapped[List['Comments']] = relationship('Comments', foreign_keys='[Comments.job_opening_id]', back_populates='job_opening_')
 
 
 class JobSysnam(Base):
@@ -194,5 +193,4 @@ class Comments(Base):
     deletion_reason: Mapped[Optional[str]] = mapped_column(String(255))
 
     job_opening: Mapped['JobOpenings'] = relationship('JobOpenings', foreign_keys=[job_opening_id], back_populates='comments')
-    job_opening_: Mapped['JobOpenings'] = relationship('JobOpenings', foreign_keys=[job_opening_id], back_populates='comments_')
     user: Mapped[Optional['Users']] = relationship('Users', back_populates='comments')
