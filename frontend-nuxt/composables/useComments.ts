@@ -1,4 +1,4 @@
-import { ref, onMounted } from 'vue'
+// Nuxt 3 auto-imports ref and onMounted
 import type { CommentCreate, CsrfTokenResponse } from '../types'
 import { useToast } from './useToast'
 
@@ -9,8 +9,8 @@ export const useComments = (jobId: number, emitRefresh: () => void) => {
     let widgetId: number | null = null
     const { addToast } = useToast()
 
-    const colors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#f43f5e']
-    const getRandomColor = () => colors[Math.floor(Math.random() * colors.length)]
+    const colors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#f43f5e'] as const
+    const getRandomColor = (): string => colors[Math.floor(Math.random() * colors.length)] ?? '#3b82f6'
 
     const fetchCsrfToken = async () => {
         try {
