@@ -7,13 +7,14 @@ class CommentCreate(BaseModel):
     user_id: Optional[int] = None
     username: str = Field(..., min_length=1, max_length=50)
     message: str = Field(..., min_length=1, max_length=500)
-    color: str = Field(..., pattern=r'^#[0-9a-fA-F]{6}$')
-    email: Optional[str] = Field(None, pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
+    color: str = Field(..., regex=r'^#[0-9a-fA-F]{6}$')
+    email: Optional[str] = Field(None, regex=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     job_all_data_id: Optional[int] = None
     parent_id: Optional[int] = None
     recaptcha_token: str
 
-    model_config = {"from_attributes": True}
+    class Config:
+        orm_mode = True
 
 
 # 定義留言返回的資料結構
@@ -30,4 +31,5 @@ class CommentResponse(BaseModel):
     parent_id: Optional[int]
     is_deleted: int  # 0=未刪除，1=已刪除
 
-    model_config = {"from_attributes": True}
+    class Config:
+        orm_mode = True
