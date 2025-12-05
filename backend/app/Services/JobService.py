@@ -74,9 +74,11 @@ class JobService:
 
         if places:
             place_list = [p.strip() for p in places.split(",")]
-            # Use IN clause for better performance (uses index)
-            filters.append("work_place_type IN :place_list")
-            params["place_list"] = tuple(place_list)
+            # Use LIKE for partial matching since work_place_type contains full addresses
+            place_conditions = [f"work_place_type LIKE :place_{i}" for i in range(len(place_list))]
+            filters.append(f"({' OR '.join(place_conditions)})")
+            for i, place in enumerate(place_list):
+                params[f"place_{i}"] = f"%{place}%"
 
         # 職等過濾
         if min_rank is not None or max_rank is not None:
