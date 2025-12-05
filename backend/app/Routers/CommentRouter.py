@@ -11,7 +11,7 @@ from app.Schemas.Schemas import CommentCreate, CommentResponse
 
 router = APIRouter()
 
-@router.post("/comments", response_model=CommentResponse)
+@router.post("/", response_model=CommentResponse)
 async def submit_comment(
     comment: CommentCreate, 
     request: Request, 
@@ -34,7 +34,7 @@ async def submit_comment(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"留言提交失敗: {str(e)}")
 
-@router.get("/comments/list", response_class=JSONResponse)
+@router.get("/list", response_class=JSONResponse)
 async def get_comments_list(
     request: Request,
     db: AsyncSession = Depends(get_async_db),

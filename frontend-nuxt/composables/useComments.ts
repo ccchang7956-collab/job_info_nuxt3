@@ -76,7 +76,7 @@ export const useComments = (jobId: number, emitRefresh: () => void) => {
                 recaptcha_token: recaptchaToken
             }
 
-            await $fetch('/api/comments/comments', {
+            await $fetch('/api/comments', {
                 method: 'POST',
                 body: payload,
                 headers: {
