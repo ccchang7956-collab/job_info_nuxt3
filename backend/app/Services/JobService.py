@@ -205,6 +205,11 @@ class JobService:
             
             # 1. 查詢職缺資料
             job_query = text(f"SELECT * FROM {table_name} WHERE id = :job_id")
+            job_result = await db.execute(job_query, {"job_id": job_id})
+            job = job_result.fetchone()
+            
+            if not job:
+                return None
             
             # 2. 查詢留言
             comments_query = text("""
@@ -213,16 +218,7 @@ class JobService:
                 WHERE job_all_data_id = :job_id AND is_deleted = 0
                 ORDER BY created_at ASC
             """)
-            
-            import asyncio
-            job_task = db.execute(job_query, {"job_id": job_id})
-            comments_task = db.execute(comments_query, {"job_id": job_id})
-            
-            job_result, raw_comments_result = await asyncio.gather(job_task, comments_task)
-            job = job_result.fetchone()
-            
-            if not job:
-                return None
+            raw_comments_result = await db.execute(comments_query, {"job_id": job_id})
 
             # 3. 查詢重複職缺
             duplicate_query = text(f"""
