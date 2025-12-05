@@ -69,7 +69,7 @@ class CommentService:
             email=comment.email or "",
             job_all_data_id=comment.job_all_data_id,
             parent_id=comment.parent_id,
-            is_deleted=False
+            is_deleted=0
         )
         # 儲存至資料庫
         db.add(new_comment)

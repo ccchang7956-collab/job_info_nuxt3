@@ -28,6 +28,6 @@ class CommentResponse(BaseModel):
     email: Optional[str]
     job_all_data_id: Optional[int]  # 改為 job_all_data_id
     parent_id: Optional[int]
-    is_deleted: bool
+    is_deleted: int  # 0=未刪除，1=已刪除
 
     model_config = {"from_attributes": True}
