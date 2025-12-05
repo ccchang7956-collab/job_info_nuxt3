@@ -19,9 +19,6 @@ from . import Line_ai_openrouter_service as ai_service
 from . import Line_ai_db_service as db_service
 from . import Line_ai_text_formatter as text_formatter
 
-from dotenv import load_dotenv
-load_dotenv()
-
 logger = logging.getLogger(__name__)
 router = APIRouter()
 

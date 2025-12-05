@@ -2,6 +2,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from cachetools import TTLCache
+import logging
 
 # Cache sitemap for 1 hour (3600 seconds)
 sitemap_cache = TTLCache(maxsize=1, ttl=3600)
@@ -75,7 +76,7 @@ Sitemap: https://www.opendgpa.site/sitemap.xml
                 xml_content.append('</url>')
                 
         except Exception as e:
-            print(f"Error generating sitemap: {e}")
+            logging.error(f"Error generating sitemap: {e}")
             
         xml_content.append('</urlset>')
         

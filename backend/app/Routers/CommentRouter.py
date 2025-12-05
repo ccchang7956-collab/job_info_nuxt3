@@ -60,5 +60,6 @@ async def get_comments_list(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f"輸入格式錯誤: {str(e)}")
     except Exception as e:
-        print(f"Error in get_comments_list: {e}")
+        import logging
+        logging.error(f"Error in get_comments_list: {e}")
         raise HTTPException(status_code=500, detail="系統暫時無法處理您的請求，請稍後再試")

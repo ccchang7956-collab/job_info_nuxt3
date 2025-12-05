@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
@@ -7,15 +7,14 @@ class CommentCreate(BaseModel):
     user_id: Optional[int] = None
     username: str = Field(..., min_length=1, max_length=50)
     message: str = Field(..., min_length=1, max_length=500)
-    color: str = Field(..., regex=r'^#[0-9a-fA-F]{6}$')
-    email: Optional[str] = Field(None, regex=r'^[\w\.-]+@[\w\.-]+\.\w+$')
+    color: str = Field(..., pattern=r'^#[0-9a-fA-F]{6}$')
+    email: Optional[str] = Field(None, pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     job_all_data_id: Optional[int] = None
     parent_id: Optional[int] = None
     recaptcha_token: str
-    
-    class Config:
-        orm_mode = True  # Pydantic V1 uses orm_mode
-    
+
+    model_config = {"from_attributes": True}
+
 
 # 定義留言返回的資料結構
 class CommentResponse(BaseModel):
@@ -31,5 +30,4 @@ class CommentResponse(BaseModel):
     parent_id: Optional[int]
     is_deleted: bool
 
-    class Config:
-        orm_mode = True  # Pydantic V1 uses orm_mode
+    model_config = {"from_attributes": True}

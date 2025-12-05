@@ -1,4 +1,3 @@
-import os
 import sys
 import logging
 import httpx
@@ -61,7 +60,7 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 # Middleware 2: Rate Limiting
 app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
 
-# Middleware 2: Inject update_date
+# Middleware 3: Inject update_date
 @app.middleware("http")
 async def add_update_date_to_request(request: Request, call_next):
     try:
@@ -71,7 +70,7 @@ async def add_update_date_to_request(request: Request, call_next):
         request.state.update_date = "*/*/*"
     return await call_next(request)
 
-# Middleware 2: Security headers
+# Middleware 4: Security headers
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)

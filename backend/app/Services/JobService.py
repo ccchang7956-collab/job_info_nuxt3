@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 import hashlib
 import json
+from typing import List
 from cachetools import TTLCache
 from app.Utils.FormatUtils import format_place, format_roc_date, format_rank_display
 import logging

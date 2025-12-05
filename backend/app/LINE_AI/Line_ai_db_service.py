@@ -2,7 +2,7 @@
 import os
 import logging
 from sqlalchemy import text
-from app.database import AsyncSessionLocal # Import from app.database.py
+from app.Core.Database import AsyncSessionLocal # Import from app.Core.Database
 from typing import List, Dict, Any, Optional
 
 logger = logging.getLogger(__name__)

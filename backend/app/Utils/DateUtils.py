@@ -2,6 +2,7 @@ from sqlalchemy import text
 from app.Core.Database import AsyncSessionLocal
 from datetime import datetime
 import asyncio
+import logging
 
 class TimedCache:
     def __init__(self):
@@ -58,7 +59,7 @@ async def fetch_latest_update_date():
                 return formatted_date
             return "114/02/22"
         except Exception as e:
-            print(f"Error fetching update date: {e}")
+            logging.error(f"Error fetching update date: {e}")
             return "114/02/22"
 
 async def get_latest_update_date():

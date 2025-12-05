@@ -81,5 +81,6 @@ async def render_comments_page(
         })
 
     except Exception as e:
-        print(f"Error in render_comments_page: {e}")
+        import logging
+        logging.error(f"Error in render_comments_page: {e}")
         raise HTTPException(status_code=500, detail="系統暫時無法處理您的請求，請稍後再試")

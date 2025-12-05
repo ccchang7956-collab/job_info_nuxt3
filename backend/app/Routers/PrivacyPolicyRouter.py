@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse# 初始化模板位置
+from fastapi.responses import HTMLResponse
 from app.Utils.TemplateUtils import templates
 
 router = APIRouter()

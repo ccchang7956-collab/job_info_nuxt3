@@ -3,7 +3,7 @@ from sqlalchemy.sql import text
 from datetime import datetime
 import pytz
 import httpx
-import os
+import logging
 import re
 import math
 from typing import List, Optional, Tuple
@@ -13,8 +13,10 @@ from app.Schemas.Schemas import CommentCreate
 from app.Utils.FormatUtils import format_roc_date
 
 from cachetools import TTLCache
+from app.Core.Config import Config
 
-GOOGLE_RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY", "6LeEYrMqAAAAAJmT3yYXUlebX0j-9HWrdnCANSkh")
+# Use config for reCAPTCHA key
+GOOGLE_RECAPTCHA_SECRET_KEY = Config.GOOGLE_RECAPTCHA_SECRET_KEY
 
 # Cache for sysnam lists (1 hour)
 _sysnam_cache = TTLCache(maxsize=2, ttl=3600)
@@ -115,7 +117,7 @@ class CommentService:
             _sysnam_cache["admin"] = sysnam_admin_list
             _sysnam_cache["tech"] = sysnam_tech_list
         except Exception as e:
-            print(f"Error fetching sysnam lists: {e}")
+            logging.error(f"Error fetching sysnam lists: {e}")
         return sysnam_admin_list, sysnam_tech_list
 
     @staticmethod

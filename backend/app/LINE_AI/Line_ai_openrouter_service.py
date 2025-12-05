@@ -4,10 +4,7 @@ import json
 import logging
 import httpx
 import re
-from dotenv import load_dotenv
 from typing import List, Optional, Dict, Any
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 
