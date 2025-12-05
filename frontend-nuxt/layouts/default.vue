@@ -11,6 +11,17 @@ import {
 
 const { data: updateDateData } = await useFetch('/api/metadata/last-update')
 const updateDate = computed(() => updateDateData.value?.date || '無法取得')
+
+// PWA Manifest
+useHead({
+  link: [
+    { rel: 'manifest', href: '/manifest.webmanifest' },
+    { rel: 'apple-touch-icon', href: '/pwa-192x192.png' }
+  ],
+  meta: [
+    { name: 'theme-color', content: '#2563eb' }
+  ]
+})
 </script>
 
 <template>
