@@ -45,6 +45,9 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      link: [
+        { rel: 'manifest', href: '/manifest.webmanifest' }
+      ],
       script: [
         { src: 'https://www.google.com/recaptcha/api.js?render=explicit', async: true, defer: true }
       ]
