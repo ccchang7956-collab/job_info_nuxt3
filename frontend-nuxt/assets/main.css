@@ -7,3 +7,18 @@
         @apply bg-slate-50 text-slate-800 antialiased;
     }
 }
+
+/* ================================
+   全站版面寬度設定
+   修改這裡可以影響所有頁面的內容寬度
+   可用選項：max-w-5xl (1024px), max-w-6xl (1152px), max-w-7xl (1280px)
+   ================================ */
+@layer components {
+    .page-container {
+        @apply container mx-auto px-4 py-8 max-w-6xl;
+    }
+
+    .footer-container {
+        @apply container mx-auto px-4 text-center text-slate-500 text-sm max-w-6xl;
+    }
+}

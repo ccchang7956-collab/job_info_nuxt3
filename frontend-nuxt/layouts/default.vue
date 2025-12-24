@@ -85,7 +85,7 @@ useHead({
     </main>
     
     <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
-      <div class="container mx-auto px-4 text-center text-slate-500 text-sm max-w-7xl">
+      <div class="footer-container">
         <p>&copy; 2024 Job Info. All rights reserved.</p>
       </div>
     </footer>
