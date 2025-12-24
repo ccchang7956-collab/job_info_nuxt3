@@ -26,49 +26,49 @@ useHead({
   <div class="min-h-screen flex flex-col">
     <header class="bg-primary-600 shadow-lg sticky top-0 z-50">
       <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-        <!-- Left Side: Logo + Nav -->
-        <div class="flex items-center gap-6">
-          <div class="logo flex-shrink-0">
-            <NuxtLink to="/" class="flex items-center gap-2 text-xl font-bold text-white hover:text-primary-100 transition-colors">
-              <img src="/logo.png" alt="Logo" class="w-10 h-10 object-contain" />
-              <span class="hidden sm:inline whitespace-nowrap">開放事求人</span>
-            </NuxtLink>
-          </div>
-          <nav class="flex gap-1">
-            <NuxtLink 
-              to="/" 
-              active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
-            >
-              <BriefcaseIcon class="w-6 h-6" />
-              <span class="hidden sm:inline">看職缺</span>
-            </NuxtLink>
-            <NuxtLink 
-              to="/comments" 
-              active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
-            >
-              <ChatBubbleLeftRightIcon class="w-6 h-6" />
-              <span class="hidden sm:inline">看留言</span>
-            </NuxtLink>
-            <NuxtLink 
-              to="/charts" 
-              active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
-            >
-              <ChartBarIcon class="w-6 h-6" />
-              <span class="hidden sm:inline">統計圖表</span>
-            </NuxtLink>
-            <NuxtLink 
-              to="/about" 
-              active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
-            >
-              <InformationCircleIcon class="w-6 h-6" />
-              <span class="hidden sm:inline">關於</span>
-            </NuxtLink>
-          </nav>
+        <!-- Left Side: Logo -->
+        <div class="logo flex-shrink-0">
+          <NuxtLink to="/" class="flex items-center gap-2 text-xl font-bold text-white hover:text-primary-100 transition-colors">
+            <img src="/logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+            <span class="hidden sm:inline whitespace-nowrap">開放事求人</span>
+          </NuxtLink>
         </div>
+        
+        <!-- Right Side: Nav -->
+        <nav class="flex gap-1">
+          <NuxtLink 
+            to="/" 
+            active-class="bg-primary-700 text-white shadow-inner"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
+          >
+            <BriefcaseIcon class="w-6 h-6" />
+            <span class="hidden sm:inline">看職缺</span>
+          </NuxtLink>
+          <NuxtLink 
+            to="/comments" 
+            active-class="bg-primary-700 text-white shadow-inner"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
+          >
+            <ChatBubbleLeftRightIcon class="w-6 h-6" />
+            <span class="hidden sm:inline">看留言</span>
+          </NuxtLink>
+          <NuxtLink 
+            to="/charts" 
+            active-class="bg-primary-700 text-white shadow-inner"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
+          >
+            <ChartBarIcon class="w-6 h-6" />
+            <span class="hidden sm:inline">統計圖表</span>
+          </NuxtLink>
+          <NuxtLink 
+            to="/about" 
+            active-class="bg-primary-700 text-white shadow-inner"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
+          >
+            <InformationCircleIcon class="w-6 h-6" />
+            <span class="hidden sm:inline">關於</span>
+          </NuxtLink>
+        </nav>
         
         <!-- Right Side: Data Date -->
         <div class="hidden lg:flex items-center gap-2 text-white/80 text-sm bg-primary-700/50 px-3 py-1.5 rounded-full border border-white/10">
