@@ -465,7 +465,7 @@ useSeoMeta({
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="bg-primary-600 border-b border-primary-700 text-white text-base font-bold tracking-wide">
+                <tr class="bg-primary-600 border-b border-primary-700 text-white text-base font-bold tracking-wide whitespace-nowrap">
                   <th class="p-4 cursor-pointer hover:bg-primary-700 transition-colors group w-[180px]" @click="handleSort('org')">
                     <div class="flex items-center gap-1">
                       機關名稱
@@ -502,7 +502,7 @@ useSeoMeta({
                       <component :is="sortField === 'date_from' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-4 h-4 text-blue-200 group-hover:text-white" />
                     </div>
                   </th>
-                  <th class="p-4 text-center w-[90px]">狀態</th>
+                  <th class="p-4 text-center w-[100px]">狀態</th>
                   <th class="p-4 text-center w-[70px]">查看</th>
                 </tr>
               </thead>
