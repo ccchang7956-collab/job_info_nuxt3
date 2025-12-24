@@ -561,7 +561,7 @@ useSeoMeta({
                   <td class="p-4 align-top text-right">
                     <NuxtLink 
                       :to="`/job/${job.id}`"
-                      class="invisible group-hover:visible inline-flex items-center justify-center px-3 py-1.5 bg-white border border-slate-300 text-primary-600 rounded-lg text-xs font-bold hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-all shadow-sm whitespace-nowrap"
+                      class="inline-flex items-center justify-center px-3 py-1.5 bg-white border border-slate-300 text-slate-700 rounded-lg text-xs font-bold hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-all shadow-sm whitespace-nowrap"
                     >
                       查看
                     </NuxtLink>
