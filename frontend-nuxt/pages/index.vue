@@ -502,7 +502,7 @@ useSeoMeta({
                       <component :is="sortField === 'date_from' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-4 h-4 text-blue-200 group-hover:text-white" />
                     </div>
                   </th>
-                  <th class="p-4 text-center w-[100px]">狀態</th>
+                  <th class="p-4 text-left w-[100px]">狀態</th>
                   <th class="p-4 text-center w-[70px]">查看</th>
                 </tr>
               </thead>
