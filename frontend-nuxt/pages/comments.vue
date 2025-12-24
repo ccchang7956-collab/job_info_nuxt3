@@ -323,7 +323,7 @@ useSeoMeta({
           v-for="comment in comments" 
           :key="comment.comment_id" 
           :to="`/job/${comment.job_all_data_id}`"
-          class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer block"
+          class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer block min-w-0"
         >
           <!-- Blue Header Section - Org Name -->
           <div class="bg-primary-600 px-5 py-5 flex items-center justify-between gap-3 rounded-t-xl">
