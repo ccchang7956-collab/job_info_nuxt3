@@ -13,7 +13,8 @@ import {
   Bars3Icon,
   XMarkIcon,
   InboxIcon,
-  BriefcaseIcon
+  BriefcaseIcon,
+  MapPinIcon
 } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
