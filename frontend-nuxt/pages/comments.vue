@@ -8,7 +8,8 @@ import {
   XMarkIcon,
   TrashIcon,
   ClockIcon,
-  CalendarIcon
+  CalendarIcon,
+  ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -41,6 +42,12 @@ const filters = ref({
 
 // Search Bar State
 const isSearchExpanded = ref(false)
+const isSysnamModalOpen = ref(false)
+
+// Trigger search when sysnam changes via modal
+watch(() => filters.value.search_sysnam, () => {
+  handleSearch()
+})
 const hasActiveFilters = computed(() => {
   return filters.value.search_org || 
          filters.value.search_title || 
@@ -242,19 +249,18 @@ useSeoMeta({
         <!-- Sysnam -->
         <div>
           <label class="block text-base font-medium text-slate-700 mb-1">職系</label>
-          <select 
-            v-model="filters.search_sysnam" 
-            class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base"
-            @change="handleSearch"
+          <div 
+            class="relative cursor-pointer group"
+            @click="isSysnamModalOpen = true"
           >
-            <option value="">全部職系</option>
-            <optgroup label="行政類">
-              <option v-for="sys in sysnamAdminList" :key="sys" :value="sys">{{ sys }}</option>
-            </optgroup>
-            <optgroup label="技術類">
-              <option v-for="sys in sysnamTechList" :key="sys" :value="sys">{{ sys }}</option>
-            </optgroup>
-          </select>
+            <input 
+              type="text" 
+              :value="filters.search_sysnam || '全部職系'" 
+              readonly
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base cursor-pointer group-hover:border-primary-300 transition-colors pointer-events-none"
+            >
+            <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-hover:text-primary-500 transition-colors" />
+          </div>
         </div>
 
         <!-- Message -->
@@ -408,5 +414,12 @@ useSeoMeta({
         </button>
       </div>
     </div>
+    <SysnamModal 
+      v-model="filters.search_sysnam"
+      :isOpen="isSysnamModalOpen"
+      :adminList="sysnamAdminList"
+      :techList="sysnamTechList"
+      @close="isSysnamModalOpen = false" 
+    />
   </div>
 </template>
