@@ -45,7 +45,7 @@ defineProps({
         <!-- 職稱 -->
         <div class="flex items-start">
           <span class="w-20 flex-shrink-0 text-slate-500 text-base">職稱</span>
-          <span class="text-primary-700 text-base font-bold">{{ job.title }}</span>
+          <span class="text-slate-800 text-base font-medium">{{ job.title }}</span>
         </div>
         
         <!-- 職等 -->
