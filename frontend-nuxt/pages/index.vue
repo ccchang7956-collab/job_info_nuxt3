@@ -535,12 +535,12 @@ useSeoMeta({
                     </div>
                   </td>
                   <td class="p-4 align-top">
-                    <div class="flex flex-col gap-1">
-                      <div class="flex items-center gap-1.5 text-xs font-mono text-slate-500 bg-slate-50 px-2 py-1 rounded inline-block w-fit">
-                        <CalendarIcon class="w-3.5 h-3.5 flex-shrink-0" />
-                        {{ job.date_from }}
-                      </div>
-                      <div class="text-[10px] text-slate-400 pl-7 text-left">~ {{ job.date_to }}</div>
+                    <div class="flex items-start gap-2">
+                       <CalendarIcon class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                       <div class="flex flex-col">
+                         <span class="text-xs font-mono text-slate-700 font-bold leading-tight">{{ job.date_from }}</span>
+                         <span class="text-xs font-mono text-slate-500 leading-tight mt-0.5">~ {{ job.date_to }}</span>
+                       </div>
                     </div>
                   </td>
                   <td class="p-4 align-top text-center">
