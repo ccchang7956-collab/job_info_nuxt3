@@ -206,11 +206,13 @@ useSeoMeta({
     <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2 mb-2">
-          <ChartBarIcon class="w-8 h-8 text-primary-600" />
+        <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3 mb-2">
+          <div class="p-2 bg-primary-100 rounded-lg">
+            <ChartBarIcon class="w-8 h-8 text-primary-600" />
+          </div>
           統計圖表
         </h1>
-        <p class="text-slate-600">瀏覽所有職缺的統計數據</p>
+        <p class="text-slate-500 text-lg">瀏覽所有職缺的統計數據</p>
       </div>
     </div>
 

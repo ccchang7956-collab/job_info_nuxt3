@@ -114,11 +114,13 @@ useSeoMeta({
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2 mb-2">
-          <InformationCircleIcon class="w-8 h-8 text-primary-600" />
+        <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3 mb-2">
+          <div class="p-2 bg-primary-100 rounded-lg">
+            <InformationCircleIcon class="w-8 h-8 text-primary-600" />
+          </div>
           關於本站與聯絡方式
         </h1>
-        <p class="text-slate-600">了解本站的緣起、特色功能，或隨時與我們聯繫。</p>
+        <p class="text-slate-500 text-lg">了解本站的緣起、特色功能，或隨時與我們聯繫。</p>
       </div>
     </div>
 
