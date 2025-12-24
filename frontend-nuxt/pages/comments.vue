@@ -330,7 +330,13 @@ useSeoMeta({
 
                 <!-- 2. Title | Sysnam -->
                 <div class="mb-2 flex flex-wrap items-center gap-2 mt-2">
-                  <span class="text-lg font-bold text-white">{{ comment.title }}</span>
+                  <NuxtLink 
+                    :to="`/job/${comment.job_all_data_id}`" 
+                    class="text-lg font-bold text-white hover:text-primary-200 hover:underline transition-colors"
+                    :title="comment.title"
+                  >
+                    {{ comment.title }}
+                  </NuxtLink>
                   <span class="text-primary-200">|</span>
                   <span class="text-base font-medium text-primary-100 bg-primary-700/50 px-2 py-0.5 rounded">{{ comment.sysnam }}</span>
                 </div>
