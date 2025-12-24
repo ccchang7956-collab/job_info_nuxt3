@@ -251,7 +251,7 @@ useSeoMeta({
       </div>
       <div class="inline-flex items-center gap-2 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
         <span class="text-slate-600 font-medium">總職缺</span>
-        <span class="text-primary-600 font-bold text-2xl font-mono">{{ pagination.total_count }}</span>
+        <span class="text-emerald-600 font-bold text-2xl font-mono">{{ pagination.total_count }}</span>
         <span class="text-slate-400 text-sm">筆</span>
       </div>
     </div>
