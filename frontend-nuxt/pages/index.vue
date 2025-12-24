@@ -514,7 +514,7 @@ useSeoMeta({
                   <td class="p-4 align-top">
                     <NuxtLink 
                       :to="`/job/${job.id}`" 
-                      class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors"
+                      class="font-bold text-slate-700 text-base hover:text-primary-600 hover:underline transition-colors truncate max-w-[200px] block"
                       :title="job.title"
                     >
                       {{ job.title }}
