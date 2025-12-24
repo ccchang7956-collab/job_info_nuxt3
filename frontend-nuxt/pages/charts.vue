@@ -217,21 +217,46 @@ useSeoMeta({
     </div>
 
     <!-- Tabs -->
-    <div class="flex flex-wrap gap-2 mb-8 border-b border-slate-200 pb-2">
-      <button 
-        v-for="tab in tabs" 
-        :key="tab.id"
-        @click="changeTab(tab.id)"
-        :class="[
-          'flex items-center gap-2 px-4 py-2.5 rounded-t-lg font-medium transition-all text-sm sm:text-base border-b-2',
-          activeTab === tab.id 
-            ? 'border-primary-600 text-primary-700 bg-primary-50' 
-            : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-        ]"
-      >
-        <component :is="tab.icon" class="w-5 h-5" :class="activeTab === tab.id ? 'text-primary-600' : 'text-slate-400'" />
-        {{ tab.name }}
-      </button>
+    <!-- Chart Type Selector -->
+    <div class="mb-6">
+      <!-- Mobile: Select Dropdown -->
+      <div class="md:hidden">
+        <label class="block text-slate-700 font-medium mb-2 text-sm">選擇統計圖表類型</label>
+        <div class="relative">
+          <select 
+            :value="activeTab" 
+            @change="changeTab($event.target.value)"
+            class="w-full appearance-none bg-white border border-slate-300 text-slate-700 py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-medium shadow-sm transition-shadow"
+          >
+            <option v-for="tab in tabs" :key="tab.id" :value="tab.id">
+              {{ tab.name }}
+            </option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop: Tabs -->
+      <div class="hidden md:flex flex-wrap gap-2 border-b border-slate-200 pb-2">
+        <button 
+          v-for="tab in tabs" 
+          :key="tab.id"
+          @click="changeTab(tab.id)"
+          :class="[
+            'flex items-center gap-2 px-4 py-2.5 rounded-t-lg font-medium transition-all text-sm lg:text-base border-b-2',
+            activeTab === tab.id 
+              ? 'border-primary-600 text-primary-700 bg-primary-50' 
+              : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+          ]"
+        >
+          <component :is="tab.icon" class="w-5 h-5" :class="activeTab === tab.id ? 'text-primary-600' : 'text-slate-400'" />
+          {{ tab.name }}
+        </button>
+      </div>
     </div>
 
     <!-- Controls -->
