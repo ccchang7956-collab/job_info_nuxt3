@@ -75,7 +75,7 @@ export default defineNuxtConfig({
       name: '開放事求人',
       short_name: '開放事求人',
       description: '公務人員職缺查詢系統',
-      theme_color: '#2563eb',
+      theme_color: '#337AB7',
       background_color: '#ffffff',
       display: 'standalone',
       icons: [
