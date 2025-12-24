@@ -522,7 +522,7 @@ useSeoMeta({
                   </td>
                   <td class="p-4 align-top">
                     <div class="flex flex-col gap-1.5 items-start">
-                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
+                      <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
                         {{ job.sysnam }}
                       </span>
                     </div>
