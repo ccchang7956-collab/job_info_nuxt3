@@ -18,26 +18,26 @@ defineProps({
 
 <template>
   <div class="group bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col">
-    <!-- Blue Header Section -->
-    <div class="bg-primary-600 px-4 py-4 flex items-start justify-between gap-3">
-      <div class="min-w-0 flex-1">
-        <h3 class="text-xl font-bold text-white leading-tight mb-1.5">
-          <NuxtLink :to="`/job/${job.id}`" class="hover:underline decoration-2 underline-offset-2">
-            {{ job.title }}
-          </NuxtLink>
-        </h3>
-        <div class="flex items-center gap-1.5 text-blue-100 text-base font-medium">
-          <BuildingOfficeIcon class="w-5 h-5 text-blue-200" />
-          <span class="truncate">{{ job.org }}</span>
-        </div>
+    <!-- Blue Header Section - Only Org Name -->
+    <div class="bg-primary-600 px-4 py-3 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 min-w-0 flex-1">
+        <BuildingOfficeIcon class="w-5 h-5 text-blue-200 flex-shrink-0" />
+        <span class="text-lg font-bold text-white truncate">{{ job.org }}</span>
       </div>
-      <ChevronRightIcon class="w-6 h-6 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0 mt-1" />
+      <ChevronRightIcon class="w-6 h-6 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" />
     </div>
     
     <!-- Content Body -->
     <div class="p-4 flex flex-col gap-3 flex-1">
-      <!-- Badges Row -->
+      <!-- Title + Badges Row -->
       <div class="flex flex-wrap items-center gap-2">
+        <NuxtLink 
+          :to="`/job/${job.id}`" 
+          class="text-lg font-bold text-slate-800 hover:text-primary-600 hover:underline transition-colors"
+          :title="job.title"
+        >
+          {{ job.title }}
+        </NuxtLink>
         <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
           {{ job.sysnam }}
         </span>
