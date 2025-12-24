@@ -7,7 +7,8 @@ import {
   MagnifyingGlassIcon,
   XMarkIcon,
   TrashIcon,
-  ClockIcon
+  ClockIcon,
+  CalendarIcon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
