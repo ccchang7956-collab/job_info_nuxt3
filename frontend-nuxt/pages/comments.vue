@@ -181,8 +181,10 @@ useSeoMeta({
     <!-- Header -->
     <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2 mb-2">
-          <ChatBubbleLeftRightIcon class="w-8 h-8 text-primary-600" />
+        <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3 mb-2">
+          <div class="p-2 bg-primary-100 rounded-lg">
+            <ChatBubbleLeftRightIcon class="w-8 h-8 text-primary-600" />
+          </div>
           看留言
         </h1>
         <p class="text-slate-500 text-lg">瀏覽所有職缺的留言討論</p>
