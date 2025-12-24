@@ -365,14 +365,14 @@ useSeoMeta({
                 <p class="text-red-700 text-sm" v-if="comment.deletion_reason">原因：{{ comment.deletion_reason }}</p>
               </div>
               
-              <div class="text-slate-800 text-base leading-relaxed whitespace-pre-wrap break-words" :class="{ 'opacity-50': comment.is_deleted }">
+              <div class="text-slate-800 text-lg leading-relaxed whitespace-pre-wrap break-words" :class="{ 'opacity-50': comment.is_deleted }">
                 {{ comment.message }}
               </div>
               
               <!-- Comment Time -->
               <div class="flex justify-end mt-3">
-                <span class="inline-flex items-center gap-1 text-sm text-slate-400">
-                  <ClockIcon class="w-4 h-4 flex-shrink-0" />
+                <span class="inline-flex items-center gap-1.5 text-base text-slate-400">
+                  <ClockIcon class="w-5 h-5 flex-shrink-0" />
                   <span class="font-mono">{{ comment.created_at }}</span>
                 </span>
               </div>
