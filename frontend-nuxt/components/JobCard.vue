@@ -38,8 +38,9 @@ defineProps({
         >
           {{ job.title }}
         </NuxtLink>
-        <span class="text-slate-300 mx-1">|</span>
-        <span class="text-base font-medium text-slate-600">{{ job.sysnam }}</span>
+        <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
+          {{ job.sysnam }}
+        </span>
         <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
           {{ job.rank_display || job.rank }}
         </span>
