@@ -3,7 +3,8 @@ import {
   InformationCircleIcon, 
   ChartBarIcon, 
   ChatBubbleLeftRightIcon,
-  BriefcaseIcon
+  BriefcaseIcon,
+  CalendarIcon
 } from '@heroicons/vue/24/outline'
 
 const { data: updateDateData } = await useFetch('/api/metadata/last-update')
