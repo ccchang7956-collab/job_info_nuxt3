@@ -58,19 +58,18 @@ defineProps({
         </div>
       </div>
 
-      <!-- Footer Status (Desktop Table Style) -->
-      <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-start gap-3">
-        <div v-show="job.comment_count > 0" class="relative">
-          <ChatBubbleLeftIcon class="w-6 h-6 text-emerald-500" />
-          <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-          </span>
-        </div>
-        <div v-show="job.history_count > 0" title="曾開缺">
-          <ArrowPathIcon class="w-6 h-6 text-amber-500" />
-        </div>
-        <span v-if="!job.comment_count && !job.history_count" class="text-slate-300 text-2xl leading-none">&middot;</span>
+
+      <!-- Footer Status Badges -->
+      <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-start gap-2 flex-wrap">
+        <span v-if="job.comment_count > 0" class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+          有留言
+        </span>
+        <span v-if="job.history_count > 0" class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-amber-50 text-amber-700 border border-amber-200">
+          曾開缺
+        </span>
+        <span v-if="!job.comment_count && !job.history_count" class="text-slate-400 text-base">
+          無特殊狀態
+        </span>
       </div>
     </div>
   </NuxtLink>
