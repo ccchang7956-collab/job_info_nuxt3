@@ -82,9 +82,20 @@ useHead({
       <slot />
     </main>
     
-    <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
-      <div class="footer-container">
-        <p>&copy; 2024 Job Info. All rights reserved.</p>
+    
+    <footer class="bg-slate-800 text-slate-300 py-6 mt-auto">
+      <div class="container mx-auto px-4 text-center text-sm space-y-2">
+        <p>
+          © 2024 本網站使用
+          <a href="https://data.gov.tw/" target="_blank" class="text-primary-300 hover:text-primary-200 underline">政府資料開放平臺</a>
+          之
+          <a href="https://data.gov.tw/dataset/7229" target="_blank" class="text-primary-300 hover:text-primary-200 underline">行政院人事行政總處事求人機關徵才資料</a>。
+        </p>
+        <p class="text-slate-400">
+          與官方版本差別可以在「<NuxtLink to="/about" class="text-primary-300 hover:text-primary-200 underline">關於</NuxtLink>」中查看。
+          ｜
+          <NuxtLink to="/privacy-policy" class="text-primary-300 hover:text-primary-200 underline">隱私權政策</NuxtLink>
+        </p>
       </div>
     </footer>
 
