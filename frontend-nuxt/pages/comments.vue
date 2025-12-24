@@ -315,7 +315,12 @@ useSeoMeta({
       </div>
 
       <div v-else class="grid gap-6">
-        <div v-for="comment in comments" :key="comment.comment_id" class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-primary-200 transition-colors">
+        <NuxtLink 
+          v-for="comment in comments" 
+          :key="comment.comment_id" 
+          :to="`/job/${comment.job_all_data_id}`"
+          class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer block"
+        >
           <!-- Header Section (Blue) -->
           <div class="bg-primary-600 rounded-t-xl border-b border-primary-700 p-4 relative overflow-hidden">
             <!-- Decorative Background Pattern -->
@@ -330,13 +335,7 @@ useSeoMeta({
 
                 <!-- 2. Title | Sysnam -->
                 <div class="mb-2 flex flex-wrap items-center gap-2 mt-2">
-                  <NuxtLink 
-                    :to="`/job/${comment.job_all_data_id}`" 
-                    class="text-lg font-bold text-white hover:text-primary-200 hover:underline transition-colors"
-                    :title="comment.title"
-                  >
-                    {{ comment.title }}
-                  </NuxtLink>
+                  <span class="text-lg font-bold text-white">{{ comment.title }}</span>
                   <span class="text-primary-200">|</span>
                   <span class="text-base font-medium text-primary-100 bg-primary-700/50 px-2 py-0.5 rounded">{{ comment.sysnam }}</span>
                 </div>
@@ -348,14 +347,12 @@ useSeoMeta({
                 </div>
               </div>
 
-              <!-- View Details Button -->
-              <NuxtLink 
-                :to="`/job/${comment.job_all_data_id}`"
-                class="flex-shrink-0 px-3 py-1.5 bg-white text-primary-600 rounded-lg text-sm font-bold hover:bg-primary-50 hover:shadow-lg transition-all whitespace-nowrap shadow-sm border border-transparent group"
-              >
-                查看詳細
-                <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
-              </NuxtLink>
+              <!-- Arrow Icon -->
+              <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-primary-200 group-hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </div>
             </div>
           </div>
 
@@ -384,7 +381,7 @@ useSeoMeta({
               </span>
             </div>
           </div>
-        </div>
+        </NuxtLink>
       </div>
 
       <!-- Pagination -->
