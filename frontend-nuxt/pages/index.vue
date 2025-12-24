@@ -528,7 +528,7 @@ useSeoMeta({
                     </div>
                   </td>
                   <td class="p-4 align-top">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
                       {{ job.rank_display || job.rank }}
                     </span>
                   </td>
