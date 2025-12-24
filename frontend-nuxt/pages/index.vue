@@ -544,19 +544,17 @@ useSeoMeta({
                       <span class="text-xs font-mono text-slate-500 leading-tight mt-1">~ {{ job.date_to }}</span>
                     </div>
                   </td>
-                  <td class="p-4 align-top text-center">
-                    <div class="flex justify-center gap-1">
-                      <div v-show="job.comment_count > 0" class="group/icon relative">
-                        <ChatBubbleLeftIcon class="w-5 h-5 text-emerald-500" />
-                        <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                        </span>
-                      </div>
-                      <div v-show="job.history_count > 0" title="曾開缺">
-                         <ArrowPathIcon class="w-5 h-5 text-amber-500" />
-                      </div>
-                      <span v-if="!job.comment_count && !job.history_count" class="text-slate-200 text-xl leading-none">&middot;</span>
+                  <td class="p-4 align-top">
+                    <div class="flex flex-wrap gap-1.5">
+                      <span v-if="job.comment_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        有留言
+                      </span>
+                      <span v-if="job.history_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        曾開缺
+                      </span>
+                      <span v-if="!job.comment_count && !job.history_count" class="text-slate-400 text-sm">
+                        —
+                      </span>
                     </div>
                   </td>
                   <td class="p-4 align-top text-right">
