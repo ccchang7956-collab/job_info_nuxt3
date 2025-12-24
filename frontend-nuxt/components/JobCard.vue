@@ -33,7 +33,7 @@ defineProps({
       <div class="flex flex-wrap items-center gap-2">
         <NuxtLink 
           :to="`/job/${job.id}`" 
-          class="text-lg font-bold text-slate-800 hover:text-primary-600 hover:underline transition-colors"
+          class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors whitespace-nowrap"
           :title="job.title"
         >
           {{ job.title }}
