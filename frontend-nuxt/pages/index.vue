@@ -529,7 +529,7 @@ useSeoMeta({
                     </span>
                   </td>
                   <td class="p-4 align-top">
-                    <div class="flex items-center gap-1.5 text-slate-900 text-sm max-w-[120px]" :title="job.place">
+                    <div class="flex items-center gap-1.5 text-slate-700 text-base font-bold max-w-[120px]" :title="job.place">
                       <MapPinIcon class="w-4 h-4 text-slate-400 flex-shrink-0" />
                       <span class="truncate">{{ job.place }}</span>
                     </div>
