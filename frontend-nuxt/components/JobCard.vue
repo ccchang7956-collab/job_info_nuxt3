@@ -5,7 +5,8 @@ import {
   MapPinIcon, 
   CalendarIcon,
   ChatBubbleLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ArrowPathIcon
 } from '@heroicons/vue/24/outline'
 
 defineProps({
@@ -17,7 +18,10 @@ defineProps({
 </script>
 
 <template>
-  <div class="group bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col">
+  <NuxtLink 
+    :to="`/job/${job.id}`" 
+    class="group bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md hover:border-primary-300 transition-all duration-300 flex flex-col cursor-pointer"
+  >
     <!-- Blue Header Section - Only Org Name -->
     <div class="bg-primary-600 px-4 py-4 flex items-center justify-between gap-3">
       <div class="flex items-center gap-2 min-w-0 flex-1">
@@ -31,13 +35,9 @@ defineProps({
     <div class="p-4 flex flex-col gap-3 flex-1">
       <!-- Title + Badges Row -->
       <div class="flex flex-wrap items-center gap-2">
-        <NuxtLink 
-          :to="`/job/${job.id}`" 
-          class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors"
-          :title="job.title"
-        >
+        <span class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-primary-50 text-primary-700 border border-primary-200">
           {{ job.title }}
-        </NuxtLink>
+        </span>
         <span class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
           {{ job.sysnam }}
         </span>
@@ -58,24 +58,20 @@ defineProps({
         </div>
       </div>
 
-      <!-- Footer Actions -->
-      <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between">
-        <div v-if="job.comment_count > 0" class="flex items-center gap-1.5 text-emerald-600 text-sm font-bold bg-emerald-50 px-2.5 py-1.5 rounded border border-emerald-100">
-          <ChatBubbleLeftIcon class="w-4 h-4" />
-          <span>{{ job.comment_count }} 則留言</span>
+      <!-- Footer Status (Desktop Table Style) -->
+      <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-start gap-3">
+        <div v-show="job.comment_count > 0" class="relative">
+          <ChatBubbleLeftIcon class="w-6 h-6 text-emerald-500" />
+          <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
         </div>
-        <div v-else class="text-sm text-slate-400 flex items-center gap-1.5">
-          <ChatBubbleLeftIcon class="w-4 h-4" />
-          尚無留言
+        <div v-show="job.history_count > 0" title="曾開缺">
+          <ArrowPathIcon class="w-6 h-6 text-amber-500" />
         </div>
-        
-        <NuxtLink 
-          :to="`/job/${job.id}`" 
-          class="text-base font-bold text-primary-600 hover:text-primary-700 hover:bg-primary-50 px-4 py-2 rounded transition-colors"
-        >
-          查看詳情
-        </NuxtLink>
+        <span v-if="!job.comment_count && !job.history_count" class="text-slate-300 text-2xl leading-none">&middot;</span>
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
