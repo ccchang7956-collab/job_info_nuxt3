@@ -221,12 +221,12 @@ useSeoMeta({
     <div class="mb-6">
       <!-- Mobile: Select Dropdown -->
       <div class="md:hidden">
-        <label class="block text-slate-700 font-medium mb-2 text-sm">選擇統計圖表類型</label>
+        <label class="block text-slate-700 font-medium mb-2 text-base">選擇統計圖表類型</label>
         <div class="relative">
           <select 
             :value="activeTab" 
             @change="changeTab($event.target.value)"
-            class="w-full appearance-none bg-white border border-slate-300 text-slate-700 py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-medium shadow-sm transition-shadow"
+            class="w-full appearance-none bg-white border border-slate-300 text-slate-700 py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 font-medium shadow-sm transition-shadow text-lg"
           >
             <option v-for="tab in tabs" :key="tab.id" :value="tab.id">
               {{ tab.name }}
