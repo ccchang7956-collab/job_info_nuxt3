@@ -1,6 +1,5 @@
 <script setup>
 import { 
-  BuildingOfficeIcon, 
   ChevronRightIcon
 } from '@heroicons/vue/24/outline'
 
@@ -20,7 +19,6 @@ defineProps({
     <!-- Blue Header Section - Org Name -->
     <div class="bg-primary-600 px-5 py-5 flex items-center justify-between gap-3">
       <div class="flex items-center gap-2.5 min-w-0 flex-1">
-        <BuildingOfficeIcon class="w-7 h-7 text-blue-200 flex-shrink-0" />
         <span class="text-2xl font-bold text-white truncate">{{ job.org }}</span>
       </div>
       <ChevronRightIcon class="w-8 h-8 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" />
