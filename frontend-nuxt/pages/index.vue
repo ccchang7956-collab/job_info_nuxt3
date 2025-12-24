@@ -512,13 +512,12 @@ useSeoMeta({
                     <div class="font-bold text-slate-700 text-base mb-0.5 truncate max-w-[180px]" :title="job.org">{{ job.org }}</div>
                   </td>
                   <td class="p-4 align-top">
-                    <NuxtLink 
-                      :to="`/job/${job.id}`" 
-                      class="font-bold text-slate-700 text-base hover:text-primary-600 hover:underline transition-colors truncate max-w-[200px] block"
+                    <span 
+                      class="font-bold text-slate-700 text-base truncate max-w-[200px] block"
                       :title="job.title"
                     >
                       {{ job.title }}
-                    </NuxtLink>
+                    </span>
                   </td>
                   <td class="p-4 align-top">
                     <div class="flex flex-col gap-1.5 items-start">
