@@ -465,7 +465,7 @@ useSeoMeta({
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="bg-primary-600 border-b border-primary-700 text-white text-lg font-bold tracking-wide">
+                <tr class="bg-primary-600 border-b border-primary-700 text-white text-base font-bold tracking-wide">
                   <th class="p-4 cursor-pointer hover:bg-primary-700 transition-colors group w-[180px]" @click="handleSort('org')">
                     <div class="flex items-center gap-1">
                       機關名稱
@@ -509,35 +509,35 @@ useSeoMeta({
               <tbody class="divide-y divide-slate-100 text-sm">
                 <tr v-for="job in jobs" :key="job.id" class="hover:bg-blue-50/50 transition-colors duration-200 border-b border-slate-50 last:border-0 group">
                   <td class="p-4 align-top">
-                    <div class="font-bold text-slate-700 text-lg mb-0.5 truncate max-w-[180px]" :title="job.org">{{ job.org }}</div>
+                    <div class="font-bold text-slate-700 text-base mb-0.5 truncate max-w-[180px]" :title="job.org">{{ job.org }}</div>
                   </td>
                   <td class="p-4 align-top">
-                    <NuxtLink :to="`/job/${job.id}`" class="block font-bold text-slate-900 text-lg hover:text-primary-600 hover:underline truncate max-w-[200px]" :title="job.title">
+                    <NuxtLink :to="`/job/${job.id}`" class="block font-bold text-slate-900 text-base hover:text-primary-600 hover:underline truncate max-w-[200px]" :title="job.title">
                       {{ job.title }}
                     </NuxtLink>
                   </td>
                   <td class="p-4 align-top">
                     <div class="flex flex-col gap-1.5 items-start">
-                      <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
                         {{ job.sysnam }}
                       </span>
                     </div>
                   </td>
                   <td class="p-4 align-top">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
                       {{ job.rank_display || job.rank }}
                     </span>
                   </td>
                   <td class="p-4 align-top">
-                    <div class="flex items-center gap-1.5 text-slate-600 text-base max-w-[120px]">
-                      <MapPinIcon class="w-5 h-5 text-slate-400 flex-shrink-0" />
+                    <div class="flex items-center gap-1.5 text-slate-600 text-sm max-w-[120px]">
+                      <MapPinIcon class="w-4 h-4 text-slate-400 flex-shrink-0" />
                       <span class="truncate" :title="job.place">{{ job.place }}</span>
                     </div>
                   </td>
                   <td class="p-4 align-top">
                     <div class="flex flex-col">
-                      <span class="text-sm font-mono text-slate-700 font-bold leading-tight">{{ job.date_from }}</span>
-                      <span class="text-sm font-mono text-slate-500 leading-tight mt-1">~ {{ job.date_to }}</span>
+                      <span class="text-xs font-mono text-slate-700 font-bold leading-tight">{{ job.date_from }}</span>
+                      <span class="text-xs font-mono text-slate-500 leading-tight mt-1">~ {{ job.date_to }}</span>
                     </div>
                   </td>
                   <td class="p-4 align-top text-center">
