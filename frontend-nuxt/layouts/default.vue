@@ -40,33 +40,33 @@ useHead({
             <NuxtLink 
               to="/" 
               active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
             >
-              <BriefcaseIcon class="w-5 h-5" />
+              <BriefcaseIcon class="w-6 h-6" />
               <span class="hidden sm:inline">看職缺</span>
             </NuxtLink>
             <NuxtLink 
               to="/comments" 
               active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
             >
-              <ChatBubbleLeftRightIcon class="w-5 h-5" />
+              <ChatBubbleLeftRightIcon class="w-6 h-6" />
               <span class="hidden sm:inline">看留言</span>
             </NuxtLink>
             <NuxtLink 
               to="/charts" 
               active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
             >
-              <ChartBarIcon class="w-5 h-5" />
+              <ChartBarIcon class="w-6 h-6" />
               <span class="hidden sm:inline">統計圖表</span>
             </NuxtLink>
             <NuxtLink 
               to="/about" 
               active-class="bg-primary-700 text-white shadow-inner"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg text-primary-100 hover:bg-primary-500 hover:text-white transition-all font-medium text-lg"
             >
-              <InformationCircleIcon class="w-5 h-5" />
+              <InformationCircleIcon class="w-6 h-6" />
               <span class="hidden sm:inline">關於</span>
             </NuxtLink>
           </nav>
