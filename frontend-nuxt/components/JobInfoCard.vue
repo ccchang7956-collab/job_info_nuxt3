@@ -106,82 +106,89 @@ const jobInfoFields = computed(() => [
       </div>
     </div>
 
-    <!-- Additional Sections -->
-    <div class="p-6 space-y-6 border-t border-slate-200 bg-slate-50">
+    <!-- Additional Sections in Table Style -->
+    <div class="divide-y divide-slate-200">
       <!-- Work Item -->
-      <section>
-        <h3 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
-          <span class="w-1 h-5 bg-primary-500 rounded-full"></span>
-          工作項目
-        </h3>
-        <div class="text-slate-700 leading-relaxed whitespace-pre-wrap bg-white p-4 rounded-lg border border-slate-200 text-sm">
+      <div class="flex">
+        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-start gap-2">
+          <BriefcaseIcon class="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <span class="font-medium text-sm">工作項目</span>
+        </div>
+        <div class="flex-1 px-4 py-3 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">
           {{ job.work_item || '詳見簡章' }}
         </div>
-      </section>
+      </div>
 
       <!-- Contact Method -->
-      <section>
-        <h3 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
-          <span class="w-1 h-5 bg-primary-500 rounded-full"></span>
-          聯絡方式
-        </h3>
-        <div class="text-slate-700 leading-relaxed whitespace-pre-wrap bg-white p-4 rounded-lg border border-slate-200 text-sm">
+      <div class="flex">
+        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-start gap-2">
+          <UserIcon class="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <span class="font-medium text-sm">聯絡方式</span>
+        </div>
+        <div class="flex-1 px-4 py-3 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">
           {{ job.contact_method || '詳見簡章' }}
         </div>
-      </section>
+      </div>
 
       <!-- History Job Openings -->
-      <section>
-        <h3 class="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
-          <span class="w-1 h-5 bg-primary-500 rounded-full"></span>
-          歷史開缺
-          <div class="group relative inline-block">
-            <InformationCircleIcon class="w-4 h-4 text-slate-400 cursor-help" />
-            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center">
-              判斷標準：相同機關且相同工作內容的過去職缺
-              <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
-            </div>
-          </div>
-        </h3>
-        
-        <div v-if="historyJobs.length > 0" class="space-y-2">
-          <div 
-            v-for="historyJob in historyJobs" 
-            :key="historyJob.id" 
-            class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg hover:border-primary-300 transition-colors group"
-          >
-            <div class="min-w-0">
-              <div class="font-medium text-slate-800 text-sm group-hover:text-primary-700 truncate">{{ historyJob.title }}</div>
-              <div class="flex items-center gap-1 text-xs text-slate-500 mt-1">
-                <ClockIcon class="w-3.5 h-3.5" />
-                <span>{{ historyJob.date_from }} ~ {{ historyJob.date_to }}</span>
+      <div class="flex">
+        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-start gap-2">
+          <ClockIcon class="w-5 h-5 flex-shrink-0 mt-0.5" />
+          <div class="flex items-center gap-1">
+            <span class="font-medium text-sm">歷史開缺</span>
+            <div class="group relative inline-block">
+              <InformationCircleIcon class="w-4 h-4 text-white/70 cursor-help" />
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center">
+                判斷標準：相同機關且相同工作內容的過去職缺
+                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
               </div>
             </div>
-            <router-link 
-              :to="{ name: 'job-details', params: { id: historyJob.id } }"
-              class="flex-shrink-0 ml-3 px-3 py-1 bg-primary-50 border border-primary-200 text-primary-600 text-xs font-medium rounded hover:bg-primary-600 hover:text-white transition-colors"
-            >
-              檢視
-            </router-link>
           </div>
         </div>
-        <div v-else class="text-center py-6 bg-white rounded-lg border border-dashed border-slate-200 text-slate-400 text-sm">
-          <BriefcaseIcon class="w-6 h-6 mx-auto mb-1 opacity-50" />
-          <p>無歷史開缺資料</p>
+        <div class="flex-1 px-4 py-3 bg-white text-slate-700">
+          <div v-if="historyJobs.length > 0" class="space-y-2">
+            <div 
+              v-for="historyJob in historyJobs" 
+              :key="historyJob.id" 
+              class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:border-primary-300 transition-colors group"
+            >
+              <div class="min-w-0">
+                <div class="font-medium text-slate-800 text-sm group-hover:text-primary-700 truncate">{{ historyJob.title }}</div>
+                <div class="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
+                  <CalendarIcon class="w-3 h-3" />
+                  <span>{{ historyJob.date_from }} ~ {{ historyJob.date_to }}</span>
+                </div>
+              </div>
+              <router-link 
+                :to="{ name: 'job-details', params: { id: historyJob.id } }"
+                class="flex-shrink-0 ml-3 px-2 py-1 bg-primary-50 border border-primary-200 text-primary-600 text-xs font-medium rounded hover:bg-primary-600 hover:text-white transition-colors"
+              >
+                檢視
+              </router-link>
+            </div>
+          </div>
+          <div v-else class="text-slate-400 text-sm">
+            無歷史開缺資料
+          </div>
         </div>
-      </section>
-    </div>
+      </div>
 
-    <!-- Actions -->
-    <div class="p-6 border-t border-slate-200 flex justify-center bg-white">
-      <a 
-        :href="job.view_url" 
-        target="_blank" 
-        class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-2.5 rounded-lg font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-      >
-        前往事求人網站查看完整資訊
-        <ArrowTopRightOnSquareIcon class="w-5 h-5" />
-      </a>
+      <!-- Action: View Original Site -->
+      <div class="flex">
+        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-center gap-2">
+          <ArrowTopRightOnSquareIcon class="w-5 h-5 flex-shrink-0" />
+          <span class="font-medium text-sm">原始連結</span>
+        </div>
+        <div class="flex-1 px-4 py-3 bg-white flex items-center">
+          <a 
+            :href="job.view_url" 
+            target="_blank" 
+            class="text-primary-600 hover:underline hover:text-primary-700 text-sm font-medium"
+          >
+            前往事求人網站查看完整資訊 →
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
