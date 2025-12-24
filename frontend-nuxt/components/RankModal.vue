@@ -85,7 +85,7 @@ const clearSelection = () => {
           <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" @click.stop>
             <div class="bg-primary-600 px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-primary-700">
               <div class="flex justify-between items-center mb-0">
-                <h3 class="text-lg leading-6 font-bold text-white" id="modal-title">選擇職等範圍</h3>
+                <h3 class="text-xl leading-6 font-bold text-white" id="modal-title">選擇職等範圍</h3>
                 <button type="button" @click="$emit('close')" class="text-blue-100 hover:text-white hover:bg-primary-500 rounded-full p-1 transition-colors">
                   <XMarkIcon class="h-6 w-6" />
                 </button>
@@ -95,7 +95,7 @@ const clearSelection = () => {
             <div class="px-4 py-4 sm:p-6">
 
               <div class="space-y-4">
-                <p class="text-sm text-slate-500">請點選起始與結束職等（可單選）</p>
+                <p class="text-base text-slate-500">請點選起始與結束職等（可單選）</p>
                 
                 <div class="grid grid-cols-5 gap-3">
                   <button 
@@ -103,7 +103,7 @@ const clearSelection = () => {
                     v-for="rank in ranks" 
                     :key="rank"
                     @click="selectRank(rank)"
-                    class="aspect-square flex items-center justify-center rounded-lg text-lg font-bold transition-all border-2"
+                    class="aspect-square flex items-center justify-center rounded-lg text-xl font-bold transition-all border-2"
                     :class="[
                       isEndpoint(rank) 
                         ? 'bg-primary-600 text-white border-primary-600 scale-105 shadow-md z-10' 
@@ -117,7 +117,7 @@ const clearSelection = () => {
                 </div>
                 
                 <div class="mt-2 text-center h-6">
-                  <span v-if="localMin && localMax" class="text-primary-700 font-bold bg-primary-50 px-3 py-1 rounded-full text-sm">
+                  <span v-if="localMin && localMax" class="text-primary-700 font-bold bg-primary-50 px-3 py-1 rounded-full text-base">
                     已選擇：{{ localMin }} ~ {{ localMax }} 職等
                   </span>
                 </div>
@@ -127,14 +127,14 @@ const clearSelection = () => {
             <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
               <button 
                 type="button" 
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm"
+                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto"
                 @click="confirmSelection"
               >
                 確定
               </button>
               <button 
                 type="button" 
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto"
                 @click="clearSelection"
               >
                 清空

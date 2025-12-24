@@ -105,9 +105,9 @@ const regions = [
             <!-- Header -->
             <div class="bg-primary-600 px-4 py-3 border-b border-primary-700 flex-shrink-0">
               <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-white" id="modal-title">選擇地點</h3>
+                <h3 class="text-xl font-bold text-white" id="modal-title">選擇地點</h3>
                 <button type="button" @click="$emit('close')" class="text-blue-100 hover:text-white transition-colors p-1 rounded-full hover:bg-primary-500">
-                  <XMarkIcon class="h-5 w-5" />
+                  <XMarkIcon class="h-6 w-6" />
                 </button>
               </div>
             </div>
@@ -117,14 +117,14 @@ const regions = [
               <div class="space-y-5">
                 <div v-for="(region, index) in regions" :key="index">
                   <div class="flex items-center justify-between mb-2 sticky top-0 bg-white/95 backdrop-blur-sm z-10 py-1">
-                    <h6 class="text-sm font-bold text-slate-700 flex items-center gap-2">
-                      <span class="w-1 h-4 bg-primary-500 rounded-full"></span>
+                    <h6 class="text-base font-bold text-slate-700 flex items-center gap-2">
+                      <span class="w-1 h-5 bg-primary-500 rounded-full"></span>
                       {{ region.name }}
                     </h6>
                     <button 
                       type="button"
                       @click="toggleRegion(region.places.join(','))"
-                      class="text-xs font-medium px-2 py-0.5 rounded border border-primary-200 text-primary-600 hover:bg-primary-50 transition-colors"
+                      class="text-sm font-medium px-2.5 py-1 rounded border border-primary-200 text-primary-600 hover:bg-primary-50 transition-colors"
                     >
                       全選
                     </button>
@@ -135,7 +135,7 @@ const regions = [
                       v-for="place in region.places" 
                       :key="place"
                       @click="togglePlace(place)"
-                      class="px-2 py-1.5 rounded text-xs font-medium transition-all border"
+                      class="px-2 py-2 rounded-lg text-base font-medium transition-all border"
                       :class="selectedPlaces.has(place) 
                         ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm ring-1 ring-primary-200' 
                         : 'bg-white text-slate-600 border-slate-200 hover:border-primary-300 hover:bg-slate-50'"
@@ -152,21 +152,21 @@ const regions = [
             <div class="bg-slate-50 px-4 py-3 sm:px-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 flex-shrink-0 border-t border-slate-100">
               <button 
                 type="button" 
-                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none transition-colors"
+                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none transition-colors"
                 @click="$emit('close')"
               >
                 關閉
               </button>
               <button 
                 type="button" 
-                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-red-200 shadow-sm px-4 py-2 bg-white text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none transition-colors"
+                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-red-200 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-600 hover:bg-red-50 focus:outline-none transition-colors"
                 @click="clearSelection"
               >
                 清空
               </button>
               <button 
                 type="button" 
-                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-2 bg-primary-600 text-sm font-bold text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all shadow-primary-500/20"
+                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-2 bg-primary-600 text-base font-bold text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all shadow-primary-500/20"
                 @click="confirmSelection"
               >
                 確定選取
