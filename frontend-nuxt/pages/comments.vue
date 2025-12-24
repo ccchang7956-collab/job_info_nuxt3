@@ -175,7 +175,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="container mx-auto px-4 py-8 max-w-5xl">
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
     <!-- Header -->
     <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div>
