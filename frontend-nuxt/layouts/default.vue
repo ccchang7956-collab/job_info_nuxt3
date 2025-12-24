@@ -83,18 +83,18 @@ useHead({
     </main>
     
     
-    <footer class="bg-slate-800 text-slate-300 py-6 mt-auto">
-      <div class="container mx-auto px-4 text-center text-sm space-y-2 flex flex-col items-center">
+    <footer class="bg-white border-t border-slate-200 text-slate-600 py-8 mt-auto">
+      <div class="container mx-auto px-4 text-center text-sm space-y-3 flex flex-col items-center">
         <p>
           © 2024 本網站使用
-          <a href="https://data.gov.tw/" target="_blank" class="text-primary-300 hover:text-primary-200 underline">政府資料開放平臺</a>
+          <a href="https://data.gov.tw/" target="_blank" class="text-primary-600 hover:text-primary-700 underline">政府資料開放平臺</a>
           之
-          <a href="https://data.gov.tw/dataset/7229" target="_blank" class="text-primary-300 hover:text-primary-200 underline">行政院人事行政總處事求人機關徵才資料</a>。
+          <a href="https://data.gov.tw/dataset/7229" target="_blank" class="text-primary-600 hover:text-primary-700 underline">行政院人事行政總處事求人機關徵才資料</a>。
         </p>
-        <p class="text-slate-400">
-          與官方版本差別可以在「<NuxtLink to="/about" class="text-primary-300 hover:text-primary-200 underline">關於</NuxtLink>」中查看。
+        <p>
+          與官方版本差別可以在「<NuxtLink to="/about" class="text-primary-600 hover:text-primary-700 underline">關於</NuxtLink>」中查看。
           ｜
-          <NuxtLink to="/privacy-policy" class="text-primary-300 hover:text-primary-200 underline">隱私權政策</NuxtLink>
+          <NuxtLink to="/privacy-policy" class="text-primary-600 hover:text-primary-700 underline">隱私權政策</NuxtLink>
         </p>
       </div>
     </footer>
