@@ -371,10 +371,10 @@ useSeoMeta({
 
             <!-- 5. Comment Time (Bottom Right) -->
             <div class="flex justify-end">
-              <div class="flex items-center gap-1 text-xs text-slate-400 font-mono">
-                <ClockIcon class="w-3.5 h-3.5" />
-                {{ comment.created_at }}
-              </div>
+              <span class="inline-flex items-center gap-1 text-xs text-slate-400">
+                <ClockIcon class="w-3.5 h-3.5 flex-shrink-0" />
+                <span class="font-mono">{{ comment.created_at }}</span>
+              </span>
             </div>
           </div>
         </div>
