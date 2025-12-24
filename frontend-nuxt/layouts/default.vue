@@ -84,7 +84,7 @@ useHead({
     
     
     <footer class="bg-slate-800 text-slate-300 py-6 mt-auto">
-      <div class="container mx-auto px-4 text-center text-sm space-y-2">
+      <div class="container mx-auto px-4 text-center text-sm space-y-2 flex flex-col items-center">
         <p>
           © 2024 本網站使用
           <a href="https://data.gov.tw/" target="_blank" class="text-primary-300 hover:text-primary-200 underline">政府資料開放平臺</a>
