@@ -9,7 +9,7 @@ import {
   TrashIcon,
   ClockIcon,
   CalendarIcon,
-  ChevronDownIcon
+  Bars3Icon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -249,17 +249,22 @@ useSeoMeta({
         <!-- Sysnam -->
         <div>
           <label class="block text-base font-medium text-slate-700 mb-1">職系</label>
-          <div 
-            class="relative cursor-pointer group"
-            @click="isSysnamModalOpen = true"
-          >
+          <div class="relative">
             <input 
               type="text" 
-              :value="filters.search_sysnam || '全部職系'" 
               readonly
-              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base cursor-pointer group-hover:border-primary-300 transition-colors pointer-events-none"
+              :value="filters.search_sysnam"
+              placeholder="全部職系"
+              class="w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base cursor-pointer hover:bg-slate-50"
+              @click="isSysnamModalOpen = true"
             >
-            <ChevronDownIcon class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-hover:text-primary-500 transition-colors" />
+            <button 
+              type="button"
+              @click.stop="isSysnamModalOpen = true"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+            >
+              <Bars3Icon class="w-5 h-5" />
+            </button>
           </div>
         </div>
 
