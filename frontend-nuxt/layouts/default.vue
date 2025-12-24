@@ -19,7 +19,7 @@ useHead({
     { rel: 'apple-touch-icon', href: '/pwa-192x192.png' }
   ],
   meta: [
-    { name: 'theme-color', content: '#2563eb' }
+    { name: 'theme-color', content: '#337AB7' }
   ]
 })
 </script>
@@ -32,7 +32,7 @@ useHead({
         <div class="flex items-center gap-6">
           <div class="logo">
             <NuxtLink to="/" class="flex items-center gap-2 text-xl font-bold text-white hover:text-primary-100 transition-colors">
-              <span class="text-2xl">🚀</span>
+              <img src="/logo.png" alt="Logo" class="w-10 h-10 object-contain" />
               <span>開放事求人</span>
             </NuxtLink>
           </div>
