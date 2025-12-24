@@ -11,7 +11,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', 'system-ui', 'sans-serif'],
+                sans: ['"Noto Sans TC"', 'system-ui', '-apple-system', 'sans-serif'],
             },
             colors: {
                 primary: {

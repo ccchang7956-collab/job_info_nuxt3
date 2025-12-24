@@ -61,8 +61,8 @@ const jobInfoFields = computed(() => [
     </div>
 
     <!-- Job Title Header -->
-    <header class="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-primary-600 to-primary-700">
-      <h1 class="text-xl sm:text-2xl font-bold text-white">{{ job.title }}</h1>
+    <header class="px-6 py-5 border-b border-slate-200 bg-gradient-to-r from-primary-600 to-primary-700">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white">{{ job.title }}</h1>
     </header>
 
     <!-- Job Info Table -->
@@ -73,12 +73,12 @@ const jobInfoFields = computed(() => [
         class="flex"
       >
         <!-- Label Column -->
-        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-center gap-2">
+        <div class="w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-4 flex items-center gap-2">
           <component :is="field.icon" class="w-5 h-5 flex-shrink-0" />
-          <span class="font-medium text-sm">{{ field.label }}</span>
+          <span class="font-medium text-base">{{ field.label }}</span>
         </div>
         <!-- Value Column -->
-        <div class="flex-1 px-4 py-3 bg-white text-slate-700">
+        <div class="flex-1 px-4 py-4 bg-white text-slate-700 text-base">
           <template v-if="field.isLink">
             <a 
               :href="field.linkUrl" 
@@ -96,11 +96,11 @@ const jobInfoFields = computed(() => [
 
       <!-- 條件資格 (Full Width Section) -->
       <div class="flex">
-        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-start gap-2">
+        <div class="w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-4 flex items-start gap-2">
           <DocumentTextIcon class="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <span class="font-medium text-sm">條件資格</span>
+          <span class="font-medium text-base">條件資格</span>
         </div>
-        <div class="flex-1 px-4 py-3 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">
+        <div class="flex-1 px-4 py-4 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-base">
           {{ job.work_quality || '詳見簡章' }}
         </div>
       </div>
@@ -110,64 +110,64 @@ const jobInfoFields = computed(() => [
     <div class="divide-y divide-slate-200">
       <!-- Work Item -->
       <div class="flex">
-        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-start gap-2">
+        <div class="w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-4 flex items-start gap-2">
           <BriefcaseIcon class="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <span class="font-medium text-sm">工作項目</span>
+          <span class="font-medium text-base">工作項目</span>
         </div>
-        <div class="flex-1 px-4 py-3 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">
+        <div class="flex-1 px-4 py-4 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-base">
           {{ job.work_item || '詳見簡章' }}
         </div>
       </div>
 
       <!-- Contact Method -->
       <div class="flex">
-        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-start gap-2">
+        <div class="w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-4 flex items-start gap-2">
           <UserIcon class="w-5 h-5 flex-shrink-0 mt-0.5" />
-          <span class="font-medium text-sm">聯絡方式</span>
+          <span class="font-medium text-base">聯絡方式</span>
         </div>
-        <div class="flex-1 px-4 py-3 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">
+        <div class="flex-1 px-4 py-4 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-base">
           {{ job.contact_method || '詳見簡章' }}
         </div>
       </div>
 
       <!-- History Job Openings -->
       <div class="flex">
-        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-start gap-2">
+        <div class="w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-4 flex items-start gap-2">
           <ClockIcon class="w-5 h-5 flex-shrink-0 mt-0.5" />
           <div class="flex items-center gap-1">
-            <span class="font-medium text-sm">歷史開缺</span>
+            <span class="font-medium text-base">歷史開缺</span>
             <div class="group relative inline-block">
               <InformationCircleIcon class="w-4 h-4 text-white/70 cursor-help" />
-              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center">
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 p-2 bg-slate-800 text-white text-sm rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 text-center">
                 判斷標準：相同機關且相同工作內容的過去職缺
                 <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
               </div>
             </div>
           </div>
         </div>
-        <div class="flex-1 px-4 py-3 bg-white text-slate-700">
+        <div class="flex-1 px-4 py-4 bg-white text-slate-700">
           <div v-if="historyJobs.length > 0" class="space-y-2">
             <div 
               v-for="historyJob in historyJobs" 
               :key="historyJob.id" 
-              class="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded hover:border-primary-300 transition-colors group"
+              class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded hover:border-primary-300 transition-colors group"
             >
               <div class="min-w-0">
-                <div class="font-medium text-slate-800 text-sm group-hover:text-primary-700 truncate">{{ historyJob.title }}</div>
-                <div class="flex items-center gap-1 text-xs text-slate-500 mt-0.5">
-                  <CalendarIcon class="w-3 h-3" />
+                <div class="font-medium text-slate-800 text-base group-hover:text-primary-700 truncate">{{ historyJob.title }}</div>
+                <div class="flex items-center gap-1 text-sm text-slate-500 mt-0.5">
+                  <CalendarIcon class="w-4 h-4" />
                   <span>{{ historyJob.date_from }} ~ {{ historyJob.date_to }}</span>
                 </div>
               </div>
               <router-link 
                 :to="{ name: 'job-details', params: { id: historyJob.id } }"
-                class="flex-shrink-0 ml-3 px-2 py-1 bg-primary-50 border border-primary-200 text-primary-600 text-xs font-medium rounded hover:bg-primary-600 hover:text-white transition-colors"
+                class="flex-shrink-0 ml-3 px-3 py-1.5 bg-primary-50 border border-primary-200 text-primary-600 text-sm font-medium rounded hover:bg-primary-600 hover:text-white transition-colors"
               >
                 檢視
               </router-link>
             </div>
           </div>
-          <div v-else class="text-slate-400 text-sm">
+          <div v-else class="text-slate-400 text-base">
             無歷史開缺資料
           </div>
         </div>
@@ -175,15 +175,15 @@ const jobInfoFields = computed(() => [
 
       <!-- Action: View Original Site -->
       <div class="flex">
-        <div class="w-32 sm:w-40 flex-shrink-0 bg-primary-600 text-white px-4 py-3 flex items-center gap-2">
+        <div class="w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-4 flex items-center gap-2">
           <ArrowTopRightOnSquareIcon class="w-5 h-5 flex-shrink-0" />
-          <span class="font-medium text-sm">原始連結</span>
+          <span class="font-medium text-base">原始連結</span>
         </div>
-        <div class="flex-1 px-4 py-3 bg-white flex items-center">
+        <div class="flex-1 px-4 py-4 bg-white flex items-center">
           <a 
             :href="job.view_url" 
             target="_blank" 
-            class="text-primary-600 hover:underline hover:text-primary-700 text-sm font-medium"
+            class="text-primary-600 hover:underline hover:text-primary-700 text-base font-medium"
           >
             前往事求人網站查看完整資訊 →
           </a>
