@@ -124,9 +124,9 @@ useSeoMeta({
 
     <!-- About Card -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-      <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center gap-2">
+      <div class="bg-primary-50 px-6 py-4 border-b border-primary-100 flex items-center gap-2">
         <InformationCircleIcon class="w-6 h-6 text-primary-600" />
-        <h5 class="font-bold text-slate-800 m-0">關於本站</h5>
+        <h5 class="font-bold text-primary-900 m-0">關於本站</h5>
       </div>
       <div class="p-6">
         <ul class="space-y-4 text-slate-600 leading-relaxed">
@@ -148,9 +148,9 @@ useSeoMeta({
 
     <!-- Features Card -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-      <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center gap-2">
+      <div class="bg-primary-50 px-6 py-4 border-b border-primary-100 flex items-center gap-2">
         <WrenchScrewdriverIcon class="w-6 h-6 text-primary-600" />
-        <h5 class="font-bold text-slate-800 m-0">本站特色功能</h5>
+        <h5 class="font-bold text-primary-900 m-0">本站特色功能</h5>
       </div>
       <div class="p-6">
         <ul class="space-y-4 text-slate-600 leading-relaxed">
@@ -196,12 +196,12 @@ useSeoMeta({
     <!-- Dev Log Card -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
       <div 
-        class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center justify-between cursor-pointer hover:bg-slate-100 transition-colors"
+        class="bg-primary-50 px-6 py-4 border-b border-primary-100 flex items-center justify-between cursor-pointer hover:bg-primary-100 transition-colors"
         @click="toggleDevLog"
       >
         <div class="flex items-center gap-2">
           <CommandLineIcon class="w-6 h-6 text-primary-600" />
-          <h5 class="font-bold text-slate-800 m-0">開發日誌</h5>
+          <h5 class="font-bold text-primary-900 m-0">開發日誌</h5>
         </div>
         <component :is="isDevLogOpen ? ChevronUpIcon : ChevronDownIcon" class="w-5 h-5 text-slate-500" />
       </div>
@@ -326,10 +326,10 @@ useSeoMeta({
 
     <!-- Contact Form Card -->
     <div id="contact-section" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+      <div class="bg-primary-50 px-6 py-4 border-b border-primary-100">
         <div class="flex items-center gap-2 mb-1">
           <PaperAirplaneIcon class="w-6 h-6 text-primary-600" />
-          <h5 class="font-bold text-slate-800 m-0">與我們聯繫</h5>
+          <h5 class="font-bold text-primary-900 m-0">與我們聯繫</h5>
         </div>
         <p class="text-sm text-slate-500 m-0">有任何問題、建議或錯誤報告？請填寫下方表單，您的意見對改進網站非常重要！</p>
       </div>

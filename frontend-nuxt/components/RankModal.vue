@@ -83,13 +83,16 @@ const clearSelection = () => {
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
           <!-- Modal Panel -->
           <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg" @click.stop>
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-              <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">選擇職等範圍</h3>
-                <button type="button" @click="$emit('close')" class="text-gray-400 hover:text-gray-500">
+            <div class="bg-primary-600 px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-primary-700">
+              <div class="flex justify-between items-center mb-0">
+                <h3 class="text-lg leading-6 font-bold text-white" id="modal-title">選擇職等範圍</h3>
+                <button type="button" @click="$emit('close')" class="text-blue-100 hover:text-white hover:bg-primary-500 rounded-full p-1 transition-colors">
                   <XMarkIcon class="h-6 w-6" />
                 </button>
               </div>
+            </div>
+
+            <div class="px-4 py-4 sm:p-6">
 
               <div class="space-y-4">
                 <p class="text-sm text-slate-500">請點選起始與結束職等（可單選）</p>

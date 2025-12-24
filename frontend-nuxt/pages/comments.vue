@@ -314,24 +314,28 @@ useSeoMeta({
 
       <div v-else class="grid gap-6">
         <div v-for="comment in comments" :key="comment.comment_id" class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-primary-200 transition-colors">
-          <!-- Header Section (Gray) -->
-          <div class="bg-slate-200 rounded-t-xl border-b border-slate-300 p-4">
-            <div class="flex justify-between items-start gap-4">
+          <!-- Header Section (Blue) -->
+          <div class="bg-primary-600 rounded-t-xl border-b border-primary-700 p-4 relative overflow-hidden">
+            <!-- Decorative Background Pattern -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 pointer-events-none"></div>
+            
+            <div class="flex justify-between items-start gap-4 relative z-10">
               <div class="flex-grow">
                 <!-- 1. Organization Name -->
-                <div class="mb-2">
-                  <span class="text-xl font-bold text-slate-800">{{ comment.org_name }}</span>
+                <div class="mb-1">
+                  <span class="text-xl font-bold text-white tracking-wide border-b-2 border-primary-400 pb-1">{{ comment.org_name }}</span>
                 </div>
 
                 <!-- 2. Title | Sysnam -->
-                <div class="mb-2 flex flex-wrap items-center gap-2">
-                  <span class="text-lg font-bold text-black">{{ comment.title }}</span>
-                  <span class="text-slate-400">|</span>
-                  <span class="text-lg font-bold text-black">{{ comment.sysnam }}</span>
+                <div class="mb-2 flex flex-wrap items-center gap-2 mt-2">
+                  <span class="text-lg font-bold text-white">{{ comment.title }}</span>
+                  <span class="text-primary-200">|</span>
+                  <span class="text-base font-medium text-primary-100 bg-primary-700/50 px-2 py-0.5 rounded">{{ comment.sysnam }}</span>
                 </div>
 
                 <!-- 3. Date Range -->
-                <div class="text-sm text-slate-500 font-mono">
+                <div class="text-xs text-primary-200 font-mono flex items-center gap-1">
+                   <CalendarIcon class="w-3 h-3" />
                   {{ comment.date_from }} ~ {{ comment.date_to }}
                 </div>
               </div>
@@ -339,9 +343,10 @@ useSeoMeta({
               <!-- View Details Button -->
               <NuxtLink 
                 :to="`/job/${comment.job_all_data_id}`"
-                class="flex-shrink-0 px-3 py-1.5 sm:px-4 sm:py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-bold hover:bg-primary-50 hover:text-primary-600 hover:border-primary-300 transition-all whitespace-nowrap shadow-sm"
+                class="flex-shrink-0 px-3 py-1.5 bg-white text-primary-600 rounded-lg text-sm font-bold hover:bg-primary-50 hover:shadow-lg transition-all whitespace-nowrap shadow-sm border border-transparent group"
               >
                 查看詳細
+                <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
               </NuxtLink>
             </div>
           </div>

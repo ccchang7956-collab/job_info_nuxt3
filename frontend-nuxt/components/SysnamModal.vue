@@ -65,10 +65,10 @@ onMounted(() => {
           <div class="relative flex flex-col transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl max-h-[85vh]" @click.stop>
             
             <!-- Header -->
-            <div class="bg-white px-4 py-3 border-b border-slate-100 flex-shrink-0">
+            <div class="bg-primary-600 px-4 py-3 border-b border-primary-700 flex-shrink-0">
               <div class="flex justify-between items-center">
-                <h3 class="text-lg font-bold text-slate-800" id="modal-title">選擇職系</h3>
-                <button type="button" @click="$emit('close')" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-full hover:bg-slate-100">
+                <h3 class="text-lg font-bold text-white" id="modal-title">選擇職系</h3>
+                <button type="button" @click="$emit('close')" class="text-blue-100 hover:text-white transition-colors p-1 rounded-full hover:bg-primary-500">
                   <XMarkIcon class="h-5 w-5" />
                 </button>
               </div>

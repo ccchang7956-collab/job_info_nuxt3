@@ -221,13 +221,13 @@ useSeoMeta({
         :key="tab.id"
         @click="changeTab(tab.id)"
         :class="[
-          'flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all text-sm sm:text-base',
+          'flex items-center gap-2 px-4 py-2.5 rounded-t-lg font-medium transition-all text-sm sm:text-base border-b-2',
           activeTab === tab.id 
-            ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-200' 
-            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+            ? 'border-primary-600 text-primary-700 bg-primary-50' 
+            : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
         ]"
       >
-        <component :is="tab.icon" class="w-5 h-5" />
+        <component :is="tab.icon" class="w-5 h-5" :class="activeTab === tab.id ? 'text-primary-600' : 'text-slate-400'" />
         {{ tab.name }}
       </button>
     </div>
@@ -305,12 +305,12 @@ useSeoMeta({
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm text-left">
-            <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+            <thead class="text-white uppercase bg-primary-600 border-b border-primary-700">
               <tr>
-                <th class="px-6 py-3 font-bold">排名</th>
-                <th class="px-6 py-3 font-bold">名稱</th>
-                <th class="px-6 py-3 font-bold text-right">開缺數</th>
-                <th class="px-6 py-3 font-bold text-right">佔比</th>
+                <th class="px-6 py-4 font-bold rounded-tl-lg">排名</th>
+                <th class="px-6 py-4 font-bold">名稱</th>
+                <th class="px-6 py-4 font-bold text-right">開缺數</th>
+                <th class="px-6 py-4 font-bold text-right rounded-tr-lg">佔比</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
