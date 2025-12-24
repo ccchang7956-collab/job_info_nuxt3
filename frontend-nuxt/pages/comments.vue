@@ -189,8 +189,10 @@ useSeoMeta({
         </h1>
         <p class="text-slate-500 text-lg">瀏覽所有職缺的留言討論</p>
       </div>
-      <div class="text-slate-600 font-medium bg-slate-100 px-4 py-2 rounded-lg self-start sm:self-auto">
-        總共 <span class="text-primary-600 font-bold text-lg">{{ pagination.total_count }}</span> 筆留言
+      <div class="inline-flex items-center gap-2 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-slate-600 font-medium">總留言</span>
+        <span class="text-emerald-600 font-bold text-2xl font-mono">{{ pagination.total_count }}</span>
+        <span class="text-slate-400 text-sm">筆</span>
       </div>
     </div>
 
