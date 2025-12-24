@@ -1,5 +1,5 @@
 <script setup>
-import { ShieldCheckIcon } from '@heroicons/vue/24/outline'
+import { ShieldCheckIcon, ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({
   title: '隱私權政策 - 開放事求人',
@@ -97,7 +97,8 @@ useSeoMeta({
         <!-- Back Link -->
         <div class="mt-10 pt-6 border-t border-slate-100">
           <NuxtLink to="/" class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium">
-            ← 返回首頁
+            <ArrowLeftIcon class="w-4 h-4" />
+            返回首頁
           </NuxtLink>
         </div>
       </div>

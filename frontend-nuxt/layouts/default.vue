@@ -29,7 +29,7 @@ useHead({
         <!-- Left Side: Logo -->
         <div class="logo flex-shrink-0">
           <NuxtLink to="/" class="flex items-center gap-2 text-xl font-bold text-white hover:text-primary-100 transition-colors">
-            <img src="/logo.png" alt="Logo" class="w-10 h-10 object-contain" />
+            <img src="/logo.png" alt="開放事求人 Logo" class="w-10 h-10 object-contain" />
             <span class="hidden sm:inline whitespace-nowrap">開放事求人</span>
           </NuxtLink>
         </div>
@@ -87,9 +87,9 @@ useHead({
       <div class="container mx-auto px-4 text-center text-sm space-y-3 flex flex-col items-center">
         <p>
           © 2024 本網站使用
-          <a href="https://data.gov.tw/" target="_blank" class="text-primary-600 hover:text-primary-700 underline">政府資料開放平臺</a>
+          <a href="https://data.gov.tw/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 underline">政府資料開放平臺</a>
           之
-          <a href="https://data.gov.tw/dataset/7229" target="_blank" class="text-primary-600 hover:text-primary-700 underline">行政院人事行政總處事求人機關徵才資料</a>。
+          <a href="https://data.gov.tw/dataset/7229" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 underline">行政院人事行政總處事求人機關徵才資料</a>。
         </p>
         <p>
           與官方版本差別可以在「<NuxtLink to="/about" class="text-primary-600 hover:text-primary-700 underline">關於</NuxtLink>」中查看。

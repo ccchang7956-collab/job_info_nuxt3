@@ -95,7 +95,9 @@ const fetchChartData = async () => {
     
     if (response.month_options) {
       monthOptions.value = response.month_options
-      if (!selectedMonth.value) {
+      // Check if current selectedMonth is valid in new options
+      const isValid = monthOptions.value.some(opt => opt.value === selectedMonth.value)
+      if (!selectedMonth.value || !isValid) {
         selectedMonth.value = response.month
       }
     }
