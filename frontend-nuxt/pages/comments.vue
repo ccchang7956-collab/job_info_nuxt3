@@ -342,19 +342,19 @@ useSeoMeta({
               <!-- 時間起迄 -->
               <div class="flex items-start">
                 <span class="w-24 flex-shrink-0 text-slate-500 text-lg">時間起迄</span>
-                <span class="text-slate-800 text-lg font-mono">{{ comment.date_from }} ~ {{ comment.date_to }}</span>
+                <span class="text-slate-800 text-lg font-mono flex-1 min-w-0 break-words">{{ comment.date_from }} ~ {{ comment.date_to }}</span>
               </div>
               
               <!-- 職系 -->
               <div class="flex items-start">
                 <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職系</span>
-                <span class="text-slate-800 text-lg font-medium">{{ comment.sysnam }}</span>
+                <span class="text-slate-800 text-lg font-medium flex-1 min-w-0 break-words">{{ comment.sysnam }}</span>
               </div>
               
               <!-- 職稱 -->
               <div class="flex items-start">
                 <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職稱</span>
-                <span class="text-slate-800 text-lg font-medium">{{ comment.title }}</span>
+                <span class="text-slate-800 text-lg font-medium flex-1 min-w-0 break-words">{{ comment.title }}</span>
               </div>
             </div>
 
