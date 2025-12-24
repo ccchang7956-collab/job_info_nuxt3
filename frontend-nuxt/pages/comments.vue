@@ -356,6 +356,7 @@ useSeoMeta({
 
             <!-- Comment Content -->
             <div class="pt-4 border-t border-slate-100">
+              <div class="text-slate-500 text-lg mb-2">留言內容：</div>
               <div v-if="comment.is_deleted" class="bg-red-50 border border-red-100 rounded-lg p-4 mb-2">
                 <div class="flex items-center gap-2 text-red-600 font-bold mb-1 text-sm">
                   <TrashIcon class="w-4 h-4" />
