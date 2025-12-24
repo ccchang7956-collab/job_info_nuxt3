@@ -496,7 +496,7 @@ useSeoMeta({
                       <component :is="sortField === 'place' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-3 h-3 text-slate-400 group-hover:text-primary-500" />
                     </div>
                   </th>
-                  <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors group w-[170px]" @click="handleSort('date_from')">
+                  <th class="p-4 cursor-pointer hover:bg-slate-100 transition-colors group w-[170px]" @click="handleSort('date_from')">
                     <div class="flex items-center gap-1">
                       期間
                       <component :is="sortField === 'date_from' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-3 h-3 text-slate-400 group-hover:text-primary-500" />
@@ -535,12 +535,9 @@ useSeoMeta({
                     </div>
                   </td>
                   <td class="p-4 align-top">
-                    <div class="flex items-start gap-2">
-                       <CalendarIcon class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                       <div class="flex flex-col">
-                         <span class="text-xs font-mono text-slate-700 font-bold leading-tight">{{ job.date_from }}</span>
-                         <span class="text-xs font-mono text-slate-500 leading-tight mt-0.5">~ {{ job.date_to }}</span>
-                       </div>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-mono text-slate-700 font-bold leading-tight">{{ job.date_from }}</span>
+                      <span class="text-xs font-mono text-slate-500 leading-tight mt-1">~ {{ job.date_to }}</span>
                     </div>
                   </td>
                   <td class="p-4 align-top text-center">
