@@ -19,12 +19,12 @@ defineProps({
 <template>
   <div class="group bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col">
     <!-- Blue Header Section - Only Org Name -->
-    <div class="bg-primary-600 px-4 py-3 flex items-center justify-between gap-3">
+    <div class="bg-primary-600 px-4 py-4 flex items-center justify-between gap-3">
       <div class="flex items-center gap-2 min-w-0 flex-1">
-        <BuildingOfficeIcon class="w-5 h-5 text-blue-200 flex-shrink-0" />
-        <span class="text-lg font-bold text-white truncate">{{ job.org }}</span>
+        <BuildingOfficeIcon class="w-6 h-6 text-blue-200 flex-shrink-0" />
+        <span class="text-xl font-bold text-white truncate">{{ job.org }}</span>
       </div>
-      <ChevronRightIcon class="w-6 h-6 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" />
+      <ChevronRightIcon class="w-7 h-7 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" />
     </div>
     
     <!-- Content Body -->
@@ -33,15 +33,15 @@ defineProps({
       <div class="flex flex-wrap items-center gap-2">
         <NuxtLink 
           :to="`/job/${job.id}`" 
-          class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors whitespace-nowrap"
+          class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors"
           :title="job.title"
         >
           {{ job.title }}
         </NuxtLink>
-        <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
+        <span class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
           {{ job.sysnam }}
         </span>
-        <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
+        <span class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
           {{ job.rank_display || job.rank }}
         </span>
       </div>
