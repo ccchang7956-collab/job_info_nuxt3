@@ -6,7 +6,8 @@ import {
   ChevronRightIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
-  TrashIcon
+  TrashIcon,
+  ClockIcon
 } from '@heroicons/vue/24/outline'
 
 const route = useRoute()
@@ -370,7 +371,8 @@ useSeoMeta({
 
             <!-- 5. Comment Time (Bottom Right) -->
             <div class="flex justify-end">
-              <div class="text-xs text-slate-400 font-mono">
+              <div class="flex items-center gap-1 text-xs text-slate-400 font-mono">
+                <ClockIcon class="w-3.5 h-3.5" />
                 {{ comment.created_at }}
               </div>
             </div>
