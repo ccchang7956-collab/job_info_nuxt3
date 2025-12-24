@@ -185,7 +185,7 @@ useSeoMeta({
           <ChatBubbleLeftRightIcon class="w-8 h-8 text-primary-600" />
           看留言
         </h1>
-        <p class="text-slate-500">瀏覽所有職缺的留言討論</p>
+        <p class="text-slate-500 text-lg">瀏覽所有職缺的留言討論</p>
       </div>
       <div class="text-slate-600 font-medium bg-slate-100 px-4 py-2 rounded-lg self-start sm:self-auto">
         總共 <span class="text-primary-600 font-bold text-lg">{{ pagination.total_count }}</span> 筆留言
