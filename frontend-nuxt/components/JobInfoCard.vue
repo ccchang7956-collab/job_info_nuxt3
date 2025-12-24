@@ -62,7 +62,7 @@ const jobInfoFields = computed(() => [
 
     <!-- Job Title Header -->
     <header class="mb-4 sm:mb-0 px-0 sm:px-6 py-0 sm:py-5 border-0 sm:border-b border-slate-200 bg-transparent sm:bg-gradient-to-r sm:from-primary-600 sm:to-primary-700 text-center sm:text-left">
-      <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 sm:text-white">{{ job.title }}</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-white">{{ job.title }}</h1>
       <h2 class="block sm:hidden text-xl text-slate-600 font-bold mt-1">{{ job.org_name }}</h2>
     </header>
 
@@ -75,8 +75,8 @@ const jobInfoFields = computed(() => [
         v-show="!(index === 2)" 
       >
         <!-- Label Column -->
-        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-white sm:bg-primary-600 text-slate-800 sm:text-white px-4 py-3 sm:py-4 flex items-center gap-2 border-b border-slate-100 sm:border-0">
-          <component :is="field.icon" class="w-5 h-5 flex-shrink-0 text-slate-900 sm:text-white" />
+        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-3 sm:py-4 flex items-center gap-2 border-b border-slate-100 sm:border-0">
+          <component :is="field.icon" class="w-5 h-5 flex-shrink-0 text-white" />
           <span class="font-bold sm:font-medium text-lg sm:text-base">{{ field.label }}</span>
         </div>
         <!-- Value Column -->
@@ -98,8 +98,8 @@ const jobInfoFields = computed(() => [
 
       <!-- 條件資格 (Full Width Section) -->
       <div class="flex flex-col sm:flex-row bg-white sm:bg-transparent rounded-lg sm:rounded-none border border-slate-200 sm:border-0 shadow-sm sm:shadow-none overflow-hidden sm:overflow-visible">
-        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-white sm:bg-primary-600 text-slate-800 sm:text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
-          <DocumentTextIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-slate-900 sm:text-white" />
+        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
+          <DocumentTextIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-white" />
           <span class="font-bold sm:font-medium text-lg sm:text-base">條件資格</span>
         </div>
         <div class="flex-1 px-4 py-3 sm:py-4 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-base sm:text-base">
@@ -109,8 +109,8 @@ const jobInfoFields = computed(() => [
     
       <!-- Work Item -->
       <div class="flex flex-col sm:flex-row bg-white sm:bg-transparent rounded-lg sm:rounded-none border border-slate-200 sm:border-0 shadow-sm sm:shadow-none overflow-hidden sm:overflow-visible">
-        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-white sm:bg-primary-600 text-slate-800 sm:text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
-          <BriefcaseIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-slate-900 sm:text-white" />
+        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
+          <BriefcaseIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-white" />
           <span class="font-bold sm:font-medium text-lg sm:text-base">工作項目</span>
         </div>
         <div class="flex-1 px-4 py-3 sm:py-4 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-base sm:text-base">
@@ -120,8 +120,8 @@ const jobInfoFields = computed(() => [
 
       <!-- Contact Method -->
       <div class="flex flex-col sm:flex-row bg-white sm:bg-transparent rounded-lg sm:rounded-none border border-slate-200 sm:border-0 shadow-sm sm:shadow-none overflow-hidden sm:overflow-visible">
-        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-white sm:bg-primary-600 text-slate-800 sm:text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
-          <UserIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-slate-900 sm:text-white" />
+        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
+          <UserIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-white" />
           <span class="font-bold sm:font-medium text-lg sm:text-base">聯絡方式</span>
         </div>
         <div class="flex-1 px-4 py-3 sm:py-4 bg-white text-slate-700 whitespace-pre-wrap leading-relaxed text-base sm:text-base">
@@ -131,8 +131,8 @@ const jobInfoFields = computed(() => [
 
       <!-- History Job Openings -->
       <div class="flex flex-col sm:flex-row bg-white sm:bg-transparent rounded-lg sm:rounded-none border border-slate-200 sm:border-0 shadow-sm sm:shadow-none overflow-hidden sm:overflow-visible">
-        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-white sm:bg-primary-600 text-slate-800 sm:text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
-          <ClockIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-slate-900 sm:text-white" />
+        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-3 sm:py-4 flex items-start gap-2 border-b border-slate-100 sm:border-0">
+          <ClockIcon class="w-5 h-5 flex-shrink-0 mt-1 sm:mt-0.5 text-white" />
           <div class="flex items-center gap-1">
             <span class="font-bold sm:font-medium text-lg sm:text-base">歷史開缺</span>
             <div class="group relative inline-block">
@@ -174,8 +174,8 @@ const jobInfoFields = computed(() => [
 
       <!-- Action: View Original Site -->
       <div class="flex flex-col sm:flex-row bg-white sm:bg-transparent rounded-lg sm:rounded-none border border-slate-200 sm:border-0 shadow-sm sm:shadow-none overflow-hidden sm:overflow-visible">
-        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-white sm:bg-primary-600 text-slate-800 sm:text-white px-4 py-3 sm:py-4 flex items-center gap-2 border-b border-slate-100 sm:border-0">
-          <ArrowTopRightOnSquareIcon class="w-5 h-5 flex-shrink-0 text-slate-900 sm:text-white" />
+        <div class="w-full sm:w-36 sm:w-44 flex-shrink-0 bg-primary-600 text-white px-4 py-3 sm:py-4 flex items-center gap-2 border-b border-slate-100 sm:border-0">
+          <ArrowTopRightOnSquareIcon class="w-5 h-5 flex-shrink-0 text-white" />
           <span class="font-bold sm:font-medium text-lg sm:text-base">原始連結</span>
         </div>
         <div class="flex-1 px-4 py-3 sm:py-4 bg-white flex items-center">

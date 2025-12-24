@@ -21,8 +21,8 @@ defineEmits(['update:modelValue'])
 
 <template>
   <section 
-    class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-8 overflow-hidden transition-all duration-300" 
-    :class="modelValue ? 'ring-2 ring-primary-100' : ''"
+    class="bg-white rounded-2xl shadow-sm border border-slate-200 mb-8 overflow-hidden transition-all duration-300 hover:shadow-md"
+    :class="modelValue ? 'ring-2 ring-primary-100 border-primary-200' : ''"
   >
     <!-- Header / Toggle -->
     <div 
@@ -34,7 +34,7 @@ defineEmits(['update:modelValue'])
           <slot name="icon"></slot>
         </div>
         <div>
-          <h2 class="font-bold text-slate-800">{{ title }}</h2>
+          <h2 class="font-bold text-slate-800 text-lg">{{ title }}</h2>
           <!-- Active Filters Summary (Mobile/Collapsed) -->
           <div v-if="!modelValue && hasActiveFilters" class="flex flex-wrap gap-2 mt-1">
             <slot name="summary"></slot>

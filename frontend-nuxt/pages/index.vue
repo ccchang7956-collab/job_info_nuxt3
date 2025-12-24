@@ -239,16 +239,20 @@ useSeoMeta({
 <template>
   <div class="container mx-auto px-4 py-8 max-w-5xl">
     <!-- Header -->
-    <div class="mb-8 flex items-end justify-between">
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2 mb-2">
-          <BriefcaseIcon class="w-8 h-8 text-primary-600" />
+        <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3 mb-2">
+          <div class="p-2 bg-primary-100 rounded-lg">
+            <BriefcaseIcon class="w-8 h-8 text-primary-600" />
+          </div>
           看職缺
         </h1>
-        <p class="text-slate-500">瀏覽所有公職職缺資訊</p>
+        <p class="text-slate-500 text-lg">瀏覽全台最新公務人員職缺資訊</p>
       </div>
-      <div class="text-slate-600 font-medium bg-slate-100 px-4 py-2 rounded-lg">
-        總共 <span class="text-primary-600 font-bold text-lg">{{ pagination.total_count }}</span> 筆職缺
+      <div class="inline-flex items-center gap-2 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
+        <span class="text-slate-600 font-medium">總職缺</span>
+        <span class="text-primary-600 font-bold text-2xl font-mono">{{ pagination.total_count }}</span>
+        <span class="text-slate-400 text-sm">筆</span>
       </div>
     </div>
 
@@ -457,11 +461,11 @@ useSeoMeta({
         <div v-else>
 
         <!-- Desktop View (Table) -->
-        <div class="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8 ring-1 ring-slate-900/5">
+        <div class="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="bg-slate-200 border-b border-slate-300 text-slate-700 text-sm font-bold backdrop-blur-sm">
+                <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 text-sm font-semibold tracking-wide uppercase">
                   <th class="p-3 cursor-pointer hover:bg-slate-100 transition-colors group w-[180px]" @click="handleSort('org')">
                     <div class="flex items-center gap-1">
                       機關名稱
@@ -503,46 +507,61 @@ useSeoMeta({
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100 text-sm">
-                <tr v-for="job in jobs" :key="job.id" class="hover:bg-slate-50 transition-colors duration-150 group">
-                  <td class="p-3">
-                    <div class="font-medium text-slate-700 group-hover:text-slate-900 transition-colors truncate max-w-[180px]" :title="job.org">{{ job.org }}</div>
+                <tr v-for="job in jobs" :key="job.id" class="hover:bg-blue-50/50 transition-colors duration-200 border-b border-slate-50 last:border-0 group">
+                  <td class="p-4 align-top">
+                    <div class="font-bold text-slate-700 text-base mb-0.5 truncate max-w-[180px]" :title="job.org">{{ job.org }}</div>
                   </td>
-                  <td class="p-3">
-                    <div class="font-bold text-slate-800 truncate max-w-[140px]" :title="job.title">
+                  <td class="p-4 align-top">
+                    <NuxtLink :to="`/job/${job.id}`" class="block font-bold text-slate-900 text-base hover:text-primary-600 hover:underline truncate max-w-[200px]" :title="job.title">
                       {{ job.title }}
+                    </NuxtLink>
+                  </td>
+                  <td class="p-4 align-top">
+                    <div class="flex flex-col gap-1.5 items-start">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
+                        {{ job.sysnam }}
+                      </span>
                     </div>
                   </td>
-                  <td class="p-3">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full font-medium bg-blue-50 text-blue-700 border border-blue-100 text-xs whitespace-nowrap">
-                      {{ job.sysnam }}
-                    </span>
-                  </td>
-                  <td class="p-3">
-                    <span class="inline-flex items-center px-2 py-0.5 rounded-full font-medium bg-slate-100 text-slate-600 border border-slate-200 text-xs whitespace-nowrap">
+                  <td class="p-4 align-top">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
                       {{ job.rank_display || job.rank }}
                     </span>
                   </td>
-                  <td class="p-3 text-black truncate max-w-[100px]" :title="job.place">
-                    {{ job.place }}
-                  </td>
-                  <td class="p-3 text-black whitespace-nowrap font-mono text-xs">
-                    {{ job.date_from }} ~ {{ job.date_to }}
-                  </td>
-                  <td class="p-3 text-center">
-                    <div class="flex flex-col gap-1 items-center">
-                      <span v-if="job.comment_count > 0" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 whitespace-nowrap">
-                        有留言
-                      </span>
-                      <span v-if="job.history_count > 0" class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 whitespace-nowrap">
-                        曾開缺
-                      </span>
-                      <span v-if="!job.comment_count && !job.history_count" class="text-slate-300">-</span>
+                  <td class="p-4 align-top">
+                    <div class="flex items-center gap-1.5 text-slate-600 text-sm max-w-[120px]">
+                      <MapPinIcon class="w-4 h-4 text-slate-400 flex-shrink-0" />
+                      <span class="truncate" :title="job.place">{{ job.place }}</span>
                     </div>
                   </td>
-                  <td class="p-3 text-center">
+                  <td class="p-4 align-top">
+                    <div class="flex flex-col gap-1">
+                      <div class="flex items-center gap-1.5 text-xs font-mono text-slate-500 bg-slate-50 px-2 py-1 rounded inline-block w-fit">
+                        <CalendarIcon class="w-3.5 h-3.5 flex-shrink-0" />
+                        {{ job.date_from }}
+                      </div>
+                      <div class="text-[10px] text-slate-400 pl-7 text-left">~ {{ job.date_to }}</div>
+                    </div>
+                  </td>
+                  <td class="p-4 align-top text-center">
+                    <div class="flex justify-center gap-1">
+                      <div v-show="job.comment_count > 0" class="group/icon relative">
+                        <ChatBubbleLeftIcon class="w-5 h-5 text-emerald-500" />
+                        <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                      </div>
+                      <div v-show="job.history_count > 0" title="曾開缺">
+                         <ArrowPathIcon class="w-5 h-5 text-amber-500" />
+                      </div>
+                      <span v-if="!job.comment_count && !job.history_count" class="text-slate-200 text-xl leading-none">&middot;</span>
+                    </div>
+                  </td>
+                  <td class="p-4 align-top text-right">
                     <NuxtLink 
                       :to="`/job/${job.id}`"
-                      class="inline-flex items-center justify-center px-2.5 py-1 bg-white border border-slate-300 text-slate-700 rounded-md text-xs font-bold hover:bg-primary-50 hover:text-primary-600 hover:border-primary-300 transition-all shadow-sm whitespace-nowrap"
+                      class="invisible group-hover:visible inline-flex items-center justify-center px-3 py-1.5 bg-white border border-slate-300 text-primary-600 rounded-lg text-xs font-bold hover:bg-primary-600 hover:text-white hover:border-primary-600 transition-all shadow-sm whitespace-nowrap"
                     >
                       查看
                     </NuxtLink>
