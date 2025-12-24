@@ -28,10 +28,10 @@ useHead({
       <div class="container mx-auto px-4 h-16 flex items-center justify-between">
         <!-- Left Side: Logo + Nav -->
         <div class="flex items-center gap-6">
-          <div class="logo">
+          <div class="logo flex-shrink-0">
             <NuxtLink to="/" class="flex items-center gap-2 text-xl font-bold text-white hover:text-primary-100 transition-colors">
               <img src="/logo.png" alt="Logo" class="w-10 h-10 object-contain" />
-              <span>開放事求人</span>
+              <span class="hidden sm:inline whitespace-nowrap">開放事求人</span>
             </NuxtLink>
           </div>
           <nav class="flex gap-1">
