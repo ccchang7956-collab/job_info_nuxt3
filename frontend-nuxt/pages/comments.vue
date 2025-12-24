@@ -319,47 +319,43 @@ useSeoMeta({
           v-for="comment in comments" 
           :key="comment.comment_id" 
           :to="`/job/${comment.job_all_data_id}`"
-          class="bg-white rounded-xl shadow-sm border border-slate-200 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer block"
+          class="group bg-white rounded-xl shadow-sm border border-slate-200 hover:border-primary-300 hover:shadow-md transition-all cursor-pointer block"
         >
-          <!-- Header Section (Blue) -->
-          <div class="bg-primary-600 rounded-t-xl border-b border-primary-700 p-4 relative overflow-hidden">
-            <!-- Decorative Background Pattern -->
-            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 pointer-events-none"></div>
-            
-            <div class="flex justify-between items-start gap-4 relative z-10">
-              <div class="flex-grow">
-                <!-- 1. Organization Name -->
-                <div class="mb-1">
-                  <span class="text-xl font-bold text-white tracking-wide border-b-2 border-primary-400 pb-1">{{ comment.org_name }}</span>
-                </div>
-
-                <!-- 2. Title | Sysnam -->
-                <div class="mb-2 flex flex-wrap items-center gap-2 mt-2">
-                  <span class="text-lg font-bold text-white">{{ comment.title }}</span>
-                  <span class="text-primary-200">|</span>
-                  <span class="text-base font-medium text-primary-100 bg-primary-700/50 px-2 py-0.5 rounded">{{ comment.sysnam }}</span>
-                </div>
-
-                <!-- 3. Date Range -->
-                <div class="text-xs text-primary-200 font-mono flex items-center gap-1">
-                   <CalendarIcon class="w-3 h-3" />
-                  {{ comment.date_from }} ~ {{ comment.date_to }}
-                </div>
+          <!-- Blue Header Section - Org Name -->
+          <div class="bg-primary-600 px-5 py-5 flex items-center justify-between gap-3 rounded-t-xl">
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <span class="text-2xl font-bold text-white truncate">{{ comment.org_name }}</span>
+            </div>
+            <svg class="w-8 h-8 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+          
+          <!-- Content Body - Table-like Layout -->
+          <div class="p-5 flex flex-col gap-4">
+            <!-- Info Rows -->
+            <div class="space-y-3">
+              <!-- 時間起迄 -->
+              <div class="flex items-start">
+                <span class="w-24 flex-shrink-0 text-slate-500 text-lg">時間起迄</span>
+                <span class="text-slate-800 text-lg font-mono">{{ comment.date_from }} ~ {{ comment.date_to }}</span>
               </div>
-
-              <!-- Arrow Icon -->
-              <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-primary-200 group-hover:text-white">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
+              
+              <!-- 職系 -->
+              <div class="flex items-start">
+                <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職系</span>
+                <span class="text-slate-800 text-lg font-medium">{{ comment.sysnam }}</span>
+              </div>
+              
+              <!-- 職稱 -->
+              <div class="flex items-start">
+                <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職稱</span>
+                <span class="text-slate-800 text-lg font-medium">{{ comment.title }}</span>
               </div>
             </div>
-          </div>
 
-          <!-- Content Section (White) -->
-          <div class="p-4 sm:p-6">
-            <!-- 4. Comment Content -->
-            <div class="relative mb-2">
+            <!-- Comment Content -->
+            <div class="pt-4 border-t border-slate-100">
               <div v-if="comment.is_deleted" class="bg-red-50 border border-red-100 rounded-lg p-4 mb-2">
                 <div class="flex items-center gap-2 text-red-600 font-bold mb-1 text-sm">
                   <TrashIcon class="w-4 h-4" />
@@ -368,17 +364,17 @@ useSeoMeta({
                 <p class="text-red-700 text-sm" v-if="comment.deletion_reason">原因：{{ comment.deletion_reason }}</p>
               </div>
               
-              <div class="text-slate-800 leading-relaxed whitespace-pre-wrap break-words" :class="{ 'opacity-50': comment.is_deleted }">
+              <div class="text-slate-800 text-base leading-relaxed whitespace-pre-wrap break-words" :class="{ 'opacity-50': comment.is_deleted }">
                 {{ comment.message }}
               </div>
-            </div>
-
-            <!-- 5. Comment Time (Bottom Right) -->
-            <div class="flex justify-end">
-              <span class="inline-flex items-center gap-1 text-xs text-slate-400">
-                <ClockIcon class="w-3.5 h-3.5 flex-shrink-0" />
-                <span class="font-mono">{{ comment.created_at }}</span>
-              </span>
+              
+              <!-- Comment Time -->
+              <div class="flex justify-end mt-3">
+                <span class="inline-flex items-center gap-1 text-sm text-slate-400">
+                  <ClockIcon class="w-4 h-4 flex-shrink-0" />
+                  <span class="font-mono">{{ comment.created_at }}</span>
+                </span>
+              </div>
             </div>
           </div>
         </NuxtLink>
