@@ -1,38 +1,36 @@
-<script setup>
+<script setup lang="ts">
 // Nuxt 3 auto-imports ref and nextTick
 import CommentItem from './CommentItem.vue'
 import { XMarkIcon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import { useComments } from '../composables/useComments'
+import type { Comment } from '@/types'
 
-const props = defineProps({
-  comments: {
-    type: Array,
-    default: () => []
-  },
-  jobId: {
-    type: Number,
-    required: true
-  }
-})
+const props = defineProps<{
+  comments: Comment[]
+  jobId: number
+}>()
 
-const emit = defineEmits(['refresh'])
+const emit = defineEmits<{
+  (e: 'refresh'): void
+}>()
 
 const username = ref('')
 const message = ref('')
-const replyTo = ref(null)
+const replyTo = ref<Comment | null>(null)
+
+const commentFormRef = ref<HTMLElement | null>(null)
+const messageTextareaRef = ref<HTMLTextAreaElement | null>(null)
 
 const { submitting, error, submitComment } = useComments(props.jobId, () => emit('refresh'))
 
-const handleReply = (comment) => {
+const handleReply = (comment: Comment) => {
   replyTo.value = comment
   // Scroll to form
-  const form = document.getElementById('comment-form')
-  if (form) {
-    form.scrollIntoView({ behavior: 'smooth' })
+  if (commentFormRef.value) {
+    commentFormRef.value.scrollIntoView({ behavior: 'smooth' })
     // Focus textarea
     nextTick(() => {
-      const textarea = form.querySelector('textarea')
-      if (textarea) textarea.focus()
+      if (messageTextareaRef.value) messageTextareaRef.value.focus()
     })
   }
 }
@@ -81,7 +79,7 @@ const handleSubmit = async () => {
       </div>
 
       <!-- Comment Form -->
-      <div id="comment-form" class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+      <div ref="commentFormRef" class="bg-slate-50 p-6 rounded-xl border border-slate-200">
         <div class="flex justify-between items-center mb-4">
           <h3 class="font-bold text-slate-800">發表留言</h3>
           <button 
@@ -107,6 +105,7 @@ const handleSubmit = async () => {
         <div class="mb-4">
           <label class="block text-xs font-medium text-slate-500 mb-1">留言內容 *</label>
           <textarea 
+            ref="messageTextareaRef"
             v-model="message" 
             rows="4" 
             placeholder="請輸入您的留言..." 

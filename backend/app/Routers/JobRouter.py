@@ -4,9 +4,11 @@ from app.Core.Database import get_async_db
 from app.Services.JobService import JobService
 from typing import Optional
 
+from app.Schemas.Schemas import JobListResponse
+
 router = APIRouter()
 
-@router.get("/")
+@router.get("/", response_model=JobListResponse)
 async def get_jobs(
     page: int = Query(1, ge=1),
     per_page: int = Query(15, ge=1, le=100),

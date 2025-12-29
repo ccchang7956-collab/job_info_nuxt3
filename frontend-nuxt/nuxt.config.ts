@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-// Force rebuild for tailwind config changes
+// Force rebuild for tailwind config changes (Timestamp: 2024-12-25 15:30)
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -22,14 +22,27 @@ export default defineNuxtConfig({
   security: {
     headers: {
       contentSecurityPolicy: {
+        'default-src': ["'self'"],
         'script-src': [
           "'self'",
           "'unsafe-inline'", // Required for some Nuxt functionality and reCAPTCHA callbacks
+          "'unsafe-eval'", // Sometimes needed for dev mode
           "https://www.google.com",
           "https://www.gstatic.com"
         ],
+        'style-src': [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com"
+        ],
         'frame-src': [
           "'self'",
+          "https://www.google.com",
+          "https://web3.dgpa.gov.tw"
+        ],
+        'connect-src': [
+          "'self'",
+          "http://localhost:8000",
           "https://www.google.com"
         ],
         'img-src': [
@@ -38,7 +51,11 @@ export default defineNuxtConfig({
           "https:",
           "blob:"
         ],
-        'upgrade-insecure-requests': true
+        'font-src': [
+          "'self'",
+          "https://fonts.gstatic.com"
+        ],
+        'upgrade-insecure-requests': false // Disable for localhost dev
       },
       crossOriginEmbedderPolicy: false, // Often causes issues with external resources
     }

@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { 
   ChatBubbleLeftRightIcon, 
   FunnelIcon,
@@ -8,31 +10,43 @@ import {
   XMarkIcon,
   TrashIcon,
   ClockIcon,
-  CalendarIcon,
   Bars3Icon
 } from '@heroicons/vue/24/outline'
+import type { Comment, CommentListResponse } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
 const { addToast } = useToast()
 
-const comments = ref([])
-const loading = ref(true)
-const error = ref(null)
+// Interfaces
+interface PaginationState {
+  current_page: number
+  total_pages: number
+  total_count: number
+  per_page: number
+}
 
-// Filter Options
-const sysnamAdminList = ref([])
-const sysnamTechList = ref([])
+interface FilterState {
+  search_org: string
+  search_title: string
+  search_sysnam: string
+  search_message: string
+  show_deleted: boolean
+}
 
 // State
-const pagination = ref({
+const comments = ref<Comment[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
+
+const pagination = ref<PaginationState>({
   current_page: 1,
   total_pages: 1,
   total_count: 0,
   per_page: 10
 })
 
-const filters = ref({
+const filters = ref<FilterState>({
   search_org: '',
   search_title: '',
   search_sysnam: '',
@@ -48,17 +62,18 @@ const isSysnamModalOpen = ref(false)
 watch(() => filters.value.search_sysnam, () => {
   handleSearch()
 })
+
 const hasActiveFilters = computed(() => {
-  return filters.value.search_org || 
+  return !!(filters.value.search_org || 
          filters.value.search_title || 
          filters.value.search_sysnam || 
          filters.value.search_message || 
-         filters.value.show_deleted
+         filters.value.show_deleted)
 })
 
 // Helper to build query params
 const buildParams = () => {
-  const params = {
+  const params: Record<string, any> = {
     page: pagination.value.current_page,
     per_page: pagination.value.per_page,
     ...filters.value
@@ -80,17 +95,17 @@ const updateUrl = () => {
 // Initial Data Fetch (SSR)
 const initFromUrl = () => {
   const query = route.query
-  if (query.page) pagination.value.current_page = parseInt(query.page)
-  if (query.search_org) filters.value.search_org = query.search_org
-  if (query.search_title) filters.value.search_title = query.search_title
-  if (query.search_sysnam) filters.value.search_sysnam = query.search_sysnam
-  if (query.search_message) filters.value.search_message = query.search_message
+  if (query.page) pagination.value.current_page = parseInt(query.page as string)
+  if (query.search_org) filters.value.search_org = query.search_org as string
+  if (query.search_title) filters.value.search_title = query.search_title as string
+  if (query.search_sysnam) filters.value.search_sysnam = query.search_sysnam as string
+  if (query.search_message) filters.value.search_message = query.search_message as string
   if (query.show_deleted) filters.value.show_deleted = query.show_deleted === 'true'
 }
 
 initFromUrl()
 
-const { data: initialData, error: initialError } = await useFetch('/api/comments/list', {
+const { data: initialData, error: initialError } = await useFetch<CommentListResponse>('/api/comments/list', {
   query: buildParams()
 })
 
@@ -102,8 +117,7 @@ if (initialData.value) {
     total_count: initialData.value.total_count,
     per_page: initialData.value.per_page
   }
-  sysnamAdminList.value = initialData.value.sysnam_admin_list
-  sysnamTechList.value = initialData.value.sysnam_tech_list
+
   loading.value = false
 } else if (initialError.value) {
   error.value = '無法載入留言資料，請稍後再試'
@@ -111,12 +125,14 @@ if (initialData.value) {
 }
 
 // Client-side Fetch
+const { fetchComments: apiFetchComments } = useJobApi()
+
 const fetchComments = async (isSearch = false) => {
   loading.value = true
   error.value = null
   try {
     const params = buildParams()
-    const response = await $fetch('/api/comments/list', { params })
+    const response = await apiFetchComments(params)
     
     comments.value = response.comments
     pagination.value = {
@@ -125,8 +141,7 @@ const fetchComments = async (isSearch = false) => {
       total_count: response.total_count,
       per_page: response.per_page
     }
-    sysnamAdminList.value = response.sysnam_admin_list
-    sysnamTechList.value = response.sysnam_tech_list
+
     
     if (isSearch) {
       addToast(`搜尋完成，共找到 ${response.total_count} 筆留言`, 'success')
@@ -160,7 +175,7 @@ const clearFilters = () => {
   addToast('已清空所有搜尋條件', 'info')
 }
 
-const changePage = (page) => {
+const changePage = (page: number) => {
   if (page < 1 || page > pagination.value.total_pages) return
   pagination.value.current_page = page
   updateUrl()
@@ -422,8 +437,6 @@ useSeoMeta({
     <SysnamModal 
       v-model="filters.search_sysnam"
       :isOpen="isSysnamModalOpen"
-      :adminList="sysnamAdminList"
-      :techList="sysnamTechList"
       @close="isSysnamModalOpen = false" 
     />
   </div>

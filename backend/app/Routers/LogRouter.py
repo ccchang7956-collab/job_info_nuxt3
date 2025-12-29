@@ -4,10 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.Core.Database import get_async_db
 from app.Services.LogService import LogService
 
+from app.Schemas.Schemas import LogListResponse
+
 router = APIRouter()
 
-@router.get("/logs", response_class=JSONResponse)
-@router.get("/log", response_class=JSONResponse)
+@router.get("/logs", response_model=LogListResponse)
+@router.get("/log", response_model=LogListResponse)
 async def get_logs(
     request: Request,
     page: int = Query(1, ge=1),

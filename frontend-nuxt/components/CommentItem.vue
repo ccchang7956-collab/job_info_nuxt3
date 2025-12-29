@@ -1,17 +1,17 @@
-<script setup>
+<script setup lang="ts">
 import { formatDistanceToNow } from 'date-fns'
 import { zhTW } from 'date-fns/locale'
+import type { Comment } from '@/types'
 
-const props = defineProps({
-  comment: {
-    type: Object,
-    required: true
-  }
-})
+defineProps<{
+  comment: Comment
+}>()
 
-defineEmits(['reply'])
+defineEmits<{
+  (e: 'reply', comment: Comment): void
+}>()
 
-const formatDate = (dateStr) => {
+const formatDate = (dateStr: string) => {
   if (!dateStr) return ''
   try {
     const date = new Date(dateStr)

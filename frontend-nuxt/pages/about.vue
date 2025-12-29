@@ -1,4 +1,5 @@
-<script setup>
+<script setup lang="ts">
+import { ref } from 'vue'
 import { 
   InformationCircleIcon, 
   WrenchScrewdriverIcon, 
@@ -10,6 +11,18 @@ import {
   ExclamationCircleIcon
 } from '@heroicons/vue/24/outline'
 
+// Types
+interface FormData {
+  name: string
+  email: string
+  message: string
+}
+
+interface SubmitStatus {
+  type: '' | 'success' | 'error'
+  message: string
+}
+
 // Dev Log State
 const isDevLogOpen = ref(false)
 const toggleDevLog = () => {
@@ -17,20 +30,20 @@ const toggleDevLog = () => {
 }
 
 // Contact Form State
-const formData = ref({
+const formData = ref<FormData>({
   name: '',
   email: '',
   message: ''
 })
-const errors = ref({})
+const errors = ref<Partial<FormData>>({})
 const loading = ref(false)
-const submitStatus = ref({
-  type: '', // 'success' or 'error'
+const submitStatus = ref<SubmitStatus>({
+  type: '', 
   message: ''
 })
 
-const validateForm = () => {
-  const newErrors = {}
+const validateForm = (): boolean => {
+  const newErrors: Partial<FormData> = {}
   let isValid = true
 
   if (!formData.value.name.trim()) {
@@ -86,11 +99,11 @@ const submitForm = async () => {
     } else {
       let errorMsg = '訊息提交失敗，請稍後再試。'
       if (data && data.errors && data.errors.length > 0) {
-        errorMsg = data.errors.map(err => err.message).join(', ')
+        errorMsg = data.errors.map((err: any) => err.message).join(', ')
       }
       throw new Error(errorMsg)
     }
-  } catch (error) {
+  } catch (error: any) {
     submitStatus.value = {
       type: 'error',
       message: '訊息提交失敗。錯誤：' + error.message

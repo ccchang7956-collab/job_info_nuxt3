@@ -1,14 +1,14 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql import text
+from sqlalchemy import select, func, desc, asc, text
 from datetime import datetime
 import pytz
 import httpx
 import logging
 import re
 import math
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 from fastapi import HTTPException
-from app.Models.Models import JobComments
+from app.Models.Models import JobComments, JobAllData, JobSysnam
 from app.Schemas.Schemas import CommentCreate
 from app.Utils.FormatUtils import format_roc_date
 
@@ -106,13 +106,14 @@ class CommentService:
         sysnam_admin_list = []
         sysnam_tech_list = []
         try:
-            admin_query = text("SELECT sysnam FROM job_sysnam WHERE category = :category")
-            result_admin = await db.execute(admin_query, {"category": "行政類"})
-            sysnam_admin_list = [row.sysnam for row in result_admin.fetchall()]
+            # ORM Refactor
+            admin_stmt = select(JobSysnam.sysnam).where(JobSysnam.category == "行政類")
+            result_admin = await db.execute(admin_stmt)
+            sysnam_admin_list = result_admin.scalars().all()
 
-            tech_query = text("SELECT sysnam FROM job_sysnam WHERE category = :category")
-            result_tech = await db.execute(tech_query, {"category": "技術類"})
-            sysnam_tech_list = [row.sysnam for row in result_tech.fetchall()]
+            tech_stmt = select(JobSysnam.sysnam).where(JobSysnam.category == "技術類")
+            result_tech = await db.execute(tech_stmt)
+            sysnam_tech_list = result_tech.scalars().all()
             
             _sysnam_cache["admin"] = sysnam_admin_list
             _sysnam_cache["tech"] = sysnam_tech_list
@@ -139,83 +140,84 @@ class CommentService:
         
         offset = (page - 1) * per_page
 
-        base_query_fields = """
-            c.id AS comment_id, c.message, c.created_at, c.job_all_data_id,
-            c.is_deleted, c.deletion_reason,
-            jo.org_name, jo.sysnam, jo.title, jo.date_from, jo.date_to, jo.rank
-        """
-        base_query_from = """
-            FROM job_comments c
-            JOIN job_all_data jo ON c.job_all_data_id = jo.id
-        """
+        # ORM Query Construction
+        stmt = (
+            select(JobComments, JobAllData)
+            .join(JobAllData, JobComments.job_all_data_id == JobAllData.id)
+        )
 
         conditions = []
-        params = {}
-        param_counter = 0
+        
+        # Filter by display status
+        if show_deleted:
+            conditions.append(JobComments.is_deleted == 1)
+        else:
+            conditions.append(JobComments.is_deleted == 0)
 
         if search_org:
-            conditions.append(f"jo.org_name LIKE :param_{param_counter}")
-            params[f"param_{param_counter}"] = f"%{search_org}%"
-            param_counter += 1
+            conditions.append(JobAllData.org_name.like(f"%{search_org}%"))
         
         if search_title:
-            conditions.append(f"jo.title LIKE :param_{param_counter}")
-            params[f"param_{param_counter}"] = f"%{search_title}%"
-            param_counter += 1
+             conditions.append(JobAllData.title.like(f"%{search_title}%"))
         
         if search_sysnam_list:
-            in_params = []
-            for s in search_sysnam_list:
-                in_params.append(f":param_{param_counter}")
-                params[f"param_{param_counter}"] = s
-                param_counter += 1
-            conditions.append(f"jo.sysnam IN ({', '.join(in_params)})")
+            conditions.append(JobAllData.sysnam.in_(search_sysnam_list))
         
         if search_message:
-            conditions.append(f"c.message LIKE :param_{param_counter}")
-            params[f"param_{param_counter}"] = f"%{search_message}%"
-            param_counter += 1
+            conditions.append(JobComments.message.like(f"%{search_message}%"))
 
-        # Build WHERE clause
-        conditions.insert(0, f"c.is_deleted = :is_deleted_param")
-        params["is_deleted_param"] = 1 if show_deleted else 0
-        
-        where_clause = "WHERE " + " AND ".join(conditions)
+        if conditions:
+            stmt = stmt.where(*conditions)
 
-        # Count
-        count_sql = f"SELECT COUNT(c.id) {base_query_from} {where_clause}"
-        result_count = await db.execute(text(count_sql), params)
-        total_count = result_count.scalar_one()
+        # Count Query
+        # Note: SQLAlchemy 1.4/2.0+ idiom for count is select(func.count()).select_from(...)
+        count_stmt = select(func.count()).select_from(JobComments).join(JobAllData, JobComments.job_all_data_id == JobAllData.id)
+        if conditions:
+            count_stmt = count_stmt.where(*conditions)
+            
+        result_count = await db.execute(count_stmt)
+        total_count = result_count.scalar()
 
         # Pagination
         total_pages = math.ceil(total_count / per_page) if total_count > 0 else 1
         current_page = min(page, total_pages) if total_pages > 0 else 1
         offset_corrected = (current_page - 1) * per_page
 
-        # Data
-        data_sql = f"""
-            SELECT {base_query_fields}
-            {base_query_from}
-            {where_clause}
-            ORDER BY c.created_at DESC
-            LIMIT :limit OFFSET :offset
-        """
-        params["limit"] = per_page
-        params["offset"] = offset_corrected
+        # Data Query
+        stmt = stmt.order_by(desc(JobComments.created_at)).limit(per_page).offset(offset_corrected)
         
-        result_comments = await db.execute(text(data_sql), params)
-        comments_results = result_comments.fetchall()
+        result_comments = await db.execute(stmt)
+        rows = result_comments.all()
 
         comments = []
-        for row in comments_results:
-            comment = dict(row._mapping)
-            if comment.get('created_at'):
-                comment['created_at'] = comment['created_at'].strftime("%Y-%m-%d %H:%M:%S")
-            if comment.get('date_from'):
-                comment['date_from'] = format_roc_date(comment['date_from'])
-            if comment.get('date_to'):
-                comment['date_to'] = format_roc_date(comment['date_to'])
-            comments.append(comment)
+        for row in rows:
+            comment, job = row
+            # Mapping based on Schemas.CommentItem
+            comment_dict = {
+                "comment_id": comment.id,
+                "message": comment.message,
+                "created_at": comment.created_at.strftime("%Y-%m-%d %H:%M:%S") if comment.created_at else "",
+                "job_all_data_id": comment.job_all_data_id,
+                "is_deleted": comment.is_deleted,
+                "deletion_reason": comment.deletion_reason,
+                
+                # Joined fields from JobAllData
+                "org_name": job.org_name,
+                "sysnam": job.sysnam,
+                "title": job.title,
+                "date_from": format_roc_date(job.date_from),
+                "date_to": format_roc_date(job.date_to),
+                "rank": job.rank,
+                
+                # User fields
+                "user_id": comment.user_id,
+                "username": comment.username,
+                "initial": comment.initial,
+                "color": comment.color,
+                "email": comment.email,
+                "parent_id": comment.parent_id
+            }
+            comments.append(comment_dict)
 
         sysnam_admin_list, sysnam_tech_list = await CommentService.get_sysnam_lists(db)
 

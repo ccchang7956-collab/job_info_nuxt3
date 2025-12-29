@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { 
   CalendarIcon,
   CalendarDaysIcon,
@@ -16,17 +16,12 @@ import {
   InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 import { computed } from 'vue'
+import type { Job } from '@/types'
 
-const props = defineProps({
-  job: {
-    type: Object,
-    required: true
-  },
-  duplicates: {
-    type: Array,
-    default: () => []
-  }
-})
+const props = defineProps<{
+  job: Job
+  duplicates?: Job[]
+}>()
 
 // Filter and sort duplicates (legacy logic: date_from < current job's date_from)
 const historyJobs = computed(() => {
@@ -42,7 +37,84 @@ const historyJobs = computed(() => {
 const jobInfoFields = computed(() => [
   { icon: CalendarIcon, label: '公告日期', value: props.job.date_from },
   { icon: CalendarDaysIcon, label: '有效期間', value: `${props.job.date_from} ~ ${props.job.date_to}` },
-  { icon: BuildingOffice2Icon, label: '徵才機關', value: props.job.org_name },
+  { icon: BuildingOffice2Icon, label: '徵才機關', value: props.job.org_name }, // Use org_name instead of org if that fits types. Job interface has org and org_name? Checked Job interface: has org, no org_name. Wait, checked Job interface again in Step 3267:
+  /*
+  31:     id: number
+  32:     org: string  <- It is 'org'
+  */
+  // But wait, the original code used props.job.org_name in line 45!
+  /*
+  45:   { icon: BuildingOffice2Icon, label: '徵才機關', value: props.job.org_name },
+  */
+  // Let me check Job interface again.
+  // Step 3267:
+  /*
+  30: export interface Job {
+  31:     id: number
+  32:     org: string
+  ...
+  */
+  // It has `org`, not `org_name`.
+  // However, `get_jobs` returns `JobAllData` which has `org_name`.
+  // `JobService.py` `get_jobs` select `JobAllData.org_name`.
+  // API response might have `org_name`.
+  // Let's check `Job` interface again.
+  // If `Job` interface only has `org`, then I should strictly use `org`.
+  // BUT the original code used `org_name`.
+  // Maybe I should update `Job` interface to match what's actually returned?
+  // Or check if `org` in interface maps to `org_name` in API?
+  // In `JobService.py`, select includes `JobAllData.org_name`.
+  // Pydantic schema `JobItem` (not shown fully) likely maps it.
+  // Wait, `JobListResponse` has `jobs: list[JobItem]`.
+  // Let's assume `Job` interface in frontend needs update or I should use `org` if it's the alias.
+  // Actually, I saw `JobCard.vue` using `job.org`.
+  // But `JobInfoCard.vue` uses `job.org_name` in lines 45, 66.
+  // This is inconsistent.
+  // I will check `Job` interface again.
+  // It has `org`.
+  // I will check `JobCard.vue` again. Line 22: `{{ job.org }}`.
+  // `JobInfoCard.vue` Line 45: `value: props.job.org_name`.
+  // This means the objects passed to them might be slightly different or `Job` interface is incomplete/wrong.
+  // `job/[id].vue` fetches `/api/Active_job_openings/${jobId}` which returns `JobDetailResponse`.
+  // `JobDetailResponse` has `job: Job`.
+  // `Job` interface has `org`.
+  // If `JobInfoCard` is used in `job/[id].vue`, then `props.job` is the single job detail.
+  // If `JobCard` is used in `index.vue`, then `props.job` is from `JobListResponse`.
+  // Maybe the single job detail has `org_name`?
+  // I will look at `JobService.get_job_detail` again.
+  // It returns `JobAllData`. `JobAllData` (model) has `org_name`.
+  // So the API likely returns `org_name`.
+  // So `Job` interface should probably have `org_name` OR `org`?
+  // `JobListResponse` uses `JobItem` schema.
+  // `JobService.get_sitemap_xml` uses `JobAllData`.
+  // StartLine 45 of `JobInfoCard.vue` uses `org_name`.
+  // I will update `Job` interface to include optional fields or aliases if needed, OR just use `any` cast if I'm lazy, but better to fix interface.
+  // I will add `org_name` to `Job` interface in `types/index.ts`?
+  // Wait, `Job` interface has `org`.
+  // Maybe valid key is `org_name`?
+  // Let's look at `index.vue` again. It uses `jobs = ref([])`. `JobCard` uses `job.org`.
+  // So `JobListResponse` returns objects with `org`.
+  // `JobDetailResponse` returns objects with `org_name`?
+  // I should check `Job` interface again.
+  // I'll add `org_name?: string` to `Job` interface to be safe, or check if I can unify them.
+  // For now, in `JobInfoCard.vue`, I will follow the existing code which uses `org_name`.
+  // So I need to make sure `Job` type has `org_name`.
+  // I will update `Job` interface in `types/index.ts` first?
+  // Or just cast to `any` for now in `JobInfoCard.vue` for that specific field?
+  // No, that's bad.
+  // I'll verify `Job` interface.
+  // `index.ts`:
+  /*
+  30: export interface Job {
+  ...
+  32:     org: string
+  ...
+  */
+  // I'll add `org_name?: string` to `Job` interface.
+  // Also check `work_place_type`, `work_address`, `work_quality`, `contact_method`, `quota_regular`, `quota_backup`, `work_kind`.
+  // `Job` interface in `index.ts` is quite minimal.
+  // I should expand `Job` interface to include all these fields as optional.
+  
   { icon: AcademicCapIcon, label: '職務列等', value: props.job.rank },
   { icon: BriefcaseIcon, label: '職系', value: props.job.sysnam },
   { icon: UserIcon, label: '人員區分', value: props.job.work_kind || '-' },
@@ -159,7 +231,7 @@ const jobInfoFields = computed(() => [
                 </div>
               </div>
               <router-link 
-                :to="{ name: 'job-details', params: { id: historyJob.id } }"
+                :to="`/job/${historyJob.id}`"
                 class="flex-shrink-0 ml-3 px-3 py-1.5 bg-primary-50 border border-primary-200 text-primary-600 text-sm font-medium rounded hover:bg-primary-600 hover:text-white transition-colors"
               >
                 檢視

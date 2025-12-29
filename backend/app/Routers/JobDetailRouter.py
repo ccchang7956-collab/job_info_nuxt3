@@ -5,9 +5,11 @@ from app.Core.Database import get_async_db
 from app.Services.JobService import JobService
 from datetime import datetime, timedelta
 
+from app.Schemas.Schemas import JobDetailResponse
+
 router = APIRouter()
 
-@router.get("/Active_job_openings/{job_id}")
+@router.get("/Active_job_openings/{job_id}", response_model=JobDetailResponse)
 async def get_job_details(
     request: Request, 
     job_id: int, 

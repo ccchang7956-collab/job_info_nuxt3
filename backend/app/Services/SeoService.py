@@ -1,7 +1,8 @@
-from sqlalchemy import text
+from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from cachetools import TTLCache
+from app.Models.Models import JobAllData
 import logging
 
 # Cache sitemap for 1 hour (3600 seconds)
@@ -53,24 +54,23 @@ Sitemap: https://www.opendgpa.site/sitemap.xml
             
         # Add dynamic job routes (Active jobs only)
         try:
-            query = text("""
-                SELECT id, date_from 
-                FROM job_all_data 
-                WHERE date_to >= :today 
-                ORDER BY date_from DESC 
-                LIMIT 5000
-            """)
-            
             today = datetime.now()
             roc_year = today.year - 1911
             roc_today = f"{roc_year}{today.strftime('%m%d')}"
             
-            result = await db.execute(query, {"today": roc_today})
-            jobs = result.fetchall()
+            stmt = (
+                select(JobAllData.id)
+                .where(JobAllData.date_to >= roc_today)
+                .order_by(desc(JobAllData.date_from))
+                .limit(5000)
+            )
             
-            for job in jobs:
+            result = await db.execute(stmt)
+            jobs = result.scalars().all()
+            
+            for job_id in jobs:
                 xml_content.append('<url>')
-                xml_content.append(f'<loc>{base_url}/Active_job_openings/{job.id}</loc>')
+                xml_content.append(f'<loc>{base_url}/Active_job_openings/{job_id}</loc>')
                 xml_content.append('<changefreq>weekly</changefreq>')
                 xml_content.append('<priority>0.6</priority>')
                 xml_content.append('</url>')

@@ -1,21 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
+import BaseModal from './BaseModal.vue'
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: ''
-  },
-  isOpen: {
-    type: Boolean,
-    default: false
-  }
-})
+const props = defineProps<{
+  modelValue: string
+  isOpen: boolean
+}>()
 
-const emit = defineEmits(['update:modelValue', 'close'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+  (e: 'close'): void
+}>()
 
-const selectedPlaces = ref(new Set())
+const selectedPlaces = ref<Set<string>>(new Set())
 
 // Initialize selected places from props
 watch(() => props.isOpen, (newVal) => {
@@ -26,7 +23,7 @@ watch(() => props.isOpen, (newVal) => {
   }
 })
 
-const togglePlace = (place) => {
+const togglePlace = (place: string) => {
   const newSet = new Set(selectedPlaces.value)
   if (newSet.has(place)) {
     newSet.delete(place)
@@ -36,7 +33,7 @@ const togglePlace = (place) => {
   selectedPlaces.value = newSet
 }
 
-const toggleRegion = (places) => {
+const toggleRegion = (places: string) => {
   const placesArr = places.split(',')
   const newSet = new Set(selectedPlaces.value)
   const allSelected = placesArr.every(p => newSet.has(p))
@@ -58,7 +55,12 @@ const confirmSelection = () => {
   emit('close')
 }
 
-const regions = [
+interface Region {
+  name: string
+  places: string[]
+}
+
+const regions: Region[] = [
   {
     name: '北北基地區',
     places: ['臺北市', '新北市', '基隆市']
@@ -91,94 +93,71 @@ const regions = [
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="isOpen" class="relative z-[9999]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <!-- Backdrop -->
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-
-      <!-- Modal Container -->
-      <div class="fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-          <!-- Modal Panel -->
-          <div class="relative flex flex-col transform overflow-hidden rounded-xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl max-h-[85vh]" @click.stop>
-            
-            <!-- Header -->
-            <div class="bg-primary-600 px-4 py-3 border-b border-primary-700 flex-shrink-0">
-              <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold text-white" id="modal-title">選擇地點</h3>
-                <button type="button" @click="$emit('close')" class="text-blue-100 hover:text-white transition-colors p-1 rounded-full hover:bg-primary-500">
-                  <XMarkIcon class="h-6 w-6" />
-                </button>
-              </div>
-            </div>
-
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto bg-white px-4 py-4">
-              <div class="space-y-5">
-                <div v-for="(region, index) in regions" :key="index">
-                  <div class="flex items-center justify-between mb-2 sticky top-0 bg-white/95 backdrop-blur-sm z-10 py-1">
-                    <h6 class="text-base font-bold text-slate-700 flex items-center gap-2">
-                      <span class="w-1 h-5 bg-primary-500 rounded-full"></span>
-                      {{ region.name }}
-                    </h6>
-                    <button 
-                      type="button"
-                      @click="toggleRegion(region.places.join(','))"
-                      class="text-sm font-medium px-2.5 py-1 rounded border border-primary-200 text-primary-600 hover:bg-primary-50 transition-colors"
-                    >
-                      全選
-                    </button>
-                  </div>
-                  <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    <button 
-                      type="button"
-                      v-for="place in region.places" 
-                      :key="place"
-                      @click="togglePlace(place)"
-                      class="px-2 py-2 rounded-lg text-base font-medium transition-all border"
-                      :class="selectedPlaces.has(place) 
-                        ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm ring-1 ring-primary-200' 
-                        : 'bg-white text-slate-600 border-slate-200 hover:border-primary-300 hover:bg-slate-50'"
-                    >
-                      {{ place }}
-                    </button>
-                  </div>
-                  <hr v-if="index < regions.length - 1" class="mt-4 border-slate-100">
-                </div>
-              </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="bg-slate-50 px-4 py-3 sm:px-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 flex-shrink-0 border-t border-slate-100">
-              <button 
-                type="button" 
-                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none transition-colors"
-                @click="$emit('close')"
-              >
-                關閉
-              </button>
-              <button 
-                type="button" 
-                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-red-200 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-600 hover:bg-red-50 focus:outline-none transition-colors"
-                @click="clearSelection"
-              >
-                清空
-              </button>
-              <button 
-                type="button" 
-                class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-2 bg-primary-600 text-base font-bold text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all shadow-primary-500/20"
-                @click="confirmSelection"
-              >
-                確定選取
-              </button>
-            </div>
-          </div>
+  <BaseModal
+    :is-open="isOpen"
+    title="選擇地點"
+    @close="$emit('close')"
+  >
+    <div class="space-y-5">
+      <div v-for="(region, index) in regions" :key="index">
+        <div class="flex items-center justify-between mb-2 sticky top-0 bg-white/95 backdrop-blur-sm z-10 py-1">
+          <h6 class="text-base font-bold text-slate-700 flex items-center gap-2">
+            <span class="w-1 h-5 bg-primary-500 rounded-full"></span>
+            {{ region.name }}
+          </h6>
+          <button 
+            type="button"
+            @click="toggleRegion(region.places.join(','))"
+            class="text-sm font-medium px-2.5 py-1 rounded border border-primary-200 text-primary-600 hover:bg-primary-50 transition-colors"
+          >
+            全選
+          </button>
         </div>
+        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+          <button 
+            type="button"
+            v-for="place in region.places" 
+            :key="place"
+            @click="togglePlace(place)"
+            class="px-2 py-2 rounded-lg text-base font-medium transition-all border"
+            :class="selectedPlaces.has(place) 
+              ? 'bg-primary-50 text-primary-700 border-primary-200 shadow-sm ring-1 ring-primary-200' 
+              : 'bg-white text-slate-600 border-slate-200 hover:border-primary-300 hover:bg-slate-50'"
+          >
+            {{ place }}
+          </button>
+        </div>
+        <hr v-if="index < regions.length - 1" class="mt-4 border-slate-100">
       </div>
     </div>
-  </Teleport>
+
+    <!-- Footer Slot -->
+    <template #footer>
+      <button 
+        type="button" 
+        class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none transition-colors"
+        @click="$emit('close')"
+      >
+        關閉
+      </button>
+      <button 
+        type="button" 
+        class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-red-200 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-600 hover:bg-red-50 focus:outline-none transition-colors"
+        @click="clearSelection"
+      >
+        清空
+      </button>
+      <button 
+        type="button" 
+        class="w-full sm:w-auto inline-flex justify-center rounded-lg border border-transparent shadow-sm px-6 py-2 bg-primary-600 text-base font-bold text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all shadow-primary-500/20"
+        @click="confirmSelection"
+      >
+        確定選取
+      </button>
+    </template>
+  </BaseModal>
 </template>
 
 <style scoped>
-/* Styles removed as Transition is removed */
+/* Dummy style block to reset parser state */
 </style>

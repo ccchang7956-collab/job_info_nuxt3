@@ -1,4 +1,5 @@
-<script setup>
+<script setup lang="ts">
+import { ref, computed, onMounted, type Component } from 'vue'
 import { 
   ChartBarIcon, 
   BuildingOfficeIcon,
@@ -19,9 +20,12 @@ import {
   LineElement,
   ArcElement,
   RadialLinearScale,
-  Filler
+  Filler,
+  type ChartData,
+  type ChartOptions
 } from 'chart.js'
-import { Bar, Line, Pie, Doughnut, Radar } from 'vue-chartjs'
+import { Bar, Line, Pie, Doughnut } from 'vue-chartjs'
+import type { ChartDataResponse, ChartMonthOption } from '@/types'
 
 // Register ChartJS components
 ChartJS.register(
@@ -38,15 +42,22 @@ ChartJS.register(
   Filler
 )
 
+interface Tab {
+  id: string
+  name: string
+  icon: Component
+  endpoint: string
+}
+
 const activeTab = ref('org')
 const loading = ref(false)
-const error = ref(null)
-const rawData = ref(null)
-const monthOptions = ref([])
+const error = ref<string | null>(null)
+const rawData = ref<ChartDataResponse | null>(null)
+const monthOptions = ref<ChartMonthOption[]>([])
 const selectedMonth = ref('')
 const chartType = ref('horizontalBar') // Default to horizontalBar
 
-const tabs = [
+const tabs: Tab[] = [
   { id: 'org', name: '機關開缺數', icon: BuildingOfficeIcon, endpoint: '/api/job_openings_chart' },
   { id: 'sysnam', name: '職系開缺數', icon: BriefcaseIcon, endpoint: '/api/job_openings_chart_by_sysnam' },
   { id: 'daily', name: '每日開缺數', icon: CalendarIcon, endpoint: '/api/job_openings_daily_chart' },
@@ -54,8 +65,13 @@ const tabs = [
   { id: 'comments', name: '熱門留言職缺', icon: ChatBubbleLeftIcon, endpoint: '/api/job_openings_commentscount_chart' }
 ]
 
+const getChartTitle = () => {
+  const tab = tabs.find(t => t.id === activeTab.value)
+  return tab ? tab.name : ''
+}
+
 // Chart Options
-const chartOptions = computed(() => {
+const chartOptions = computed<ChartOptions>(() => {
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -73,11 +89,6 @@ const chartOptions = computed(() => {
   }
 })
 
-const getChartTitle = () => {
-  const tab = tabs.find(t => t.id === activeTab.value)
-  return tab ? tab.name : ''
-}
-
 const fetchChartData = async () => {
   loading.value = true
   error.value = null
@@ -85,12 +96,14 @@ const fetchChartData = async () => {
   
   try {
     const tab = tabs.find(t => t.id === activeTab.value)
-    const params = {}
+    if (!tab) return
+
+    const params: Record<string, string> = {}
     if (selectedMonth.value && activeTab.value !== 'comments') {
       params.month = selectedMonth.value
     }
     
-    const response = await $fetch(tab.endpoint, { params })
+    const response = await $fetch<ChartDataResponse>(tab.endpoint, { params })
     rawData.value = response
     
     if (response.month_options) {
@@ -98,7 +111,7 @@ const fetchChartData = async () => {
       // Check if current selectedMonth is valid in new options
       const isValid = monthOptions.value.some(opt => opt.value === selectedMonth.value)
       if (!selectedMonth.value || !isValid) {
-        selectedMonth.value = response.month
+        selectedMonth.value = response.month || ''
       }
     }
   } catch (err) {
@@ -109,7 +122,7 @@ const fetchChartData = async () => {
   }
 }
 
-const changeTab = (tabId) => {
+const changeTab = (tabId: string) => {
   activeTab.value = tabId
   // Reset chart type based on tab
   if (tabId === 'daily') {
@@ -123,28 +136,28 @@ const changeTab = (tabId) => {
 }
 
 // Computed Data for Chart.js
-const chartData = computed(() => {
-  if (!rawData.value) return null
+const chartData = computed<ChartData<'bar' | 'line' | 'pie' | 'doughnut'>>(() => {
+  if (!rawData.value) return { labels: [], datasets: [] }
 
-  let labels = []
-  let data = []
+  let labels: string[] = []
+  let data: number[] = []
   let label = '數量'
 
   if (activeTab.value === 'org') {
-    labels = rawData.value.org_names
-    data = rawData.value.job_counts
+    labels = rawData.value.org_names || []
+    data = rawData.value.job_counts || []
     label = '機關開缺數'
   } else if (activeTab.value === 'sysnam') {
-    labels = rawData.value.sys_names
-    data = rawData.value.job_counts
+    labels = rawData.value.sys_names || []
+    data = rawData.value.job_counts || []
     label = '職系開缺數'
   } else if (activeTab.value === 'daily') {
-    labels = rawData.value.dates
-    data = rawData.value.job_counts
+    labels = rawData.value.dates || []
+    data = rawData.value.job_counts || []
     label = '每日開缺數'
   } else if (activeTab.value === 'workplace') {
-    labels = rawData.value.workplace_types
-    data = rawData.value.job_counts
+    labels = rawData.value.workplace_types || []
+    data = rawData.value.job_counts || []
     label = '地點開缺數'
   }
 
@@ -168,15 +181,15 @@ const chartData = computed(() => {
         data
       }
     ]
-  }
+  } as ChartData<'bar' | 'line' | 'pie' | 'doughnut'>
 })
 
 // Computed Data for Table
 const tableData = computed(() => {
   if (!chartData.value || !chartData.value.labels || !chartData.value.datasets[0].data) return []
   
-  const labels = chartData.value.labels
-  const data = chartData.value.datasets[0].data
+  const labels = chartData.value.labels as string[]
+  const data = chartData.value.datasets[0].data as number[]
   const total = data.reduce((a, b) => a + b, 0)
   
   return labels.map((label, index) => {

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ShieldCheckIcon, ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({

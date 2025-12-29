@@ -1,31 +1,48 @@
-<script setup>
-// Auto-imports: ref, computed, watch, onMounted, useRoute, useRouter, useNuxtApp
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { 
   MagnifyingGlassIcon, 
   FunnelIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ArrowPathIcon,
-  ChatBubbleLeftIcon,
   ArrowsUpDownIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   Bars3Icon,
   XMarkIcon,
   InboxIcon,
-  BriefcaseIcon,
-  MapPinIcon
+  BriefcaseIcon
 } from '@heroicons/vue/24/outline'
+import type { Job, JobListResponse } from '@/types'
 
 const router = useRouter()
 const route = useRoute()
 const { addToast } = useToast()
 
+// Interfaces
+interface PaginationState {
+  current_page: number
+  total_pages: number
+  total_count: number
+}
+
+interface FilterState {
+  org: string
+  title: string
+  sysnam: string
+  places: string
+  min_rank: string
+  max_rank: string
+  include_history: boolean
+  include_parttime: boolean
+}
+
 // State
-const jobs = ref([])
+const jobs = ref<Job[]>([])
 const loading = ref(true)
-const error = ref(null)
-const pagination = ref({
+const error = ref<string | null>(null)
+const pagination = ref<PaginationState>({
   current_page: 1,
   total_pages: 1,
   total_count: 0
@@ -35,7 +52,7 @@ const perPage = ref(15)
 const jumpPage = ref('')
 
 // Filters
-const filters = ref({
+const filters = ref<FilterState>({
   org: '',
   title: '',
   sysnam: '',
@@ -53,14 +70,14 @@ const isSearchExpanded = ref(false)
 
 // Computed
 const hasActiveFilters = computed(() => {
-  return filters.value.org || 
+  return !!(filters.value.org || 
          filters.value.title || 
          filters.value.sysnam || 
          filters.value.places || 
          filters.value.min_rank || 
          filters.value.max_rank || 
          filters.value.include_history || 
-         filters.value.include_parttime
+         filters.value.include_parttime)
 })
 
 // Sorting
@@ -69,7 +86,7 @@ const sortOrder = ref('desc')
 
 // Helper to build query params
 const buildParams = () => {
-  const params = {
+  const params: Record<string, any> = {
     page: pagination.value.current_page,
     per_page: perPage.value,
     sort: sortField.value,
@@ -99,14 +116,14 @@ const updateUrl = () => {
 // Initial Data Fetch (SSR)
 const initFromUrl = () => {
   const query = route.query
-  if (query.page) pagination.value.current_page = parseInt(query.page)
-  if (query.per_page) perPage.value = parseInt(query.per_page)
-  if (query.sort) sortField.value = query.sort
-  if (query.order) sortOrder.value = query.order
+  if (query.page) pagination.value.current_page = parseInt(query.page as string)
+  if (query.per_page) perPage.value = parseInt(query.per_page as string)
+  if (query.sort) sortField.value = query.sort as string
+  if (query.order) sortOrder.value = query.order as string
   
-  const filterKeys = ['org', 'title', 'sysnam', 'places', 'min_rank', 'max_rank']
+  const filterKeys: (keyof FilterState)[] = ['org', 'title', 'sysnam', 'places', 'min_rank', 'max_rank']
   filterKeys.forEach(key => {
-    if (query[key]) filters.value[key] = query[key]
+    if (query[key]) filters.value[key] = query[key] as any // Simplified casting
   })
   
   if (query.include_history) filters.value.include_history = query.include_history === 'true'
@@ -116,7 +133,7 @@ const initFromUrl = () => {
 initFromUrl()
 
 // Use useFetch for SSR
-const { data: initialData, error: initialError } = await useFetch('/api/jobs', {
+const { data: initialData, error: initialError } = await useFetch<JobListResponse>('/api/jobs', {
   query: buildParams()
 })
 
@@ -134,6 +151,8 @@ if (initialData.value) {
 }
 
 // Client-side Fetch
+const { fetchJobs: apiFetchJobs } = useJobApi()
+
 const fetchJobs = async (isSearch = false) => {
   loading.value = true
   error.value = null
@@ -141,7 +160,7 @@ const fetchJobs = async (isSearch = false) => {
 
   try {
     const params = buildParams()
-    const response = await $fetch('/api/jobs', { params })
+    const response = await apiFetchJobs(params)
     
     jobs.value = response.jobs
     pagination.value = {
@@ -188,7 +207,7 @@ const clearFilters = () => {
   addToast('已清空所有搜尋條件', 'info')
 }
 
-const changePage = (page) => {
+const changePage = (page: number) => {
   if (page >= 1 && page <= pagination.value.total_pages) {
     pagination.value.current_page = page
     fetchJobs()
@@ -196,7 +215,7 @@ const changePage = (page) => {
   }
 }
 
-const handleSort = (field) => {
+const handleSort = (field: string) => {
   if (sortField.value === field) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
   } else {

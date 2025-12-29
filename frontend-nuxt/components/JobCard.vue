@@ -1,14 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { 
   ChevronRightIcon
 } from '@heroicons/vue/24/outline'
+import type { Job } from '@/types'
 
-defineProps({
-  job: {
-    type: Object,
-    required: true
-  }
-})
+defineProps<{
+  job: Job
+}>()
 </script>
 
 <template>

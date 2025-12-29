@@ -1,7 +1,9 @@
-export function useToast() {
-    const toasts = useState('toasts', () => [])
+import type { Toast } from '@/types'
 
-    const addToast = (message, type = 'info', duration = 3000) => {
+export function useToast() {
+    const toasts = useState<Toast[]>('toasts', () => [])
+
+    const addToast = (message: string, type: 'success' | 'error' | 'info' = 'info', duration = 3000) => {
         const id = Date.now()
         toasts.value.push({ id, message, type })
 
@@ -12,7 +14,7 @@ export function useToast() {
         }
     }
 
-    const removeToast = (id) => {
+    const removeToast = (id: number) => {
         const index = toasts.value.findIndex(t => t.id === id)
         if (index !== -1) {
             toasts.value.splice(index, 1)

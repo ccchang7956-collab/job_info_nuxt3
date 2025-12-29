@@ -1,22 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 
-defineProps({
-  title: {
-    type: String,
-    required: true
-  },
-  modelValue: {
-    type: Boolean,
-    required: true
-  },
-  hasActiveFilters: {
-    type: Boolean,
-    default: false
-  }
-})
+defineProps<{
+  title: string
+  modelValue: boolean
+  hasActiveFilters?: boolean
+}>()
 
-defineEmits(['update:modelValue'])
+defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
 </script>
 
 <template>

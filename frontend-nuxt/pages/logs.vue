@@ -1,25 +1,28 @@
-<script setup>
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { 
   ClipboardDocumentListIcon, 
   FunnelIcon,
   ChevronLeftIcon,
   ChevronRightIcon
 } from '@heroicons/vue/24/outline'
+import type { Log, LogListResponse } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
 
-const logs = ref([])
-const actions = ref([])
+const logs = ref<Log[]>([])
+const actions = ref<string[]>([])
 const loading = ref(true)
-const error = ref(null)
+const error = ref<string | null>(null)
 
 // Pagination & Filter state
-const currentPage = ref(parseInt(route.query.page) || 1)
-const selectedAction = ref(route.query.action || '')
+const currentPage = ref(parseInt(route.query.page as string) || 1)
+const selectedAction = ref((route.query.action as string) || '')
 const totalPages = ref(0)
 const totalCount = ref(0)
-const pageRange = ref([])
+const pageRange = ref<number[]>([])
 
 // Helper to build query params
 const buildParams = () => {
@@ -30,7 +33,7 @@ const buildParams = () => {
 }
 
 const updateUrl = () => {
-  const query = { page: currentPage.value }
+  const query: Record<string, any> = { page: currentPage.value }
   if (selectedAction.value) {
     query.action = selectedAction.value
   }
@@ -38,7 +41,7 @@ const updateUrl = () => {
 }
 
 // Initial Data Fetch (SSR)
-const { data: initialData, error: initialError } = await useFetch('/api/logs', {
+const { data: initialData, error: initialError } = await useFetch<LogListResponse>('/api/logs', {
   query: buildParams()
 })
 
@@ -55,12 +58,14 @@ if (initialData.value) {
 }
 
 // Client-side Fetch
+const { fetchLogs: apiFetchLogs } = useJobApi()
+
 const fetchLogs = async () => {
   loading.value = true
   error.value = null
   try {
     const params = buildParams()
-    const response = await $fetch('/api/logs', { params })
+    const response = await apiFetchLogs(params)
     logs.value = response.logs
     actions.value = response.actions
     totalPages.value = response.total_pages
@@ -74,7 +79,7 @@ const fetchLogs = async () => {
   }
 }
 
-const changePage = (page) => {
+const changePage = (page: number) => {
   if (page < 1 || page > totalPages.value) return
   currentPage.value = page
   updateUrl()
@@ -89,8 +94,8 @@ const handleFilterChange = () => {
 
 // Watch for URL changes (e.g. back button)
 watch(() => route.query, (newQuery) => {
-  const newPage = parseInt(newQuery.page) || 1
-  const newAction = newQuery.action || ''
+  const newPage = parseInt(newQuery.page as string) || 1
+  const newAction = (newQuery.action as string) || ''
   
   if (newPage !== currentPage.value || newAction !== selectedAction.value) {
     currentPage.value = newPage

@@ -1,20 +1,23 @@
-<script setup>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
+import type { JobDetailResponse } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
 
-const jobId = route.params.id
+const jobId = route.params.id as string
 
 // SSR Data Fetching
-const { data, error: fetchError } = await useFetch(`/api/Active_job_openings/${jobId}`)
+const { data, error: fetchError } = await useFetch<JobDetailResponse>(`/api/Active_job_openings/${jobId}`)
 
 const job = computed(() => data.value?.job)
 const comments = computed(() => data.value?.comments || [])
 const duplicates = computed(() => data.value?.duplicates || [])
 
 // Error Handling
-const error = ref(null)
+const error = ref<string | null>(null)
 if (fetchError.value) {
   const err = fetchError.value
   if (err.statusCode) {
@@ -27,7 +30,7 @@ if (fetchError.value) {
 // SEO
 useSeoMeta({
   title: () => job.value ? `${job.value.title} - ${job.value.org_name} - 開放事求人` : '職缺詳細資料 - 開放事求人',
-  description: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。工作地點：${job.value.work_place}。` : '公務人員職缺詳細資訊',
+  description: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。工作地點：${job.value.work_place_type}。` : '公務人員職缺詳細資訊',
   ogTitle: () => job.value ? `${job.value.title} - ${job.value.org_name}` : '職缺詳細資料',
   ogDescription: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。` : '公務人員職缺詳細資訊',
 })

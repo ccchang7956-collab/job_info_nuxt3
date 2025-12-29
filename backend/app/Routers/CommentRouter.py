@@ -7,7 +7,7 @@ from typing import Optional
 
 from app.Core.Database import get_async_db
 from app.Services.CommentService import CommentService
-from app.Schemas.Schemas import CommentCreate, CommentResponse
+from app.Schemas.Schemas import CommentCreate, CommentResponse, CommentListResponse
 
 router = APIRouter()
 
@@ -34,7 +34,7 @@ async def submit_comment(
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"留言提交失敗: {str(e)}")
 
-@router.get("/list", response_class=JSONResponse)
+@router.get("/list", response_model=CommentListResponse)
 async def get_comments_list(
     request: Request,
     db: AsyncSession = Depends(get_async_db),

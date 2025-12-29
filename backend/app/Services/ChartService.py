@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text
+from sqlalchemy import select, func, desc, text
 from datetime import datetime, timedelta
 from collections import defaultdict
 from typing import List, Dict, Any
 from app.Utils.FormatUtils import format_place
+from app.Models.Models import JobOpenings, JobAllData, JobComments
 from cachetools import TTLCache
 
 # Cache for month options (1 hour)
@@ -48,20 +49,20 @@ class ChartService:
         if cache_key in ChartService._chart_data_cache:
             return ChartService._chart_data_cache[cache_key]
         
-        query = text("""
-            SELECT org_name, COUNT(*) AS job_count
-            FROM job_openings
-            WHERE date_from LIKE :month
-            GROUP BY org_name
-            ORDER BY job_count DESC
-            LIMIT 10
-        """)
-        result = await db.execute(query, {"month": f"{target_month}%"})
-        results = result.mappings().all()
+        # ORM Query
+        stmt = (
+            select(JobOpenings.org_name, func.count().label("job_count"))
+            .where(JobOpenings.date_from.like(f"{target_month}%"))
+            .group_by(JobOpenings.org_name)
+            .order_by(desc("job_count"))
+            .limit(10)
+        )
+        result = await db.execute(stmt)
+        results = result.all()
 
         data = {
-            "org_names": [row["org_name"] for row in results],
-            "job_counts": [row["job_count"] for row in results],
+            "org_names": [row.org_name for row in results],
+            "job_counts": [row.job_count for row in results],
             "month": target_month,
             "month_options": ChartService.get_month_options()
         }
@@ -76,20 +77,19 @@ class ChartService:
         if cache_key in ChartService._chart_data_cache:
             return ChartService._chart_data_cache[cache_key]
 
-        query = text("""
-            SELECT sysnam, COUNT(*) AS job_count
-            FROM job_openings
-            WHERE date_from LIKE :month
-            GROUP BY sysnam
-            ORDER BY job_count DESC
-            LIMIT 10
-        """)
-        result = await db.execute(query, {"month": f"{target_month}%"})
-        results = result.mappings().all()
+        stmt = (
+            select(JobOpenings.sysnam, func.count().label("job_count"))
+            .where(JobOpenings.date_from.like(f"{target_month}%"))
+            .group_by(JobOpenings.sysnam)
+            .order_by(desc("job_count"))
+            .limit(10)
+        )
+        result = await db.execute(stmt)
+        results = result.all()
 
         data = {
-            "sys_names": [row["sysnam"] for row in results],
-            "job_counts": [row["job_count"] for row in results],
+            "sys_names": [row.sysnam for row in results],
+            "job_counts": [row.job_count for row in results],
             "month": target_month,
             "month_options": ChartService.get_month_options()
         }
@@ -104,19 +104,18 @@ class ChartService:
         if cache_key in ChartService._chart_data_cache:
             return ChartService._chart_data_cache[cache_key]
 
-        query = text("""
-            SELECT announce_date, COUNT(*) AS job_count
-            FROM job_openings
-            WHERE announce_date LIKE :month
-            GROUP BY announce_date
-            ORDER BY announce_date ASC
-        """)
-        result = await db.execute(query, {"month": f"{target_month}%"})
-        results = result.mappings().all()
+        stmt = (
+            select(JobOpenings.announce_date, func.count().label("job_count"))
+            .where(JobOpenings.announce_date.like(f"{target_month}%"))
+            .group_by(JobOpenings.announce_date)
+            .order_by(JobOpenings.announce_date.asc())
+        )
+        result = await db.execute(stmt)
+        results = result.all()
 
         data = {
-            "dates": [row["announce_date"] for row in results],
-            "job_counts": [row["job_count"] for row in results],
+            "dates": [row.announce_date for row in results],
+            "job_counts": [row.job_count for row in results],
             "month": target_month,
             "month_options": ChartService.get_month_options()
         }
@@ -131,19 +130,18 @@ class ChartService:
         if cache_key in ChartService._chart_data_cache:
             return ChartService._chart_data_cache[cache_key]
 
-        query = text("""
-            SELECT work_place_type, COUNT(*) AS job_count
-            FROM job_openings
-            WHERE date_from LIKE :month
-            GROUP BY work_place_type
-        """)
-        result = await db.execute(query, {"month": f"{target_month}%"})
-        results = result.mappings().all()
+        stmt = (
+            select(JobOpenings.work_place_type, func.count().label("job_count"))
+            .where(JobOpenings.date_from.like(f"{target_month}%"))
+            .group_by(JobOpenings.work_place_type)
+        )
+        result = await db.execute(stmt)
+        results = result.all()
 
         workplace_counts = defaultdict(int)
         for row in results:
-            raw_place = row["work_place_type"]
-            job_count = row["job_count"]
+            raw_place = row.work_place_type
+            job_count = row.job_count
             formatted_place = format_place(raw_place)
             places = formatted_place.split(', ')
             for place in places:
@@ -170,20 +168,37 @@ class ChartService:
         if cache_key in ChartService._chart_data_cache:
             return ChartService._chart_data_cache[cache_key]
 
-        query = text("""
-            SELECT jad.id AS id, jad.org_name, jad.title, jad.date_from, jad.date_to, COUNT(jc.id) AS comment_count
-            FROM job_all_data jad
-            LEFT JOIN job_comments jc ON jad.id = jc.job_all_data_id
-            WHERE jc.is_deleted = 0
-            GROUP BY jad.id, jad.org_name, jad.title, jad.date_from, jad.date_to
-            ORDER BY comment_count DESC
-            LIMIT 10
-        """)
-        result = await db.execute(query)
-        data = result.fetchall()
+        stmt = (
+            select(
+                JobAllData,
+                func.count(JobComments.id).label("comment_count")
+            )
+            .outerjoin(JobComments, JobAllData.id == JobComments.job_all_data_id)
+            .where(JobComments.is_deleted == 0)
+            .group_by(JobAllData.id) # Group by all columns or primary key
+            .order_by(desc("comment_count"))
+            .limit(10)
+        )
+        
+        result = await db.execute(stmt)
+        rows = result.all()
+
+        most_commented_jobs = []
+        for row in rows:
+            job, count = row
+            # Mapping based on Schemas.MostCommentedJobItem
+            job_data = {
+                "id": job.id,
+                "org_name": job.org_name,
+                "title": job.title,
+                "date_from": job.date_from,
+                "date_to": job.date_to,
+                "comment_count": count
+            }
+            most_commented_jobs.append(job_data)
 
         response = {
-            "most_commented_jobs": [dict(row._mapping) for row in data],
+            "most_commented_jobs": most_commented_jobs,
         }
         ChartService._chart_data_cache[cache_key] = response
         return response

@@ -1,4 +1,4 @@
-from sqlalchemy import text, select, distinct
+from sqlalchemy import select, distinct, func, desc, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.Models.Models import JobDataUpdateLog
 import math
@@ -15,25 +15,27 @@ class LogService:
         offset = (page - 1) * per_page
 
         # Build query
-        query = select(JobDataUpdateLog).order_by(JobDataUpdateLog.start_time.desc())
+        stmt = select(JobDataUpdateLog).order_by(desc(JobDataUpdateLog.start_time))
 
         if action:
-            query = query.where(JobDataUpdateLog.action == action)
+            stmt = stmt.where(JobDataUpdateLog.action == action)
 
         # Get total count
-        count_query = select(text("COUNT(*)")).select_from(JobDataUpdateLog)
+        count_stmt = select(func.count()).select_from(JobDataUpdateLog)
         if action:
-            count_query = count_query.where(JobDataUpdateLog.action == action)
+            count_stmt = count_stmt.where(JobDataUpdateLog.action == action)
         
-        total_count_result = await db.execute(count_query)
+        total_count_result = await db.execute(count_stmt)
         total_count = total_count_result.scalar()
 
         # Get paginated results
-        result = await db.execute(query.limit(per_page).offset(offset))
+        stmt = stmt.limit(per_page).offset(offset)
+        result = await db.execute(stmt)
         logs = result.scalars().all()
 
         # Get distinct actions for filter
-        actions_result = await db.execute(select(distinct(JobDataUpdateLog.action)))
+        actions_stmt = select(distinct(JobDataUpdateLog.action))
+        actions_result = await db.execute(actions_stmt)
         actions = actions_result.scalars().all()
 
         # Calculate total pages
