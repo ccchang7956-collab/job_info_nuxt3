@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 // Use shared date formatting utilities
-const { isNewJob } = useFormatDate()
+const { isNewJob, isExpired } = useFormatDate()
 </script>
 
 <template>
@@ -20,13 +20,7 @@ const { isNewJob } = useFormatDate()
     <!-- Blue Header Section - Org Name -->
     <div class="bg-primary-600 px-5 py-5 flex items-center justify-between gap-3">
       <div class="flex items-center gap-2.5 min-w-0 flex-1">
-        <span 
-          v-if="isNewJob(job.announce_date)" 
-          class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-red-500 text-white animate-pulse flex-shrink-0"
-        >
-          NEW
-        </span>
-        <span class="text-2xl font-bold text-white truncate">{{ job.org }}</span>
+        <span class="text-2xl font-bold text-white break-words leading-tight">{{ job.org }}</span>
       </div>
       <ChevronRightIcon class="w-8 h-8 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" />
     </div>
@@ -38,7 +32,15 @@ const { isNewJob } = useFormatDate()
         <!-- 時間起迄 -->
         <div class="flex items-start">
           <span class="w-24 flex-shrink-0 text-slate-500 text-lg">時間起迄</span>
-          <span class="text-slate-800 text-lg font-mono">{{ job.date_from }} ~ {{ job.date_to }}</span>
+          <div class="flex items-center gap-2">
+            <span class="text-slate-800 text-lg font-mono">{{ job.date_from }} ~ {{ job.date_to }}</span>
+            <span 
+              v-if="isNewJob(job.announce_date)" 
+              class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-red-500 text-white animate-pulse"
+            >
+              NEW
+            </span>
+          </div>
         </div>
         
         <!-- 職系 -->
@@ -68,13 +70,19 @@ const { isNewJob } = useFormatDate()
 
       <!-- Footer Status Badges -->
       <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-start gap-2 flex-wrap">
-        <span v-if="job.comment_count > 0" class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span 
+          v-if="isExpired(job.date_to)" 
+          class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-slate-200 text-slate-500"
+        >
+          已逾期
+        </span>
+        <span v-if="job.comment_count > 0" class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
           有留言
         </span>
-        <span v-if="job.history_count > 0" class="inline-flex items-center px-3 py-1.5 rounded text-base font-bold bg-amber-50 text-amber-700 border border-amber-200">
+        <span v-if="job.history_count > 0" class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200">
           曾開缺
         </span>
-        <span v-if="!job.comment_count && !job.history_count" class="text-slate-400 text-base">
+        <span v-if="!isExpired(job.date_to) && !job.comment_count && !job.history_count" class="text-slate-400 text-base">
           —
         </span>
       </div>

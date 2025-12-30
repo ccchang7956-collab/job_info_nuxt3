@@ -80,10 +80,45 @@ export const useFormatDate = () => {
         }
     }
 
+    /**
+     * Check if job is expired (date_to has passed)
+     * Supports both formats: "1141230" or "114/12/30"
+     */
+    const isExpired = (dateTo: string | undefined): boolean => {
+        if (!dateTo) return false
+        try {
+            let rocYear: number, month: number, day: number
+
+            if (dateTo.includes('/')) {
+                const parts = dateTo.split('/')
+                if (parts.length !== 3) return false
+                rocYear = parseInt(parts[0])
+                month = parseInt(parts[1])
+                day = parseInt(parts[2])
+            } else {
+                const str = dateTo.padStart(7, '0')
+                rocYear = parseInt(str.slice(0, 3))
+                month = parseInt(str.slice(3, 5))
+                day = parseInt(str.slice(5, 7))
+            }
+
+            const westYear = rocYear + 1911
+            const endDate = new Date(westYear, month - 1, day)
+            endDate.setHours(23, 59, 59, 999) // End of day
+
+            const now = new Date()
+
+            return now > endDate
+        } catch (e) {
+            return false
+        }
+    }
+
     return {
         formatRelative,
         formatDateTime,
         formatDateOnly,
-        isNewJob
+        isNewJob,
+        isExpired
     }
 }

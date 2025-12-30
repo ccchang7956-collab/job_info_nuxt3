@@ -71,7 +71,7 @@ const isRankModalOpen = ref(false)
 const isSearchExpanded = ref(false)
 
 // Use shared date formatting utilities
-const { isNewJob } = useFormatDate()
+const { isNewJob, isExpired } = useFormatDate()
 
 
 // Computed
@@ -590,15 +590,7 @@ useSeoMeta({
               <tbody class="divide-y divide-slate-100 text-sm">
                 <tr v-for="job in jobs" :key="job.id" class="hover:bg-blue-50/50 transition-colors duration-200 border-b border-slate-50 last:border-0 group">
                   <td class="p-4 align-top">
-                    <div class="flex items-center gap-2">
-                      <span 
-                        v-if="isNewJob(job.announce_date)" 
-                        class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-red-500 text-white animate-pulse"
-                      >
-                        NEW
-                      </span>
-                      <div class="font-bold text-slate-700 text-base break-words leading-tight">{{ job.org }}</div>
-                    </div>
+                    <div class="font-bold text-slate-700 text-base break-words leading-tight">{{ job.org }}</div>
                   </td>
                   <td class="p-4 align-top">
                     <span 
@@ -627,19 +619,33 @@ useSeoMeta({
                   </td>
                   <td class="p-4 align-top">
                     <div class="flex flex-col">
-                      <span class="text-xs font-mono text-slate-700 font-bold leading-tight">{{ job.date_from }}</span>
+                      <div class="flex items-center gap-1.5">
+                        <span class="text-xs font-mono text-slate-700 font-bold leading-tight">{{ job.date_from }}</span>
+                        <span 
+                          v-if="isNewJob(job.announce_date)" 
+                          class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-red-500 text-white animate-pulse"
+                        >
+                          NEW
+                        </span>
+                      </div>
                       <span class="text-xs font-mono text-slate-500 leading-tight mt-1">~ {{ job.date_to }}</span>
                     </div>
                   </td>
                   <td class="p-4 align-top">
-                    <div class="flex flex-col gap-1.5">
-                      <span v-if="job.comment_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
+                    <div class="flex flex-wrap gap-1">
+                      <span 
+                        v-if="isExpired(job.date_to)" 
+                        class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-slate-200 text-slate-500"
+                      >
+                        已逾期
+                      </span>
+                      <span v-if="job.comment_count > 0" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                         有留言
                       </span>
-                      <span v-if="job.history_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
+                      <span v-if="job.history_count > 0" class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
                         曾開缺
                       </span>
-                      <span v-if="!job.comment_count && !job.history_count" class="text-slate-400 text-sm">
+                      <span v-if="!isExpired(job.date_to) && !job.comment_count && !job.history_count" class="text-slate-400 text-sm">
                         —
                       </span>
                     </div>
