@@ -351,20 +351,22 @@ useSeoMeta({
             <input type="checkbox" v-model="filters.show_deleted" class="w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
             <span class="text-sm text-slate-700">顯示已刪除留言</span>
           </label>
-          <div class="flex gap-2">
+          <div class="flex items-center gap-3">
             <button 
               type="button"
               @click="clearFilters" 
-              class="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium"
+              class="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 px-4 py-2.5 rounded-lg font-medium transition-colors shadow-sm hover:shadow active:scale-95 transform duration-100"
             >
-              清空條件
+              <XMarkIcon class="w-5 h-5" />
+              清空
             </button>
             <button 
               type="button"
               @click="handleSearch(); isSearchExpanded = false" 
-              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
+              class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm hover:shadow active:scale-95 transform duration-100"
             >
-              套用篩選
+              <MagnifyingGlassIcon class="w-5 h-5" />
+              搜尋
             </button>
           </div>
         </div>
