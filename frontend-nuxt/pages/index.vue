@@ -73,6 +73,9 @@ const isSearchExpanded = ref(false)
 // Use shared date formatting utilities
 const { isNewJob, isExpired } = useFormatDate()
 
+// Use job constants for sysnam categorization
+const { getSysnamType } = useJobConstants()
+
 
 // Computed
 const hasActiveFilters = computed(() => {
@@ -602,7 +605,14 @@ useSeoMeta({
                   </td>
                   <td class="p-4 align-top">
                     <div class="flex flex-col gap-1.5 items-start">
-                      <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-blue-50 text-blue-700 border border-blue-100 whitespace-nowrap">
+                      <span 
+                        class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold whitespace-nowrap"
+                        :class="{
+                          'bg-blue-50 text-blue-700 border border-blue-200': getSysnamType(job.sysnam) === 'admin',
+                          'bg-emerald-50 text-emerald-700 border border-emerald-200': getSysnamType(job.sysnam) === 'tech',
+                          'bg-slate-100 text-slate-600 border border-slate-200': getSysnamType(job.sysnam) === 'unknown'
+                        }"
+                      >
                         {{ job.sysnam }}
                       </span>
                     </div>

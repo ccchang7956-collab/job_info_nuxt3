@@ -10,6 +10,9 @@ defineProps<{
 
 // Use shared date formatting utilities
 const { isNewJob, isExpired } = useFormatDate()
+
+// Use job constants for sysnam categorization
+const { getSysnamType } = useJobConstants()
 </script>
 
 <template>
@@ -43,22 +46,33 @@ const { isNewJob, isExpired } = useFormatDate()
           </div>
         </div>
         
-        <!-- 職系 -->
-        <div class="flex items-start">
-          <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職系</span>
-          <span class="text-slate-800 text-lg font-medium">{{ job.sysnam }}</span>
-        </div>
-        
         <!-- 職稱 -->
         <div class="flex items-start">
           <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職稱</span>
           <span class="text-slate-800 text-lg font-medium">{{ job.title }}</span>
         </div>
+
+        <!-- 職系 -->
+        <div class="flex items-start">
+          <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職系</span>
+          <span 
+            class="text-lg font-medium px-2 py-0.5 rounded"
+            :class="{
+              'bg-blue-50 text-blue-700': getSysnamType(job.sysnam) === 'admin',
+              'bg-emerald-50 text-emerald-700': getSysnamType(job.sysnam) === 'tech',
+              'text-slate-800': getSysnamType(job.sysnam) === 'unknown'
+            }"
+          >
+            {{ job.sysnam }}
+          </span>
+        </div>
         
         <!-- 職等 -->
         <div class="flex items-start">
           <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職等</span>
-          <span class="text-slate-800 text-lg">{{ job.rank_display || job.rank }}</span>
+          <span class="inline-flex items-center px-2.5 py-1 rounded text-base font-bold bg-slate-100 text-slate-600 border border-slate-200">
+            {{ job.rank_display || job.rank }}
+          </span>
         </div>
         
         <!-- 地點 -->
@@ -67,6 +81,7 @@ const { isNewJob, isExpired } = useFormatDate()
           <span class="text-slate-800 text-lg">{{ job.place }}</span>
         </div>
       </div>
+
 
       <!-- Footer Status Badges -->
       <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-start gap-2 flex-wrap">
