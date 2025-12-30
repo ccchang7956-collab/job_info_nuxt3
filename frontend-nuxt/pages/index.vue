@@ -68,6 +68,41 @@ const isPlaceModalOpen = ref(false)
 const isRankModalOpen = ref(false)
 const isSearchExpanded = ref(false)
 
+// Helper to check if job is new (announced today or yesterday)
+const isNewJob = (announceDate: string | undefined): boolean => {
+  if (!announceDate) return false
+  try {
+    let rocYear: number, month: number, day: number
+    
+    // Handle both formats: "1141230" or "114/12/30"
+    if (announceDate.includes('/')) {
+      const parts = announceDate.split('/')
+      if (parts.length !== 3) return false
+      rocYear = parseInt(parts[0])
+      month = parseInt(parts[1])
+      day = parseInt(parts[2])
+    } else {
+      // Format: YYYMMDD (e.g., 1141230)
+      const str = announceDate.padStart(7, '0')
+      rocYear = parseInt(str.slice(0, 3))
+      month = parseInt(str.slice(3, 5))
+      day = parseInt(str.slice(5, 7))
+    }
+    
+    const westYear = rocYear + 1911
+    const jobDate = new Date(westYear, month - 1, day)
+    
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    
+    return jobDate >= yesterday
+  } catch (e) {
+    return false
+  }
+}
+
 // Computed
 const hasActiveFilters = computed(() => {
   return !!(filters.value.org || 
@@ -529,7 +564,15 @@ useSeoMeta({
               <tbody class="divide-y divide-slate-100 text-sm">
                 <tr v-for="job in jobs" :key="job.id" class="hover:bg-blue-50/50 transition-colors duration-200 border-b border-slate-50 last:border-0 group">
                   <td class="p-4 align-top">
-                    <div class="font-bold text-slate-700 text-base mb-0.5 truncate max-w-[180px]" :title="job.org">{{ job.org }}</div>
+                    <div class="flex items-center gap-2">
+                      <span 
+                        v-if="isNewJob(job.announce_date)" 
+                        class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-red-500 text-white animate-pulse"
+                      >
+                        NEW
+                      </span>
+                      <div class="font-bold text-slate-700 text-base truncate max-w-[160px]" :title="job.org">{{ job.org }}</div>
+                    </div>
                   </td>
                   <td class="p-4 align-top">
                     <span 

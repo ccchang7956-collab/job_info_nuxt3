@@ -7,6 +7,39 @@ import type { Job } from '@/types'
 defineProps<{
   job: Job
 }>()
+
+// Helper to check if job is new (announced today or yesterday)
+const isNewJob = (announceDate: string | undefined): boolean => {
+  if (!announceDate) return false
+  try {
+    let rocYear: number, month: number, day: number
+    
+    if (announceDate.includes('/')) {
+      const parts = announceDate.split('/')
+      if (parts.length !== 3) return false
+      rocYear = parseInt(parts[0])
+      month = parseInt(parts[1])
+      day = parseInt(parts[2])
+    } else {
+      const str = announceDate.padStart(7, '0')
+      rocYear = parseInt(str.slice(0, 3))
+      month = parseInt(str.slice(3, 5))
+      day = parseInt(str.slice(5, 7))
+    }
+    
+    const westYear = rocYear + 1911
+    const jobDate = new Date(westYear, month - 1, day)
+    
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const yesterday = new Date(today)
+    yesterday.setDate(yesterday.getDate() - 1)
+    
+    return jobDate >= yesterday
+  } catch (e) {
+    return false
+  }
+}
 </script>
 
 <template>
@@ -17,6 +50,12 @@ defineProps<{
     <!-- Blue Header Section - Org Name -->
     <div class="bg-primary-600 px-5 py-5 flex items-center justify-between gap-3">
       <div class="flex items-center gap-2.5 min-w-0 flex-1">
+        <span 
+          v-if="isNewJob(job.announce_date)" 
+          class="inline-flex items-center px-2 py-1 rounded text-sm font-bold bg-red-500 text-white animate-pulse flex-shrink-0"
+        >
+          NEW
+        </span>
         <span class="text-2xl font-bold text-white truncate">{{ job.org }}</span>
       </div>
       <ChevronRightIcon class="w-8 h-8 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" />
