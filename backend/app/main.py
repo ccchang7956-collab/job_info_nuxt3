@@ -1,5 +1,7 @@
 import sys
 import logging
+import json
+import uuid
 import httpx
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -26,11 +28,38 @@ from app.Routers import (
     SeoRouter
 )
 
-# Logging setup
+# 結構化 JSON 日誌格式化器
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_data = {
+            "timestamp": self.formatTime(record, self.datefmt),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        # 加入額外屬性 (request_id 等)
+        if hasattr(record, "request_id"):
+            log_data["request_id"] = record.request_id
+        if hasattr(record, "client_ip"):
+            log_data["client_ip"] = record.client_ip
+        if hasattr(record, "method"):
+            log_data["method"] = record.method
+        if hasattr(record, "path"):
+            log_data["path"] = record.path
+        if hasattr(record, "status_code"):
+            log_data["status_code"] = record.status_code
+        if hasattr(record, "duration_ms"):
+            log_data["duration_ms"] = record.duration_ms
+        if record.exc_info:
+            log_data["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_data, ensure_ascii=False)
+
+# Logging setup - 使用結構化 JSON 日誌
+log_handler = logging.StreamHandler(sys.stdout)
+log_handler.setFormatter(JsonFormatter())
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(levelname)s:     %(asctime)s - %(name)s - %(message)s',
-    handlers=[logging.StreamHandler(sys.stdout)]
+    level=logging.INFO,
+    handlers=[log_handler]
 )
 logger = logging.getLogger(__name__)
 

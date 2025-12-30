@@ -15,7 +15,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      recaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || '6LeEYrMqAAAAAOwsV1pF_EoPxSJjvE49tz2nIQbC'
+      // reCAPTCHA 金鑰必須透過環境變數設定，不使用硬編碼預設值
+      recaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
     }
   },
 
@@ -25,14 +26,15 @@ export default defineNuxtConfig({
         'default-src': ["'self'"],
         'script-src': [
           "'self'",
-          "'unsafe-inline'", // Required for some Nuxt functionality and reCAPTCHA callbacks
-          "'unsafe-eval'", // Sometimes needed for dev mode
+          "'unsafe-inline'", // Required for Nuxt hydration and reCAPTCHA callbacks
+          // 僅在開發模式允許 unsafe-eval
+          ...(process.env.NODE_ENV === 'development' ? ["'unsafe-eval'"] : []),
           "https://www.google.com",
           "https://www.gstatic.com"
         ],
         'style-src': [
           "'self'",
-          "'unsafe-inline'",
+          "'unsafe-inline'", // Required for Tailwind and dynamic styles
           "https://fonts.googleapis.com"
         ],
         'frame-src': [
@@ -42,7 +44,8 @@ export default defineNuxtConfig({
         ],
         'connect-src': [
           "'self'",
-          "http://localhost:8000",
+          // 開發模式允許本地 API
+          ...(process.env.NODE_ENV === 'development' ? ["http://localhost:8000"] : []),
           "https://www.google.com"
         ],
         'img-src': [
@@ -55,9 +58,10 @@ export default defineNuxtConfig({
           "'self'",
           "https://fonts.gstatic.com"
         ],
-        'upgrade-insecure-requests': false // Disable for localhost dev
+        // 僅在生產環境啟用 HTTPS 升級
+        'upgrade-insecure-requests': process.env.NODE_ENV === 'production'
       },
-      crossOriginEmbedderPolicy: false, // Often causes issues with external resources
+      crossOriginEmbedderPolicy: false, // 外部資源相容性
     }
   },
 

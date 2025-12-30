@@ -245,7 +245,7 @@ useSeoMeta({
             :class="{ 'bg-primary-50 border-primary-200 text-primary-700': hasActiveFilters || isSearchExpanded }"
           >
             <AdjustmentsHorizontalIcon class="w-5 h-5" />
-            <span class="hidden sm:inline">進階篩選</span>
+            <span>進階篩選</span>
             <ChevronDownIcon class="w-4 h-4 transition-transform" :class="{ 'rotate-180': isSearchExpanded }" />
           </button>
           <button 
@@ -288,38 +288,38 @@ useSeoMeta({
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <!-- Org -->
           <div class="space-y-1.5">
-            <label class="text-sm font-medium text-slate-700">機關名稱</label>
+            <label class="text-base font-medium text-slate-700">機關名稱</label>
             <input 
               v-model="filters.search_org" 
               type="text" 
               placeholder="搜尋機關..." 
-              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-sm"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base"
               @keyup.enter="handleSearch"
             >
           </div>
 
           <!-- Title -->
           <div class="space-y-1.5">
-            <label class="text-sm font-medium text-slate-700">職稱</label>
+            <label class="text-base font-medium text-slate-700">職稱</label>
             <input 
               v-model="filters.search_title" 
               type="text" 
               placeholder="搜尋職稱..." 
-              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-sm"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base"
               @keyup.enter="handleSearch"
             >
           </div>
 
           <!-- Sysnam -->
           <div class="space-y-1.5">
-            <label class="text-sm font-medium text-slate-700">職系</label>
+            <label class="text-base font-medium text-slate-700">職系</label>
             <div class="relative">
               <input 
                 type="text" 
                 readonly
                 :value="filters.search_sysnam"
                 placeholder="全部職系"
-                class="w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-sm cursor-pointer hover:bg-slate-50"
+                class="w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base cursor-pointer hover:bg-slate-50"
                 @click="isSysnamModalOpen = true"
               >
               <button 
@@ -327,19 +327,19 @@ useSeoMeta({
                 @click.stop="isSysnamModalOpen = true"
                 class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
               >
-                <Bars3Icon class="w-4 h-4" />
+                <Bars3Icon class="w-5 h-5" />
               </button>
             </div>
           </div>
 
           <!-- Message -->
           <div class="space-y-1.5">
-            <label class="text-sm font-medium text-slate-700">留言內容</label>
+            <label class="text-base font-medium text-slate-700">留言內容</label>
             <input 
               v-model="filters.search_message" 
               type="text" 
               placeholder="搜尋留言..." 
-              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-sm"
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base"
               @keyup.enter="handleSearch"
             >
           </div>
@@ -461,27 +461,14 @@ useSeoMeta({
       </div>
 
       <!-- Pagination -->
-      <div class="flex items-center justify-center gap-4 mt-8" v-if="pagination.total_pages > 1">
-        <button 
-          @click="changePage(pagination.current_page - 1)"
-          :disabled="pagination.current_page === 1"
-          class="p-2 rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
-        >
-          <ChevronLeftIcon class="w-5 h-5" />
-        </button>
-        
-        <span class="text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-          第 {{ pagination.current_page }} 頁 / 共 {{ pagination.total_pages }} 頁
-        </span>
-        
-        <button 
-          @click="changePage(pagination.current_page + 1)"
-          :disabled="pagination.current_page === pagination.total_pages"
-          class="p-2 rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
-        >
-          <ChevronRightIcon class="w-5 h-5" />
-        </button>
-      </div>
+      <Pagination
+        :currentPage="pagination.current_page"
+        :totalPages="pagination.total_pages"
+        :perPage="pagination.per_page"
+        :showPerPage="false"
+        :showJumpTo="false"
+        @update:currentPage="changePage"
+      />
     </div>
     <SysnamModal 
       v-model="filters.search_sysnam"

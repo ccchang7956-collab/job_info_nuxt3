@@ -70,9 +70,7 @@ const { getSysnamType } = useJobConstants()
         <!-- 職等 -->
         <div class="flex items-start">
           <span class="w-24 flex-shrink-0 text-slate-500 text-lg">職等</span>
-          <span class="inline-flex items-center px-2.5 py-1 rounded text-base font-bold bg-slate-100 text-slate-600 border border-slate-200">
-            {{ job.rank_display || job.rank }}
-          </span>
+          <span class="text-slate-800 text-lg font-medium">{{ job.rank_display || job.rank }}</span>
         </div>
         
         <!-- 地點 -->

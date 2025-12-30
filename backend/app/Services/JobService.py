@@ -1,9 +1,11 @@
-from sqlalchemy import select, func, or_, desc, asc, case
+from sqlalchemy import select, func, or_, desc, asc, case, literal_column
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 from datetime import datetime, timedelta
 import hashlib
 import json
-from typing import List, Dict, Any
+import re
+from typing import List, Dict, Any, Tuple
 from cachetools import TTLCache
 from app.Utils.FormatUtils import format_place, format_roc_date, format_rank_display
 from app.Models.Models import JobAllData, JobComments
@@ -11,6 +13,57 @@ import logging
 
 # 使用 cachetools 的 TTLCache
 _query_cache = TTLCache(maxsize=1000, ttl=300)
+# 日期快取 (1小時過期)
+_date_cache = TTLCache(maxsize=1, ttl=3600)
+
+
+def get_roc_dates() -> Tuple[str, str]:
+    """
+    取得今日與昨日的民國日期，使用快取避免重複計算
+    Returns: (roc_today, roc_yesterday)
+    """
+    cache_key = "roc_dates"
+    if cache_key in _date_cache:
+        cached = _date_cache[cache_key]
+        # 檢查是否仍為同一天
+        if cached["date"] == datetime.now().date():
+            return cached["roc_today"], cached["roc_yesterday"]
+    
+    today = datetime.now()
+    yesterday = today - timedelta(days=1)
+    roc_year_today = today.year - 1911
+    roc_year_yesterday = yesterday.year - 1911
+    roc_today = f"{roc_year_today}{today.strftime('%m%d')}"
+    roc_yesterday = f"{roc_year_yesterday}{yesterday.strftime('%m%d')}"
+    
+    _date_cache[cache_key] = {
+        "date": today.date(),
+        "roc_today": roc_today,
+        "roc_yesterday": roc_yesterday
+    }
+    return roc_today, roc_yesterday
+
+
+def parse_rank_range(rank_str: str) -> Tuple[int, int]:
+    """
+    解析職等字串，提取最小與最大職等
+    例如: "5-7" -> (5, 7), "5" -> (5, 5)
+    """
+    if not rank_str:
+        return (0, 0)
+    
+    # 移除非數字與非連字號的字元
+    cleaned = re.sub(r'[^0-9\-]', ' ', rank_str)
+    numbers = re.findall(r'\d+', cleaned)
+    
+    if not numbers:
+        return (0, 0)
+    
+    nums = [int(n) for n in numbers if 1 <= int(n) <= 14]
+    if not nums:
+        return (0, 0)
+    
+    return (min(nums), max(nums))
 
 class JobService:
     @staticmethod
@@ -41,7 +94,7 @@ class JobService:
         cache_key = hashlib.md5(json.dumps(cache_key_data, sort_keys=True).encode()).hexdigest()
         
         # 檢查快取 (cachetools 會自動處理過期)
-        if page > 1 and cache_key in _query_cache:
+        if cache_key in _query_cache:
             return _query_cache[cache_key]
         
         # 建立查詢
@@ -53,13 +106,8 @@ class JobService:
         if not include_parttime:
             conditions.append(JobAllData.sysnam != '無')
 
-        # 取得今天與昨日的民國日期
-        today = datetime.now()
-        yesterday = today - timedelta(days=1)
-        roc_year_today = today.year - 1911
-        roc_year_yesterday = yesterday.year - 1911
-        roc_today = f"{roc_year_today}{today.strftime('%m%d')}"
-        roc_yesterday = f"{roc_year_yesterday}{yesterday.strftime('%m%d')}"
+        # 取得今天與昨日的民國日期 (使用快取)
+        roc_today, roc_yesterday = get_roc_dates()
 
         if not include_history:
             conditions.append(JobAllData.date_to >= roc_today)
@@ -78,20 +126,27 @@ class JobService:
             if place_conditions:
                 conditions.append(or_(*place_conditions))
 
-        # 職等過濾
+        # 職等過濾 (優化版本：使用 REGEXP 或精確匹配減少 OR 條件數量)
         if min_rank is not None or max_rank is not None:
-            rank_conditions = []
             start_rank = min_rank if min_rank is not None else 1
             end_rank = max_rank if max_rank is not None else 14
+            start_rank = max(1, min(14, start_rank))
+            end_rank = max(1, min(14, end_rank))
             
-            # 確保範圍合理
-            start_rank = max(1, start_rank)
-            
-            for i in range(start_rank, end_rank + 1):
-                rank_conditions.append(JobAllData.rank.like(f"%{i}%"))
-            
-            if rank_conditions:
-                conditions.append(or_(*rank_conditions))
+            # 優化：如果範圍較小，使用 OR；如果範圍較大，使用 REGEXP
+            if end_rank - start_rank <= 3:
+                # 小範圍：使用 OR 條件
+                rank_conditions = []
+                for i in range(start_rank, end_rank + 1):
+                    # 使用邊界匹配減少誤判 (例如 1 不應匹配到 10, 11, 12...)
+                    rank_conditions.append(JobAllData.rank.regexp_match(f'(^|[^0-9]){i}($|[^0-9])'))
+                if rank_conditions:
+                    conditions.append(or_(*rank_conditions))
+            else:
+                # 大範圍：構建正則表達式
+                rank_pattern_parts = [str(i) for i in range(start_rank, end_rank + 1)]
+                rank_pattern = f"({'|'.join(rank_pattern_parts)})"
+                conditions.append(JobAllData.rank.regexp_match(rank_pattern))
 
         if conditions:
             stmt = stmt.where(*conditions)
@@ -113,23 +168,10 @@ class JobService:
             stmt = stmt.order_by(asc(sort_col))
 
         # 3. 處理 Subqueries (歷史職缺數與留言數)
-        # 為了效能，這裡我們可以用 scalar subqueries
-        # History Count Subquery
-        history_count_subq = (
-            select(func.count())
-            .select_from(JobAllData)
-            .where(
-                JobAllData.org_name == JobAllData.org_name, # Correlated
-                JobAllData.work_item == JobAllData.work_item, # Correlated
-                JobAllData.id != JobAllData.id, # Correlated (Wait, this logic is tricky in simple scalar select on same table alias)
-                JobAllData.date_from < JobAllData.date_from # Correlated
-            )
-            .correlate(JobAllData) # Explicitly correlate to outer table
-            .scalar_subquery()
-        )
+        # 使用 aliased 建立 correlated subquery 進行計數
+        # 這比 LEFT JOIN + GROUP BY 更適合分頁場景，因為只計算當頁資料的計數
         
-        # 修正: 上面的 correlated subquery 引用 self 可能有問題，需要用 aliased
-        from sqlalchemy.orm import aliased
+        # History Count: 同機關同職務的歷史職缺數
         J2 = aliased(JobAllData)
         history_count_subq = (
              select(func.count())
@@ -140,9 +182,11 @@ class JobService:
                  J2.id != JobAllData.id,
                  J2.date_from < JobAllData.date_from
              )
+             .correlate(JobAllData)
              .scalar_subquery()
         )
 
+        # Comment Count: 該職缺的留言數 (未刪除)
         comment_count_subq = (
             select(func.count())
             .select_from(JobComments)
@@ -150,17 +194,20 @@ class JobService:
                 JobComments.job_all_data_id == JobAllData.id,
                 JobComments.is_deleted == 0
             )
+            .correlate(JobAllData)
             .scalar_subquery()
         )
-
-        # Add these to the select options or simply populate them?
-        # Ideally we want to select(JobAllData, history_count, comment_count)
         
+        # 建立包含計數的查詢語句
         stmt_with_counts = select(
             JobAllData,
             history_count_subq.label("history_count"),
             comment_count_subq.label("comment_count")
-        ).where(*conditions)
+        )
+        
+        # 套用篩選條件
+        if conditions:
+            stmt_with_counts = stmt_with_counts.where(*conditions)
 
         # Re-apply order by to the new statement
         if order == "desc":

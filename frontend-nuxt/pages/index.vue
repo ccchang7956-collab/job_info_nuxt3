@@ -22,6 +22,10 @@ const router = useRouter()
 const route = useRoute()
 const { addToast } = useToast()
 
+// Fetch update date for display
+const { data: updateDateData } = await useFetch('/api/metadata/last-update')
+const updateDate = computed(() => updateDateData.value?.date || '無法取得')
+
 // Interfaces
 interface PaginationState {
   current_page: number
@@ -279,9 +283,10 @@ useSeoMeta({
         <p class="text-slate-500 text-lg">瀏覽全台最新公務人員職缺資訊</p>
       </div>
       <div class="inline-flex items-center gap-2 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
-        <span class="text-slate-600 font-medium">總職缺</span>
+        <span class="text-slate-600 font-medium">總職缺：</span>
         <span class="text-emerald-600 font-bold text-2xl font-mono">{{ pagination.total_count }}</span>
         <span class="text-slate-400 text-sm">筆</span>
+        <span class="text-slate-400 text-sm lg:hidden">（資料日期：{{ updateDate }}）</span>
       </div>
     </div>
 
@@ -310,7 +315,7 @@ useSeoMeta({
             :class="{ 'bg-primary-50 border-primary-200 text-primary-700': hasActiveFilters || isSearchExpanded }"
           >
             <AdjustmentsHorizontalIcon class="w-5 h-5" />
-            <span class="hidden sm:inline">進階篩選</span>
+            <span>進階篩選</span>
             <ChevronDownIcon class="w-4 h-4 transition-transform" :class="{ 'rotate-180': isSearchExpanded }" />
           </button>
           <button 
@@ -618,7 +623,7 @@ useSeoMeta({
                     </div>
                   </td>
                   <td class="p-4 align-top">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-slate-100 text-slate-600 border border-slate-200 whitespace-nowrap">
+                    <span class="text-slate-700 text-sm font-bold whitespace-nowrap">
                       {{ job.rank_display || job.rank }}
                     </span>
                   </td>
@@ -683,71 +688,15 @@ useSeoMeta({
           />
         </div>
 
+
         <!-- Pagination -->
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8" v-if="pagination.total_pages > 1">
-          <!-- Page Controls -->
-          <div class="flex items-center gap-2">
-            <button 
-              type="button"
-              :disabled="pagination.current_page === 1" 
-              @click="changePage(pagination.current_page - 1)"
-              class="p-2 rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
-            >
-              <ChevronLeftIcon class="w-5 h-5" />
-            </button>
-            
-            <span class="text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm whitespace-nowrap">
-              第 {{ pagination.current_page }} 頁 / 共 {{ pagination.total_pages }} 頁
-            </span>
-            
-            <button 
-              type="button"
-              :disabled="pagination.current_page === pagination.total_pages" 
-              @click="changePage(pagination.current_page + 1)"
-              class="p-2 rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
-            >
-              <ChevronRightIcon class="w-5 h-5" />
-            </button>
-          </div>
-
-          <!-- Settings -->
-          <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-slate-500">每頁顯示</span>
-              <select 
-                v-model="perPage" 
-                @change="handlePerPageChange"
-                class="bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 outline-none"
-              >
-                <option :value="15">15</option>
-                <option :value="30">30</option>
-                <option :value="50">50</option>
-                <option :value="100">100</option>
-              </select>
-              <span class="text-sm text-slate-500">筆</span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-slate-500">跳至</span>
-              <input 
-                v-model="jumpPage" 
-                type="number" 
-                min="1" 
-                :max="pagination.total_pages"
-                class="w-16 bg-white border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 outline-none text-center"
-                @keyup.enter="handleJumpPage"
-              >
-              <span class="text-sm text-slate-500">頁</span>
-              <button 
-                type="button"
-                @click="handleJumpPage"
-                class="px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
-              >
-                GO
-              </button>
-            </div>
-          </div>
-        </div>
+        <Pagination
+          :currentPage="pagination.current_page"
+          :totalPages="pagination.total_pages"
+          :perPage="perPage"
+          @update:currentPage="changePage"
+          @update:perPage="(val) => { perPage = val; handlePerPageChange() }"
+        />
         </div>
       </div>
     </section>

@@ -28,7 +28,7 @@ useHead({
       <div class="container mx-auto px-4 h-16 flex items-center justify-between">
         <!-- Left Side: Logo -->
         <div class="logo flex-shrink-0">
-          <NuxtLink to="/" class="flex items-center gap-2 text-xl font-bold text-white hover:text-primary-100 transition-colors">
+          <NuxtLink to="/" class="flex items-center gap-2 text-2xl font-bold text-white hover:text-primary-100 transition-colors">
             <img src="/logo.png" alt="開放事求人 Logo" class="w-10 h-10 object-contain" />
             <span class="hidden sm:inline whitespace-nowrap">開放事求人</span>
           </NuxtLink>

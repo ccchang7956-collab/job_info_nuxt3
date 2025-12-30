@@ -53,4 +53,4 @@ async def get_comments_list(
     except Exception as e:
         import logging
         logging.error(f"Error in get_comments_list: {e}")
-        raise HTTPException(status_code=500, detail="系統暫時無法處理您的請求，請稀後再試")
+        raise HTTPException(status_code=500, detail="系統暫時無法處理您的請求，請稍後再試")
