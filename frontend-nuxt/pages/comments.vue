@@ -6,11 +6,13 @@ import {
   FunnelIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
   MagnifyingGlassIcon,
   XMarkIcon,
   TrashIcon,
   ClockIcon,
-  Bars3Icon
+  Bars3Icon,
+  AdjustmentsHorizontalIcon
 } from '@heroicons/vue/24/outline'
 import type { Comment, CommentListResponse } from '@/types'
 
@@ -218,111 +220,156 @@ useSeoMeta({
       </div>
     </div>
 
-    <!-- Filters -->
-    <CollapsibleSearchPanel 
-      title="篩選條件" 
-      v-model="isSearchExpanded" 
-      :hasActiveFilters="hasActiveFilters"
-    >
-      <template #icon>
-        <FunnelIcon class="w-5 h-5" />
-      </template>
-
-      <template #summary>
-        <span v-if="filters.search_org" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">機關: {{ filters.search_org }}</span>
-        <span v-if="filters.search_title" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">職稱: {{ filters.search_title }}</span>
-        <span v-if="filters.search_sysnam" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">職系: {{ filters.search_sysnam }}</span>
-        <span v-if="filters.search_message" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">留言: {{ filters.search_message }}</span>
-        <span v-if="filters.show_deleted" class="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full">含刪除</span>
-      </template>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <!-- Org -->
-        <div>
-          <label class="block text-base font-medium text-slate-700 mb-1">機關名稱</label>
+    <!-- Compact Search Bar -->
+    <div class="mb-6">
+      <!-- Quick Search Row -->
+      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <!-- Quick Search Input -->
+        <div class="flex-1 relative">
+          <MagnifyingGlassIcon class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input 
-            v-model="filters.search_org" 
+            v-model="filters.search_org"
             type="text" 
-            placeholder="搜尋機關..." 
-            class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base"
+            placeholder="快速搜尋機關名稱..." 
+            class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base shadow-sm"
             @keyup.enter="handleSearch"
           >
         </div>
-
-        <!-- Title -->
-        <div>
-          <label class="block text-base font-medium text-slate-700 mb-1">職稱</label>
-          <input 
-            v-model="filters.search_title" 
-            type="text" 
-            placeholder="搜尋職稱..." 
-            class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base"
-            @keyup.enter="handleSearch"
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <button 
+            type="button"
+            @click="isSearchExpanded = !isSearchExpanded" 
+            class="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-medium transition-all hover:bg-slate-50 shadow-sm"
+            :class="{ 'bg-primary-50 border-primary-200 text-primary-700': hasActiveFilters || isSearchExpanded }"
           >
+            <AdjustmentsHorizontalIcon class="w-5 h-5" />
+            <span class="hidden sm:inline">進階篩選</span>
+            <ChevronDownIcon class="w-4 h-4 transition-transform" :class="{ 'rotate-180': isSearchExpanded }" />
+          </button>
+          <button 
+            type="button"
+            @click="handleSearch" 
+            class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-3 rounded-xl font-medium transition-colors shadow-sm"
+          >
+            <MagnifyingGlassIcon class="w-5 h-5" />
+            <span class="hidden sm:inline">搜尋</span>
+          </button>
         </div>
+      </div>
 
-        <!-- Sysnam -->
-        <div>
-          <label class="block text-base font-medium text-slate-700 mb-1">職系</label>
-          <div class="relative">
+      <!-- Active Filters Summary -->
+      <div v-if="hasActiveFilters && !isSearchExpanded" class="flex flex-wrap gap-2 mt-3">
+        <span v-if="filters.search_org" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          機關: {{ filters.search_org }}
+          <button @click="filters.search_org = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.search_title" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          職稱: {{ filters.search_title }}
+          <button @click="filters.search_title = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.search_sysnam" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          職系: {{ filters.search_sysnam }}
+          <button @click="filters.search_sysnam = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.search_message" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          留言: {{ filters.search_message }}
+          <button @click="filters.search_message = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.show_deleted" class="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-full flex items-center gap-1">
+          含刪除
+          <button @click="filters.show_deleted = false; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+      </div>
+
+      <!-- Advanced Filters Panel -->
+      <div v-show="isSearchExpanded" class="mt-4 p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <!-- Org -->
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-slate-700">機關名稱</label>
             <input 
+              v-model="filters.search_org" 
               type="text" 
-              readonly
-              :value="filters.search_sysnam"
-              placeholder="全部職系"
-              class="w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base cursor-pointer hover:bg-slate-50"
-              @click="isSysnamModalOpen = true"
+              placeholder="搜尋機關..." 
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-sm"
+              @keyup.enter="handleSearch"
             >
+          </div>
+
+          <!-- Title -->
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-slate-700">職稱</label>
+            <input 
+              v-model="filters.search_title" 
+              type="text" 
+              placeholder="搜尋職稱..." 
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-sm"
+              @keyup.enter="handleSearch"
+            >
+          </div>
+
+          <!-- Sysnam -->
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-slate-700">職系</label>
+            <div class="relative">
+              <input 
+                type="text" 
+                readonly
+                :value="filters.search_sysnam"
+                placeholder="全部職系"
+                class="w-full pl-3 pr-10 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-sm cursor-pointer hover:bg-slate-50"
+                @click="isSysnamModalOpen = true"
+              >
+              <button 
+                type="button"
+                @click.stop="isSysnamModalOpen = true"
+                class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+              >
+                <Bars3Icon class="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Message -->
+          <div class="space-y-1.5">
+            <label class="text-sm font-medium text-slate-700">留言內容</label>
+            <input 
+              v-model="filters.search_message" 
+              type="text" 
+              placeholder="搜尋留言..." 
+              class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-sm"
+              @keyup.enter="handleSearch"
+            >
+          </div>
+        </div>
+
+        <!-- Toggles and Buttons Row -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" v-model="filters.show_deleted" class="w-4 h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+            <span class="text-sm text-slate-700">顯示已刪除留言</span>
+          </label>
+          <div class="flex gap-2">
             <button 
               type="button"
-              @click.stop="isSysnamModalOpen = true"
-              class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+              @click="clearFilters" 
+              class="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium"
             >
-              <Bars3Icon class="w-5 h-5" />
+              清空條件
+            </button>
+            <button 
+              type="button"
+              @click="handleSearch(); isSearchExpanded = false" 
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-colors"
+            >
+              套用篩選
             </button>
           </div>
         </div>
-
-        <!-- Message -->
-        <div>
-          <label class="block text-base font-medium text-slate-700 mb-1">留言內容</label>
-          <input 
-            v-model="filters.search_message" 
-            type="text" 
-            placeholder="搜尋留言..." 
-            class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none text-base"
-            @keyup.enter="handleSearch"
-          >
-        </div>
       </div>
-
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
-        <label class="flex items-center gap-2 cursor-pointer group w-full sm:w-auto">
-          <div class="relative inline-flex items-center">
-            <input type="checkbox" v-model="filters.show_deleted" class="sr-only peer">
-            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
-          </div>
-          <span class="text-sm font-medium text-slate-700 group-hover:text-slate-900">顯示已刪除留言</span>
-        </label>
-
-        <div class="flex items-center gap-3 w-full sm:w-auto">
-          <button 
-            @click="clearFilters" 
-            class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium"
-          >
-            <XMarkIcon class="w-4 h-4" />
-            清空
-          </button>
-          <button 
-            @click="handleSearch" 
-            class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium shadow-sm"
-          >
-            <MagnifyingGlassIcon class="w-4 h-4" />
-            搜尋
-          </button>
-        </div>
-      </div>
-    </CollapsibleSearchPanel>
+    </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-slate-400">

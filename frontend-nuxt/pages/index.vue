@@ -6,13 +6,15 @@ import {
   FunnelIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
   ArrowsUpDownIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   Bars3Icon,
   XMarkIcon,
   InboxIcon,
-  BriefcaseIcon
+  BriefcaseIcon,
+  AdjustmentsHorizontalIcon
 } from '@heroicons/vue/24/outline'
 import type { Job, JobListResponse } from '@/types'
 
@@ -280,25 +282,79 @@ useSeoMeta({
       </div>
     </div>
 
-    <!-- Search Section -->
-    <CollapsibleSearchPanel 
-      title="搜尋職缺" 
-      v-model="isSearchExpanded" 
-      :hasActiveFilters="hasActiveFilters"
-    >
-      <template #icon>
-        <MagnifyingGlassIcon class="w-5 h-5" />
-      </template>
+    <!-- Compact Search Bar -->
+    <div class="mb-6">
+      <!-- Quick Search Row -->
+      <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <!-- Quick Search Input -->
+        <div class="flex-1 relative">
+          <MagnifyingGlassIcon class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input 
+            v-model="filters.org"
+            type="text" 
+            placeholder="快速搜尋機關名稱..." 
+            class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base shadow-sm"
+            @keyup.enter="handleSearch"
+          >
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-2">
+          <button 
+            type="button"
+            @click="isSearchExpanded = !isSearchExpanded" 
+            class="flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-medium transition-all hover:bg-slate-50 shadow-sm"
+            :class="{ 'bg-primary-50 border-primary-200 text-primary-700': hasActiveFilters || isSearchExpanded }"
+          >
+            <AdjustmentsHorizontalIcon class="w-5 h-5" />
+            <span class="hidden sm:inline">進階篩選</span>
+            <ChevronDownIcon class="w-4 h-4 transition-transform" :class="{ 'rotate-180': isSearchExpanded }" />
+          </button>
+          <button 
+            type="button"
+            @click="handleSearch" 
+            class="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-5 py-3 rounded-xl font-medium transition-colors shadow-sm"
+          >
+            <MagnifyingGlassIcon class="w-5 h-5" />
+            <span class="hidden sm:inline">搜尋</span>
+          </button>
+        </div>
+      </div>
 
-      <template #summary>
-        <span v-if="filters.org" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">機關: {{ filters.org }}</span>
-        <span v-if="filters.title" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">職稱: {{ filters.title }}</span>
-        <span v-if="filters.sysnam" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">職系: {{ filters.sysnam }}</span>
-        <span v-if="filters.places" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">地點: {{ filters.places }}</span>
-        <span v-if="filters.min_rank || filters.max_rank" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">職等: {{ filters.min_rank || 1 }}~{{ filters.max_rank || 14 }}</span>
-        <span v-if="filters.include_history" class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">含歷史</span>
-        <span v-if="filters.include_parttime" class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">含非正式</span>
-      </template>
+      <!-- Active Filters Summary -->
+      <div v-if="hasActiveFilters && !isSearchExpanded" class="flex flex-wrap gap-2 mt-3">
+        <span v-if="filters.org" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          機關: {{ filters.org }}
+          <button @click="filters.org = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.title" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          職稱: {{ filters.title }}
+          <button @click="filters.title = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.sysnam" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          職系: {{ filters.sysnam }}
+          <button @click="filters.sysnam = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.places" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          地點: {{ filters.places }}
+          <button @click="filters.places = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.min_rank || filters.max_rank" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full flex items-center gap-1">
+          職等: {{ filters.min_rank || 1 }}~{{ filters.max_rank || 14 }}
+          <button @click="filters.min_rank = ''; filters.max_rank = ''; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.include_history" class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full flex items-center gap-1">
+          含歷史
+          <button @click="filters.include_history = false; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+        <span v-if="filters.include_parttime" class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full flex items-center gap-1">
+          含非正式
+          <button @click="filters.include_parttime = false; handleSearch()" class="hover:text-red-500"><XMarkIcon class="w-3 h-3" /></button>
+        </span>
+      </div>
+
+      <!-- Advanced Filters Panel -->
+      <div v-show="isSearchExpanded" class="mt-4 p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
 
       <!-- Unified Filter Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -434,9 +490,10 @@ useSeoMeta({
               搜尋
             </button>
           </div>
+          </div>
         </div>
       </div>
-    </CollapsibleSearchPanel>
+    </div>
 
     <!-- Results Section -->
     <section>
@@ -496,7 +553,7 @@ useSeoMeta({
                       <component :is="sortField === 'org' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-4 h-4 text-blue-200 group-hover:text-white" />
                     </div>
                   </th>
-                  <th class="p-4 cursor-pointer hover:bg-primary-700 transition-colors group w-[150px]" @click="handleSort('title')">
+                  <th class="p-4 cursor-pointer hover:bg-primary-700 transition-colors group w-[120px]" @click="handleSort('title')">
                     <div class="flex items-center gap-1">
                       職稱
                       <component :is="sortField === 'title' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-4 h-4 text-blue-200 group-hover:text-white" />
@@ -520,13 +577,13 @@ useSeoMeta({
                       <component :is="sortField === 'place' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-4 h-4 text-blue-200 group-hover:text-white" />
                     </div>
                   </th>
-                  <th class="p-4 cursor-pointer hover:bg-primary-700 transition-colors group w-[170px]" @click="handleSort('date_from')">
+                  <th class="p-4 cursor-pointer hover:bg-primary-700 transition-colors group w-[130px]" @click="handleSort('date_from')">
                     <div class="flex items-center gap-1">
                       期間
                       <component :is="sortField === 'date_from' ? (sortOrder === 'asc' ? ArrowUpIcon : ArrowDownIcon) : ArrowsUpDownIcon" class="w-4 h-4 text-blue-200 group-hover:text-white" />
                     </div>
                   </th>
-                  <th class="p-4 text-left w-[100px]">狀態</th>
+                  <th class="p-4 text-left w-[80px]">狀態</th>
                   <th class="p-4 text-center w-[70px]">查看</th>
                 </tr>
               </thead>
@@ -540,7 +597,7 @@ useSeoMeta({
                       >
                         NEW
                       </span>
-                      <div class="font-bold text-slate-700 text-base truncate max-w-[160px]" :title="job.org">{{ job.org }}</div>
+                      <div class="font-bold text-slate-700 text-base break-words leading-tight">{{ job.org }}</div>
                     </div>
                   </td>
                   <td class="p-4 align-top">
