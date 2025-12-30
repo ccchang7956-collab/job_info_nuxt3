@@ -44,9 +44,46 @@ export const useFormatDate = () => {
         }
     }
 
+    /**
+     * Check if job is new (announced today or yesterday)
+     * Supports both formats: "1141230" or "114/12/30"
+     */
+    const isNewJob = (announceDate: string | undefined): boolean => {
+        if (!announceDate) return false
+        try {
+            let rocYear: number, month: number, day: number
+
+            if (announceDate.includes('/')) {
+                const parts = announceDate.split('/')
+                if (parts.length !== 3) return false
+                rocYear = parseInt(parts[0])
+                month = parseInt(parts[1])
+                day = parseInt(parts[2])
+            } else {
+                const str = announceDate.padStart(7, '0')
+                rocYear = parseInt(str.slice(0, 3))
+                month = parseInt(str.slice(3, 5))
+                day = parseInt(str.slice(5, 7))
+            }
+
+            const westYear = rocYear + 1911
+            const jobDate = new Date(westYear, month - 1, day)
+
+            const today = new Date()
+            today.setHours(0, 0, 0, 0)
+            const yesterday = new Date(today)
+            yesterday.setDate(yesterday.getDate() - 1)
+
+            return jobDate >= yesterday
+        } catch (e) {
+            return false
+        }
+    }
+
     return {
         formatRelative,
         formatDateTime,
-        formatDateOnly
+        formatDateOnly,
+        isNewJob
     }
 }

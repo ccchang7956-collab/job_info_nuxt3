@@ -33,11 +33,6 @@ def sanitize_html(text: str) -> str:
     # 移除所有 HTML 標籤
     return bleach.clean(text, tags=[], attributes={}, strip=True)
 
-# Use config for reCAPTCHA key
-GOOGLE_RECAPTCHA_SECRET_KEY = Config.GOOGLE_RECAPTCHA_SECRET_KEY
-
-# Cache for sysnam lists (1 hour)
-_sysnam_cache = TTLCache(maxsize=2, ttl=3600)
 
 class CommentService:
     @staticmethod
