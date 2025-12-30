@@ -6,6 +6,7 @@ import httpx
 import logging
 import re
 import math
+import bleach
 from typing import List, Optional, Tuple, Dict, Any
 from fastapi import HTTPException
 from app.Models.Models import JobComments, JobAllData, JobSysnam
@@ -14,6 +15,23 @@ from app.Utils.FormatUtils import format_roc_date
 
 from cachetools import TTLCache
 from app.Core.Config import Config
+
+# Use config for reCAPTCHA key
+GOOGLE_RECAPTCHA_SECRET_KEY = Config.GOOGLE_RECAPTCHA_SECRET_KEY
+
+# Cache for sysnam lists (1 hour)
+_sysnam_cache = TTLCache(maxsize=2, ttl=3600)
+
+
+def sanitize_html(text: str) -> str:
+    """
+    清理 HTML 標籤，防止 XSS 攻擊
+    只保留純文字，移除所有 HTML 標籤
+    """
+    if not text:
+        return ""
+    # 移除所有 HTML 標籤
+    return bleach.clean(text, tags=[], attributes={}, strip=True)
 
 # Use config for reCAPTCHA key
 GOOGLE_RECAPTCHA_SECRET_KEY = Config.GOOGLE_RECAPTCHA_SECRET_KEY
@@ -55,7 +73,9 @@ class CommentService:
         current_time_taipei = datetime.now(taipei_timezone)
 
         # 如果 user_id 為 None，設置為訪客模式
-        username = comment.username or "訪客"
+        # 清理使用者輸入以防止 XSS
+        username = sanitize_html(comment.username) or "訪客"
+        safe_message = sanitize_html(comment.message)
         user_id = comment.user_id
 
         # 建立新留言物件
@@ -63,7 +83,7 @@ class CommentService:
             user_id=user_id,
             username=username,
             initial=username[0].upper(),
-            message=comment.message,
+            message=safe_message,
             color=comment.color,
             created_at=current_time_taipei,
             email=comment.email or "",

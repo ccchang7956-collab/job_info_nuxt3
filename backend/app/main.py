@@ -73,10 +73,31 @@ async def add_update_date_to_request(request: Request, call_next):
 # Middleware 4: Security headers
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
+    # Log request for audit trail
+    client_ip = request.client.host if request.client else "unknown"
+    logger.info(f"Request: {request.method} {request.url.path} from {client_ip}")
+    
     response = await call_next(request)
+    
+    # Security headers
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    
+    # Content Security Policy
+    csp = "; ".join([
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://challenges.cloudflare.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data: https:",
+        "frame-src 'self' https://www.google.com https://challenges.cloudflare.com",
+        "connect-src 'self' https://www.google.com"
+    ])
+    response.headers["Content-Security-Policy"] = csp
+    
     return response
 
 # CORS
