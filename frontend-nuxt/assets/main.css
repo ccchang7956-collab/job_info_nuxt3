@@ -21,4 +21,25 @@
     .footer-container {
         @apply container mx-auto px-4 text-center text-slate-500 text-sm max-w-6xl;
     }
+
+    /* Badge base styles */
+    .badge {
+        @apply inline-flex items-center px-2.5 py-1 rounded text-sm font-bold whitespace-nowrap;
+    }
+
+    .badge-primary {
+        @apply badge bg-blue-50 text-blue-700 border border-blue-100;
+    }
+
+    .badge-success {
+        @apply badge bg-emerald-50 text-emerald-700 border border-emerald-200;
+    }
+
+    .badge-warning {
+        @apply badge bg-amber-50 text-amber-700 border border-amber-200;
+    }
+
+    .badge-neutral {
+        @apply badge bg-slate-100 text-slate-600 border border-slate-200;
+    }
 }

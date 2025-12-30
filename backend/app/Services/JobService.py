@@ -196,6 +196,10 @@ class JobService:
                     "view_url": job.view_url, # Added for Pydantic schema
                     "announce_date": job.announce_date, # Added for Pydantic schema
                     "contact_method": job.contact_method, # Added for Pydantic schema
+                    # Personnel fields
+                    "person_kind": job.person_kind,
+                    "number_of": job.number_of,
+                    "reserve_num": job.reserve_num,
                     # Add formatted fields
                     "rank_display": format_rank_display(job.rank),
                     # "place" is overwritten below with formatted value, take care

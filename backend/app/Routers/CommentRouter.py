@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends, Request, HTTPException, Query
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi_csrf_protect import CsrfProtect
-from fastapi_csrf_protect.exceptions import TokenValidationError
 from typing import Optional
 
 from app.Core.Database import get_async_db
 from app.Services.CommentService import CommentService
+from app.Services.CsrfService import verify_csrf
 from app.Schemas.Schemas import CommentCreate, CommentResponse, CommentListResponse
 
 router = APIRouter()
@@ -15,17 +14,9 @@ router = APIRouter()
 async def submit_comment(
     comment: CommentCreate, 
     request: Request, 
-    csrf_protect: CsrfProtect = Depends(), 
+    csrf_valid: bool = Depends(verify_csrf),
     db: AsyncSession = Depends(get_async_db)
 ):
-    try:
-        csrf_token = request.headers.get("X-CSRF-Token")
-        if not csrf_token:
-             raise HTTPException(status_code=403, detail="缺少 CSRF Token")
-        csrf_protect.validate_csrf(csrf_token)
-    except TokenValidationError as e:
-        raise HTTPException(status_code=403, detail="CSRF 驗證失敗")
-
     http_client = getattr(request.app.state, "http_client", None)
     await CommentService.verify_recaptcha(comment.recaptcha_token, http_client)
     
@@ -62,4 +53,4 @@ async def get_comments_list(
     except Exception as e:
         import logging
         logging.error(f"Error in get_comments_list: {e}")
-        raise HTTPException(status_code=500, detail="系統暫時無法處理您的請求，請稍後再試")
+        raise HTTPException(status_code=500, detail="系統暫時無法處理您的請求，請稀後再試")

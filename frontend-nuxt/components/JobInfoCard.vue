@@ -117,9 +117,9 @@ const jobInfoFields = computed(() => [
   
   { icon: AcademicCapIcon, label: '職務列等', value: props.job.rank },
   { icon: BriefcaseIcon, label: '職系', value: props.job.sysnam },
-  { icon: UserIcon, label: '人員區分', value: props.job.work_kind || '-' },
-  { icon: UserPlusIcon, label: '正取', value: props.job.quota_regular || '-' },
-  { icon: UsersIcon, label: '候補', value: props.job.quota_backup || '-' },
+  { icon: UserIcon, label: '人員區分', value: props.job.person_kind || '-' },
+  { icon: UserPlusIcon, label: '正取', value: props.job.number_of || '-' },
+  { icon: UsersIcon, label: '候補', value: props.job.reserve_num || '-' },
   { icon: MapPinIcon, label: '工作地點', value: props.job.work_place_type },
   { icon: HomeIcon, label: '地址', value: props.job.work_address, isLink: true, linkUrl: `https://www.google.com/maps/search/?q=${props.job.work_address}` },
 ])

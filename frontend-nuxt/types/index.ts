@@ -48,8 +48,11 @@ export interface Job {
     work_address?: string
     contact_method?: string
     work_kind?: string
-    quota_regular?: string
+    person_kind?: string
+    quota_regular?: number
+    number_of?: number
     quota_backup?: string
+    reserve_num?: string
     sort?: number
 }
 

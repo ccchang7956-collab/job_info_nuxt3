@@ -563,11 +563,11 @@ useSeoMeta({
                     </div>
                   </td>
                   <td class="p-4 align-top">
-                    <div class="flex flex-wrap gap-1.5">
-                      <span v-if="job.comment_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <div class="flex flex-col gap-1.5">
+                      <span v-if="job.comment_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">
                         有留言
                       </span>
-                      <span v-if="job.history_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                      <span v-if="job.history_count > 0" class="inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
                         曾開缺
                       </span>
                       <span v-if="!job.comment_count && !job.history_count" class="text-slate-400 text-sm">
