@@ -185,7 +185,12 @@ const fetchJobs = async (isSearch = false) => {
     if (isSearch) {
       addToast(`搜尋完成，共找到 ${response.total_count} 筆職缺`, 'success')
     }
-  } catch (err) {
+  } catch (err: any) {
+    // 忽略被取消的請求（請求競爭導致）
+    if (err?.name === 'AbortError' || err?.message?.includes('aborted') || err?.message?.includes('取消')) {
+      console.debug('請求已被取消（可能是新搜尋觸發）')
+      return
+    }
     error.value = '無法取得職缺資料，請稍後再試。'
     console.error(err)
     addToast('無法取得職缺資料，請稍後再試', 'error')

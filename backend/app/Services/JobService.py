@@ -126,33 +126,26 @@ class JobService:
             if place_conditions:
                 conditions.append(or_(*place_conditions))
 
-        # 職等過濾 (改進的 LIKE 模式匹配，避免 1 匹配到 10、11 等)
+        # 職等過濾 (使用 LIKE 模式匹配，支援多種格式)
         if min_rank is not None or max_rank is not None:
             start_rank = min_rank if min_rank is not None else 1
             end_rank = max_rank if max_rank is not None else 14
             start_rank = max(1, min(14, start_rank))
             end_rank = max(1, min(14, end_rank))
             
-            # 使用多種 LIKE 模式匹配確保精確度
+            # 職等格式範例:
+            # "薦任第8職等至薦任第9職等"
+            # "委任第5職等"
+            # "5-7"
             rank_conditions = []
             for i in range(start_rank, end_rank + 1):
-                # 匹配多種格式: "5", "第5職等", "5-7", "第5-7職等" 等
-                # 使用邊界條件：數字前後不能是其他數字
+                # 匹配 "第X職等" 格式 (薦任第8職等、委任第5職等)
+                rank_conditions.append(JobAllData.rank.like(f"%第{i}職等%"))
+                # 匹配純數字格式 (5-7, 第5-7職等)
                 if i < 10:
-                    # 單位數：確保前後不是數字
-                    rank_conditions.append(
-                        or_(
-                            JobAllData.rank == str(i),  # 完全匹配
-                            JobAllData.rank.like(f"第{i}職等%"),  # 開頭
-                            JobAllData.rank.like(f"第{i}-%"),  # 範圍起始
-                            JobAllData.rank.like(f"%-{i}職等"),  # 範圍結束
-                            JobAllData.rank.like(f"{i}-%"),  # 數字範圍起始
-                            JobAllData.rank.like(f"%-{i}"),  # 數字範圍結束
-                        )
-                    )
-                else:
-                    # 雙位數 (10-14)：直接匹配
-                    rank_conditions.append(JobAllData.rank.like(f"%{i}%"))
+                    # 單位數需排除 10-14 的誤判
+                    rank_conditions.append(JobAllData.rank.like(f"%第{i}-%"))
+                    rank_conditions.append(JobAllData.rank.like(f"%-{i}職等%"))
             if rank_conditions:
                 conditions.append(or_(*rank_conditions))
 

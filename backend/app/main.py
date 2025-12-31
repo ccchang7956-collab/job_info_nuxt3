@@ -127,11 +127,13 @@ async def add_security_headers(request: Request, call_next):
     ])
     response.headers["Content-Security-Policy"] = csp
     
-    # 快取控制 (對 GET 請求加入快取標頭)
+    # 快取控制
     if request.method == "GET" and response.status_code == 200:
-        # 靜態資料快取 5 分鐘
-        if "/api/" in str(request.url.path):
-            response.headers["Cache-Control"] = "public, max-age=300, stale-while-revalidate=60"
+        path = str(request.url.path)
+        # API 路徑：不快取（每次驗證）
+        if path == "/" or path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-cache, must-revalidate"
+        # 靜態資源：快取 1 小時
         else:
             response.headers["Cache-Control"] = "public, max-age=3600"
     
