@@ -1,6 +1,10 @@
-# 部署教學：Debian + Nginx + Cloudflared
+# 部署教學：Debian + Nginx + Cloudflared + SQLite
 
 本文件說明如何將開放事求人專案部署到 Debian 主機上，使用 Nginx 作為反向代理，Cloudflared 進行安全隧道連接。
+
+> **更新日期**: 2025-12-31
+> 
+> **資料庫變更**: 已從 MySQL 遷移至 SQLite，簡化部署流程
 
 ---
 
@@ -11,6 +15,8 @@
                                 ↓
                            Port 3000 (Nuxt)
                            Port 8000 (FastAPI)
+                                ↓
+                           SQLite 資料庫
 ```
 
 ---
@@ -74,7 +80,7 @@ scp -r /path/to/local/project user@server:/var/www/job-portal
 
 ---
 
-## 步驟四：設定後端 (FastAPI)
+## 步驟四：設定後端 (FastAPI + SQLite)
 
 ```bash
 cd /var/www/job-portal/backend
@@ -86,6 +92,12 @@ source venv/bin/activate
 # 安裝依賴
 pip install -r requirements.txt
 
+# 建立資料庫目錄
+mkdir -p database/data
+
+# 複製 SQLite 資料庫（如果有現成的）
+scp your-local-db.db user@server:/var/www/job-portal/backend/database/data/job_info.db
+
 # 複製並編輯環境變數
 cp .env.example .env
 nano .env
@@ -94,16 +106,23 @@ nano .env
 ### `.env` 設定範例
 
 ```env
-# 資料庫
-DATABASE_URL=mysql+aiomysql://user:password@localhost/job_portal
+# 資料庫 (SQLite - 預設已配置，通常不需修改)
+# DATABASE_URL=sqlite:////var/www/job-portal/backend/database/data/job_info.db
+
+# 環境模式
+ENVIRONMENT=production
+
+# CORS 允許的來源
+CORS_ORIGINS=https://your-domain.com
 
 # CSRF
 CSRF_SECRET_KEY=你的隨機密鑰（至少32字元）
 
-# reCAPTCHA / Turnstile
+# reCAPTCHA
 GOOGLE_RECAPTCHA_SECRET_KEY=你的密鑰
-# 或
-CLOUDFLARE_TURNSTILE_SECRET_KEY=你的密鑰
+
+# 職缺同步 (選填)
+JOB_DATA_URL=https://www.dgpa.gov.tw/op/want/wantjob_today.xml
 ```
 
 ### 建立 Systemd 服務
@@ -115,7 +134,7 @@ sudo nano /etc/systemd/system/job-portal-backend.service
 ```ini
 [Unit]
 Description=Job Portal FastAPI Backend
-After=network.target mysql.service
+After=network.target
 
 [Service]
 Type=simple
@@ -316,6 +335,24 @@ sudo systemctl status cloudflared
 # 設定正確的檔案權限
 sudo chown -R www-data:www-data /var/www/job-portal
 sudo chmod -R 755 /var/www/job-portal
+
+# SQLite 資料庫需要寫入權限
+sudo chmod 664 /var/www/job-portal/backend/database/data/job_info.db
+sudo chmod 775 /var/www/job-portal/backend/database/data/
+```
+
+---
+
+## 步驟九：設定定期同步（選填）
+
+如果要自動同步職缺資料：
+
+```bash
+# 編輯 crontab
+crontab -e
+
+# 每天早上 8 點同步
+0 8 * * * cd /var/www/job-portal/backend && ./venv/bin/python database/scripts/sync_jobs.py >> /var/log/job-sync.log 2>&1
 ```
 
 ---
@@ -366,6 +403,19 @@ sudo systemctl restart job-portal-frontend
 
 ---
 
+## SQLite 資料庫備份
+
+```bash
+# 手動備份
+cp /var/www/job-portal/backend/database/data/job_info.db ~/backup/job_info_$(date +%Y%m%d).db
+
+# 設定自動備份 (每天凌晨 3 點)
+crontab -e
+0 3 * * * cp /var/www/job-portal/backend/database/data/job_info.db /backup/job_info_$(date +\%Y\%m\%d).db
+```
+
+---
+
 ## 常見問題
 
 ### 服務無法啟動
@@ -376,9 +426,13 @@ sudo journalctl -u job-portal-backend -n 50 --no-pager
 sudo journalctl -u job-portal-frontend -n 50 --no-pager
 ```
 
-### 資料庫連線失敗
+### SQLite 資料庫權限問題
 
-確認 MySQL/MariaDB 服務正在運行並檢查 `.env` 中的連線字串。
+```bash
+# 確保 www-data 有權限讀寫
+sudo chown www-data:www-data /var/www/job-portal/backend/database/data/job_info.db
+sudo chmod 664 /var/www/job-portal/backend/database/data/job_info.db
+```
 
 ### Cloudflared 無法連線
 
@@ -407,4 +461,27 @@ cloudflared tunnel info job-portal
 
 3. **監控日誌**：定期檢查 `/var/log/nginx/` 和 systemd 日誌
 
-4. **備份資料庫**：設定定期備份排程
+4. **備份資料庫**：設定定期備份排程（見上方 SQLite 備份段落）
+
+---
+
+## 專案結構
+
+```
+/var/www/job-portal/
+├── backend/
+│   ├── app/                    # FastAPI 應用程式
+│   ├── database/
+│   │   ├── data/
+│   │   │   └── job_info.db    # SQLite 資料庫
+│   │   ├── migrations/         # SQL 遷移腳本
+│   │   └── scripts/
+│   │       └── sync_jobs.py   # 職缺同步腳本
+│   ├── venv/                   # Python 虛擬環境
+│   ├── .env                    # 環境變數
+│   └── requirements.txt
+└── frontend-nuxt/
+    ├── .output/                # 建置輸出
+    ├── .env.production
+    └── package.json
+```

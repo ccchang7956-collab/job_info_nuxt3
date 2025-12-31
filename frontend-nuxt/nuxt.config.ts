@@ -117,7 +117,7 @@ export default defineNuxtConfig({
       globPatterns: ['**/*.{js,css,html,png,svg,ico}']
     },
     devOptions: {
-      enabled: false,
+      enabled: true,  // 開發模式也啟用 manifest 避免 404 警告
       type: 'module'
     }
   }

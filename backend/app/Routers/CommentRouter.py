@@ -32,10 +32,10 @@ async def get_comments_list(
     page: int = Query(1, ge=1, le=1000),
     per_page: int = Query(10, ge=5, le=50),
     show_deleted: bool = Query(False),
-    search_org: Optional[str] = Query(None),
-    search_title: Optional[str] = Query(None),
-    search_sysnam: Optional[str] = Query(None),
-    search_message: Optional[str] = Query(None)
+    search_org: Optional[str] = Query(None, max_length=100),
+    search_title: Optional[str] = Query(None, max_length=100),
+    search_sysnam: Optional[str] = Query(None, max_length=50),
+    search_message: Optional[str] = Query(None, max_length=500)
 ):
     try:
         return await CommentService.get_comments_list(

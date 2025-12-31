@@ -115,10 +115,10 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
     
-    # Content Security Policy
+    # Content Security Policy (移除 unsafe-eval 提升安全性)
     csp = "; ".join([
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com https://challenges.cloudflare.com",
+        "script-src 'self' 'unsafe-inline' https://www.google.com https://www.gstatic.com https://challenges.cloudflare.com",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         "img-src 'self' data: https:",
@@ -127,16 +127,25 @@ async def add_security_headers(request: Request, call_next):
     ])
     response.headers["Content-Security-Policy"] = csp
     
+    # 快取控制 (對 GET 請求加入快取標頭)
+    if request.method == "GET" and response.status_code == 200:
+        # 靜態資料快取 5 分鐘
+        if "/api/" in str(request.url.path):
+            response.headers["Cache-Control"] = "public, max-age=300, stale-while-revalidate=60"
+        else:
+            response.headers["Cache-Control"] = "public, max-age=3600"
+    
     return response
 
-# CORS
+# CORS (localhost 僅在開發模式允許)
+import os
+dev_origins = []
+if os.getenv("ENVIRONMENT", "production") == "development":
+    dev_origins = ["http://localhost", "http://127.0.0.1", "http://localhost:3000"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost",
-        "http://127.0.0.1",
-        "http://localhost:3000",
-    ] + Config.CORS_ORIGINS,
+    allow_origins=dev_origins + Config.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "HEAD"],
     allow_headers=["Authorization", "Content-Type", "X-CSRF-Token"],

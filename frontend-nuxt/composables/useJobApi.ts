@@ -26,7 +26,7 @@ async function fetchWithRetry<T>(
 ): Promise<T> {
     let lastError: Error | null = null
 
-    for (let attempt = 0; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
+    for (let attempt = 0; attempt < RETRY_CONFIG.maxRetries; attempt++) {
         try {
             // 檢查是否已取消
             if (signal?.aborted) {
@@ -47,7 +47,7 @@ async function fetchWithRetry<T>(
                 error?.message?.includes('network')
 
             // 如果已達最大重試次數或不可重試，則拋出錯誤
-            if (attempt >= RETRY_CONFIG.maxRetries || !isRetryable) {
+            if (attempt >= RETRY_CONFIG.maxRetries - 1 || !isRetryable) {
                 throw error
             }
 

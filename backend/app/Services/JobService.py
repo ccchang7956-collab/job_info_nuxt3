@@ -126,27 +126,35 @@ class JobService:
             if place_conditions:
                 conditions.append(or_(*place_conditions))
 
-        # 職等過濾 (優化版本：使用 REGEXP 或精確匹配減少 OR 條件數量)
+        # 職等過濾 (改進的 LIKE 模式匹配，避免 1 匹配到 10、11 等)
         if min_rank is not None or max_rank is not None:
             start_rank = min_rank if min_rank is not None else 1
             end_rank = max_rank if max_rank is not None else 14
             start_rank = max(1, min(14, start_rank))
             end_rank = max(1, min(14, end_rank))
             
-            # 優化：如果範圍較小，使用 OR；如果範圍較大，使用 REGEXP
-            if end_rank - start_rank <= 3:
-                # 小範圍：使用 OR 條件
-                rank_conditions = []
-                for i in range(start_rank, end_rank + 1):
-                    # 使用邊界匹配減少誤判 (例如 1 不應匹配到 10, 11, 12...)
-                    rank_conditions.append(JobAllData.rank.regexp_match(f'(^|[^0-9]){i}($|[^0-9])'))
-                if rank_conditions:
-                    conditions.append(or_(*rank_conditions))
-            else:
-                # 大範圍：構建正則表達式
-                rank_pattern_parts = [str(i) for i in range(start_rank, end_rank + 1)]
-                rank_pattern = f"({'|'.join(rank_pattern_parts)})"
-                conditions.append(JobAllData.rank.regexp_match(rank_pattern))
+            # 使用多種 LIKE 模式匹配確保精確度
+            rank_conditions = []
+            for i in range(start_rank, end_rank + 1):
+                # 匹配多種格式: "5", "第5職等", "5-7", "第5-7職等" 等
+                # 使用邊界條件：數字前後不能是其他數字
+                if i < 10:
+                    # 單位數：確保前後不是數字
+                    rank_conditions.append(
+                        or_(
+                            JobAllData.rank == str(i),  # 完全匹配
+                            JobAllData.rank.like(f"第{i}職等%"),  # 開頭
+                            JobAllData.rank.like(f"第{i}-%"),  # 範圍起始
+                            JobAllData.rank.like(f"%-{i}職等"),  # 範圍結束
+                            JobAllData.rank.like(f"{i}-%"),  # 數字範圍起始
+                            JobAllData.rank.like(f"%-{i}"),  # 數字範圍結束
+                        )
+                    )
+                else:
+                    # 雙位數 (10-14)：直接匹配
+                    rank_conditions.append(JobAllData.rank.like(f"%{i}%"))
+            if rank_conditions:
+                conditions.append(or_(*rank_conditions))
 
         if conditions:
             stmt = stmt.where(*conditions)

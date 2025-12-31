@@ -1,120 +1,157 @@
-# 公務人員職缺查詢系統 (重構版)
+# 開放事求人 - 公務人員職缺查詢系統
 
-本專案是一個現代化的網頁應用程式，用於查詢與瀏覽台灣公務人員職缺。專案已從 Vue 3 SPA 重構為 **Nuxt 3** 應用程式，以提升效能、SEO 及開發體驗，並搭配 **FastAPI** 後端。
+本專案是一個現代化的網頁應用程式，用於查詢與瀏覽台灣公務人員職缺。專案採用 **Nuxt 3** 前端框架搭配 **FastAPI** 後端，提供優異的效能、SEO 及開發體驗。
 
-## 技術堆疊 (Tech Stack)
+🔗 **線上版本**: [開放事求人](https://job.ccchang.tw)
+
+## ✨ 功能特色
+
+- **職缺搜尋**: 瀏覽與搜尋政府公務人員職缺，支援多條件篩選
+- **職缺詳情**: 查看特定職缺的詳細資訊與歷史記錄
+- **留言系統**: 使用者可對職缺進行留言討論，整合 reCAPTCHA v3 防護
+- **資料視覺化**: 互動式圖表展示職缺統計數據
+- **LINE AI Bot**: 透過 LINE 機器人查詢職缺資訊
+- **PWA 支援**: 可安裝為應用程式，支援離線瀏覽
+- **響應式設計**: 針對手機與桌面裝置最佳化
+
+## 🛠️ 技術堆疊
 
 ### 前端 (`frontend-nuxt`)
-- **框架**: [Nuxt 3](https://nuxt.com/) (Vue 3)
-- **樣式**: [Tailwind CSS](https://tailwindcss.com/)
-- **狀態管理**: [Pinia](https://pinia.vuejs.org/)
-- **HTTP 客戶端**: Nuxt `$fetch` / `useFetch`
-- **資安**: `nuxt-security` 模組 (CSP, 安全標頭)
-- **PWA**: `@vite-pwa/nuxt` (漸進式網頁應用)
-- **圖表**: `vue-chartjs` / `chart.js`
-- **圖示**: `@heroicons/vue`
+| 技術 | 說明 |
+|------|------|
+| [Nuxt 3](https://nuxt.com/) | Vue 3 框架，支援 SSR |
+| [Tailwind CSS](https://tailwindcss.com/) | 實用優先的 CSS 框架 |
+| [Pinia](https://pinia.vuejs.org/) | 狀態管理 |
+| `nuxt-security` | CSP、安全標頭 |
+| `@vite-pwa/nuxt` | 漸進式網頁應用 |
+| `@heroicons/vue` | 圖示庫 |
 
 ### 後端 (`backend`)
-- **框架**: [FastAPI](https://fastapi.tiangolo.com/)
-- **資料庫**: MySQL
-- **ORM**: SQLAlchemy (Async)
-- **資安**: `fastapi-csrf-protect` (CSRF Token), Google reCAPTCHA
-- **排程任務**: APScheduler (用於資料更新)
+| 技術 | 說明 |
+|------|------|
+| [FastAPI](https://fastapi.tiangolo.com/) | 高效能 Python API 框架 |
+| MySQL + SQLAlchemy (Async) | 資料庫與 ORM |
+| `fastapi-csrf-protect` | CSRF 防護 |
+| Google reCAPTCHA | 防機器人驗證 |
+| APScheduler | 排程任務 |
 
-## 功能特色
-
-- **職缺搜尋**: 瀏覽與搜尋政府公務人員職缺。
-- **職缺詳情**: 查看特定職缺的詳細資訊。
-- **留言系統**:
-    - 使用者可對職缺進行留言討論。
-    - 整合 **Google reCAPTCHA v3** 防止機器人。
-    - 使用 **CSRF Token** 保護提交安全。
-    - 支援即時 Toast 訊息回饋。
-- **資料視覺化**: 互動式圖表展示職缺統計數據。
-- **PWA 支援**: 可安裝為應用程式，支援離線瀏覽體驗。
-- **響應式設計**: 針對手機與桌面裝置最佳化。
-
-## 專案結構
+## 📁 專案結構
 
 ```
-job_info_vue_refactor/
-├── backend/                # FastAPI 後端
-│   ├── app/                # 應用程式邏輯 (路由, 模型, 架構)
-│   ├── venv/               # Python 虛擬環境
-│   ├── run.py              # 啟動入口
-│   └── requirements.txt    # Python 相依套件
-├── frontend-nuxt/          # Nuxt 3 前端
-│   ├── components/         # Vue 元件
-│   ├── composables/        # 共用邏輯 (useComments, useToast)
-│   ├── pages/              # 應用程式路由
-│   ├── server/             # 伺服器端邏輯 (如有)
-│   ├── types/              # TypeScript 型別定義
-│   └── nuxt.config.ts      # Nuxt 設定檔
-└── README.md               # 本文件
+job_info_nuxt3/
+├── backend/                  # FastAPI 後端
+│   ├── app/
+│   │   ├── Core/             # 設定檔
+│   │   ├── Models/           # 資料庫模型
+│   │   ├── Routers/          # API 路由
+│   │   ├── Services/         # 商業邏輯
+│   │   └── Utils/            # 工具函式
+│   ├── db_optimization.sql   # 資料庫索引優化
+│   └── requirements.txt
+├── frontend-nuxt/            # Nuxt 3 前端
+│   ├── components/           # Vue 元件
+│   ├── composables/          # 共用邏輯
+│   ├── layouts/              # 版面配置
+│   ├── pages/                # 頁面路由
+│   └── nuxt.config.ts
+└── README.md
 ```
 
-## 🚀 快速啟動 (Quick Start)
+## 🚀 快速啟動
 
-本專案採用前後端分離架構，開發時需 **同時開啟兩個終端機 (Terminal)** 分別執行後端與前端。
+### 環境需求
+- Node.js 18+
+- Python 3.10+
+- MySQL 8.0+
 
-### 1. 啟動後端 (Backend)
+### 1. 啟動後端
 
-請開啟第一個終端機視窗，執行以下指令：
+```bash
+cd backend
+python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+./venv/bin/python run.py
+```
+> 後端服務：`http://localhost:8000`
 
-1.  進入後端目錄：
-    ```bash
-    cd backend
-    ```
-2.  建立並啟用虛擬環境 (若尚未建立)：
-    ```bash
-    # macOS / Linux
-    python3 -m venv venv
-    source venv/bin/activate
-    ```
-3.  安裝相依套件：
-    ```bash
-    pip install -r requirements.txt
-    ```
-4.  啟動伺服器：
-    ```bash
-    ./venv/bin/python run.py
-    ```
-    > 後端服務將於 `http://localhost:8000` 啟動。
+### 2. 啟動前端
 
-### 2. 啟動前端 (Frontend)
+```bash
+cd frontend-nuxt
+npm install
+npm run dev
+```
+> 前端應用：`http://localhost:3000`
 
-請開啟 **第二個** 終端機視窗，執行以下指令：
+### 3. 環境變數設定
 
-1.  進入前端目錄：
-    ```bash
-    cd frontend-nuxt
-    ```
-2.  安裝相依套件：
-    ```bash
-    npm install
-    ```
-3.  啟動開發伺服器：
-    ```bash
-    npm run dev
-    ```
-    > 應用程式將於 `http://localhost:3000` 啟動。
+建立 `.env` 檔案：
 
-### 3. 開啟瀏覽器
+```env
+# 後端
+DATABASE_URL=mysql+pymysql://user:password@localhost/job_info
+ASYNC_DATABASE_URL=mysql+aiomysql://user:password@localhost/job_info
+GOOGLE_RECAPTCHA_SECRET_KEY=your_secret_key
 
-完成上述步驟後，請在瀏覽器輸入 `http://localhost:3000` 即可開始使用。
+# 前端
+NUXT_PUBLIC_RECAPTCHA_SITE_KEY=your_site_key
+```
 
-## 近期重構亮點
+## 📊 資料庫優化
 
-- **遷移至 Nuxt 3**: 將完整的 Vue 3 SPA 移植到 Nuxt 3，實現 SSR (伺服器端渲染) 與更佳的路由管理。
-- **資安增強**:
-    - 引入 `nuxt-security` 實作嚴格的 CSP 與安全標頭。
-    - 修復 Nuxt 與 FastAPI 之間的 CSRF Token 驗證流程。
-    - 強制留言功能需通過 reCAPTCHA 驗證。
-- **程式碼優化**:
-    - 重構 API 呼叫，全面改用 `useFetch` 並設定 Proxy 規則。
-    - 抽離邏輯至 Composables (`useComments`, `useToast`)。
-    - 加入 TypeScript 介面定義，提升型別安全。
-    - 優化後端 Pydantic Schema 驗證邏輯。
+執行索引優化以提升查詢效能：
+
+```bash
+mysql -u root -p job_info < backend/db_optimization.sql
+```
+
+## 🔐 安全特性
+
+- **CSP (Content Security Policy)**: 嚴格的內容安全政策
+- **CSRF Token**: 防止跨站請求偽造
+- **reCAPTCHA v3**: 智慧型機器人防護
+- **XSS 防護**: 輸入消毒與輸出編碼
+- **Rate Limiting**: API 請求限流
+
+## 📱 PWA 支援
+
+本應用支援 Progressive Web App：
+- 可安裝至手機主畫面
+- 離線快取靜態資源
+- 推送通知（未來功能）
+
+## 🤖 LINE AI Bot
+
+整合 LINE Messaging API，可透過 LINE 查詢職缺：
+- 傳送關鍵字搜尋職缺
+- 查看職缺詳情
+- 取得最新職缺通知
+
+## 📝 近期更新 (2025-12-30)
+
+### 效能優化
+- ✅ 日期計算快取機制
+- ✅ 職等篩選使用 REGEXP 優化
+- ✅ 啟用第一頁查詢快取
+- ✅ API 請求加入 Retry 機制
+
+### 安全強化
+- ✅ CSP unsafe-eval 僅限開發環境
+- ✅ 移除硬編碼敏感金鑰
+
+### 程式碼品質
+- ✅ 抽取共用元件 (Pagination, FilterTag)
+- ✅ 結構化 JSON 日誌格式
+- ✅ TypeScript 型別強化
 
 ---
-*最後更新: 2025-12-04*
+
+## 📄 授權
+
+本專案使用政府資料開放平臺之 [行政院人事行政總處事求人機關徵才資料](https://data.gov.tw/dataset/7229)。
+
+---
+
+*最後更新: 2025-12-30*
+

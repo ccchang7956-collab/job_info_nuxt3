@@ -13,6 +13,14 @@ venv/
 .pytest_cache/
 backend/venv/
 backend/.env
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+backend/database/data/
+backend/*.log
+*.sql.bak
 
 # Node / Nuxt
 node_modules/

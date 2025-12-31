@@ -10,18 +10,18 @@ router = APIRouter()
 
 @router.get("/", response_model=JobListResponse)
 async def get_jobs(
-    page: int = Query(1, ge=1),
+    page: int = Query(1, ge=1, le=1000),
     per_page: int = Query(15, ge=1, le=100),
-    org: str = Query(None),
-    title: str = Query(None),
-    sysnam: str = Query(None),
-    places: str = Query(None),
-    min_rank: Optional[str] = Query(None),
-    max_rank: Optional[str] = Query(None),
+    org: str = Query(None, max_length=100),
+    title: str = Query(None, max_length=100),
+    sysnam: str = Query(None, max_length=50),
+    places: str = Query(None, max_length=200),
+    min_rank: Optional[str] = Query(None, max_length=10),
+    max_rank: Optional[str] = Query(None, max_length=10),
     include_history: bool = Query(False),
     include_parttime: bool = Query(False),
-    sort: str = Query("date_from"),
-    order: str = Query("desc"),
+    sort: str = Query("date_from", max_length=20),
+    order: str = Query("desc", max_length=10),
     db: AsyncSession = Depends(get_async_db)
 ):
     # Convert rank to int if possible
