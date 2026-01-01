@@ -68,14 +68,14 @@ cloudflared --version
 
 ```bash
 # 建立應用程式目錄
-sudo mkdir -p /var/www/job_info_nuxt3
-sudo chown $USER:$USER /var/www/job_info_nuxt3
-cd /var/www/job_info_nuxt3
+sudo mkdir -p /home/chang/job_info_nuxt3
+sudo chown $USER:$USER /home/chang/job_info_nuxt3
+cd /home/chang/job_info_nuxt3
 
 # Clone 專案（或從本機 scp 上傳）
 git clone <你的 repo URL> .
 # 或
-scp -r /path/to/local/project user@server:/var/www/job_info_nuxt3
+scp -r /path/to/local/project user@server:/home/chang/job_info_nuxt3
 ```
 
 ---
@@ -83,7 +83,7 @@ scp -r /path/to/local/project user@server:/var/www/job_info_nuxt3
 ## 步驟四：設定後端 (FastAPI + SQLite)
 
 ```bash
-cd /var/www/job_info_nuxt3/backend
+cd /home/chang/job_info_nuxt3/backend
 
 # 建立虛擬環境
 python3 -m venv venv
@@ -95,8 +95,8 @@ pip install -r requirements.txt
 # 建立資料庫目錄
 mkdir -p database/data
 
-# 複製 SQLite 資料庫（如果有現成的）
-scp your-local-db.db user@server:/var/www/job_info_nuxt3/backend/database/data/job_info.db
+# 複製 SQLite 資料庫（從本機 Mac 上傳到伺服器）
+scp ~/Project/job_info_nuxt3/backend/database/data/job_info.db chang@伺服器IP:/home/chang/job_info_nuxt3/backend/database/data/job_info.db
 
 # 複製並編輯環境變數
 cp .env.example .env
@@ -107,7 +107,7 @@ nano .env
 
 ```env
 # 資料庫 (SQLite - 預設已配置，通常不需修改)
-# DATABASE_URL=sqlite:////var/www/job_info_nuxt3/backend/database/data/job_info.db
+# DATABASE_URL=sqlite:////home/chang/job_info_nuxt3/backend/database/data/job_info.db
 
 # 環境模式
 ENVIRONMENT=production
@@ -140,10 +140,10 @@ After=network.target
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/job_info_nuxt3/backend
-Environment="PATH=/var/www/job_info_nuxt3/backend/venv/bin"
+WorkingDirectory=/home/chang/job_info_nuxt3/backend
+Environment="PATH=/home/chang/job_info_nuxt3/backend/venv/bin"
 # 使用 Gunicorn + Uvicorn Worker (建議 Worker 數量: 2 × CPU 核心數 + 1)
-ExecStart=/var/www/job_info_nuxt3/backend/venv/bin/gunicorn app.Main:app \
+ExecStart=/home/chang/job_info_nuxt3/backend/venv/bin/gunicorn app.Main:app \
   -w 3 \
   -k uvicorn.workers.UvicornWorker \
   --bind 127.0.0.1:8000 \
@@ -169,7 +169,7 @@ sudo systemctl status job_info_nuxt3-backend
 ## 步驟五：設定前端 (Nuxt)
 
 ```bash
-cd /var/www/job_info_nuxt3/frontend-nuxt
+cd /home/chang/job_info_nuxt3/frontend-nuxt
 
 # 安裝依賴
 npm ci
@@ -205,7 +205,7 @@ After=network.target
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/job_info_nuxt3/frontend-nuxt
+WorkingDirectory=/home/chang/job_info_nuxt3/frontend-nuxt
 ExecStart=/usr/bin/node .output/server/index.mjs
 Environment="NODE_ENV=production"
 Environment="HOST=127.0.0.1"
@@ -339,12 +339,12 @@ sudo systemctl status cloudflared
 
 ```bash
 # 設定正確的檔案權限
-sudo chown -R www-data:www-data /var/www/job_info_nuxt3
-sudo chmod -R 755 /var/www/job_info_nuxt3
+sudo chown -R www-data:www-data /home/chang/job_info_nuxt3
+sudo chmod -R 755 /home/chang/job_info_nuxt3
 
 # SQLite 資料庫需要寫入權限
-sudo chmod 664 /var/www/job_info_nuxt3/backend/database/data/job_info.db
-sudo chmod 775 /var/www/job_info_nuxt3/backend/database/data/
+sudo chmod 664 /home/chang/job_info_nuxt3/backend/database/data/job_info.db
+sudo chmod 775 /home/chang/job_info_nuxt3/backend/database/data/
 ```
 
 ---
@@ -358,7 +358,7 @@ sudo chmod 775 /var/www/job_info_nuxt3/backend/database/data/
 crontab -e
 
 # 每天早上 8 點同步
-0 8 * * * cd /var/www/job_info_nuxt3/backend && ./venv/bin/python database/scripts/sync_jobs.py >> /var/log/job-sync.log 2>&1
+0 8 * * * cd /home/chang/job_info_nuxt3/backend && ./venv/bin/python database/scripts/sync_jobs.py >> /var/log/job-sync.log 2>&1
 ```
 
 ---
@@ -389,7 +389,7 @@ sudo journalctl -u cloudflared -f
 當有新版本需要部署時：
 
 ```bash
-cd /var/www/job_info_nuxt3
+cd /home/chang/job_info_nuxt3
 
 # 拉取最新程式碼
 git pull origin main
@@ -413,11 +413,11 @@ sudo systemctl restart job_info_nuxt3-frontend
 
 ```bash
 # 手動備份
-cp /var/www/job_info_nuxt3/backend/database/data/job_info.db ~/backup/job_info_$(date +%Y%m%d).db
+cp /home/chang/job_info_nuxt3/backend/database/data/job_info.db ~/backup/job_info_$(date +%Y%m%d).db
 
 # 設定自動備份 (每天凌晨 3 點)
 crontab -e
-0 3 * * * cp /var/www/job_info_nuxt3/backend/database/data/job_info.db /backup/job_info_$(date +\%Y\%m\%d).db
+0 3 * * * cp /home/chang/job_info_nuxt3/backend/database/data/job_info.db /backup/job_info_$(date +\%Y\%m\%d).db
 ```
 
 ---
@@ -436,8 +436,8 @@ sudo journalctl -u job_info_nuxt3-frontend -n 50 --no-pager
 
 ```bash
 # 確保 www-data 有權限讀寫
-sudo chown www-data:www-data /var/www/job_info_nuxt3/backend/database/data/job_info.db
-sudo chmod 664 /var/www/job_info_nuxt3/backend/database/data/job_info.db
+sudo chown www-data:www-data /home/chang/job_info_nuxt3/backend/database/data/job_info.db
+sudo chmod 664 /home/chang/job_info_nuxt3/backend/database/data/job_info.db
 ```
 
 ### Cloudflared 無法連線
@@ -474,7 +474,7 @@ cloudflared tunnel info job_info_nuxt3
 ## 專案結構
 
 ```
-/var/www/job_info_nuxt3/
+/home/chang/job_info_nuxt3/
 ├── backend/
 │   ├── app/                    # FastAPI 應用程式
 │   ├── database/
