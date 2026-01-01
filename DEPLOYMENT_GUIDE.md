@@ -95,7 +95,7 @@ pip install -r requirements.txt
 # 建立資料庫目錄
 mkdir -p database/data
 
-# 複製 SQLite 資料庫（從本機 Mac 上傳到伺服器）
+# 複製 SQLite 資料庫（在本機 Mac 的終端機執行，不是伺服器上）
 scp ~/Project/job_info_nuxt3/backend/database/data/job_info.db chang@100.102.52.24:/home/chang/job_info_nuxt3/backend/database/data/job_info.db
 
 # 複製並編輯環境變數
@@ -146,7 +146,7 @@ Environment="PATH=/home/chang/job_info_nuxt3/backend/venv/bin"
 ExecStart=/home/chang/job_info_nuxt3/backend/venv/bin/gunicorn app.Main:app \
   -w 3 \
   -k uvicorn.workers.UvicornWorker \
-  --bind 127.0.0.1:8000 \
+  --bind 127.0.0.1:8002 \
   --access-logfile - \
   --error-logfile -
 Restart=always
@@ -257,7 +257,7 @@ server {
 
     # 後端 API 代理（由 Nuxt 處理，這裡是備用）
     location /api/ {
-        proxy_pass http://127.0.0.1:8000/;
+        proxy_pass http://127.0.0.1:8002/;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -374,7 +374,7 @@ sudo systemctl status cloudflared
 
 # 本機測試
 curl http://localhost:3000  # 前端
-curl http://localhost:8000  # 後端 API
+curl http://localhost:8002  # 後端 API
 
 # 查看日誌
 sudo journalctl -u job_info_nuxt3-backend -f
