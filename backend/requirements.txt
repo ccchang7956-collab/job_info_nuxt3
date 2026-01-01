@@ -118,3 +118,4 @@ wrapt==1.17.2
 yarg==0.1.9
 yarl==1.20.0
 bleach>=6.0.0
+gunicorn==23.0.0

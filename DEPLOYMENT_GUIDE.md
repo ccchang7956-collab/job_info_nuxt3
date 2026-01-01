@@ -2,9 +2,9 @@
 
 本文件說明如何將開放事求人專案部署到 Debian 主機上，使用 Nginx 作為反向代理，Cloudflared 進行安全隧道連接。
 
-> **更新日期**: 2025-12-31
+> **更新日期**: 2026-01-01
 > 
-> **資料庫變更**: 已從 MySQL 遷移至 SQLite，簡化部署流程
+> **資料庫**: SQLite（WAL 模式）
 
 ---
 
@@ -68,14 +68,14 @@ cloudflared --version
 
 ```bash
 # 建立應用程式目錄
-sudo mkdir -p /var/www/job-portal
-sudo chown $USER:$USER /var/www/job-portal
-cd /var/www/job-portal
+sudo mkdir -p /var/www/job_info_nuxt3
+sudo chown $USER:$USER /var/www/job_info_nuxt3
+cd /var/www/job_info_nuxt3
 
 # Clone 專案（或從本機 scp 上傳）
 git clone <你的 repo URL> .
 # 或
-scp -r /path/to/local/project user@server:/var/www/job-portal
+scp -r /path/to/local/project user@server:/var/www/job_info_nuxt3
 ```
 
 ---
@@ -83,7 +83,7 @@ scp -r /path/to/local/project user@server:/var/www/job-portal
 ## 步驟四：設定後端 (FastAPI + SQLite)
 
 ```bash
-cd /var/www/job-portal/backend
+cd /var/www/job_info_nuxt3/backend
 
 # 建立虛擬環境
 python3 -m venv venv
@@ -96,7 +96,7 @@ pip install -r requirements.txt
 mkdir -p database/data
 
 # 複製 SQLite 資料庫（如果有現成的）
-scp your-local-db.db user@server:/var/www/job-portal/backend/database/data/job_info.db
+scp your-local-db.db user@server:/var/www/job_info_nuxt3/backend/database/data/job_info.db
 
 # 複製並編輯環境變數
 cp .env.example .env
@@ -107,7 +107,7 @@ nano .env
 
 ```env
 # 資料庫 (SQLite - 預設已配置，通常不需修改)
-# DATABASE_URL=sqlite:////var/www/job-portal/backend/database/data/job_info.db
+# DATABASE_URL=sqlite:////var/www/job_info_nuxt3/backend/database/data/job_info.db
 
 # 環境模式
 ENVIRONMENT=production
@@ -128,21 +128,27 @@ JOB_DATA_URL=https://www.dgpa.gov.tw/op/want/wantjob_today.xml
 ### 建立 Systemd 服務
 
 ```bash
-sudo nano /etc/systemd/system/job-portal-backend.service
+sudo nano /etc/systemd/system/job_info_nuxt3-backend.service
 ```
 
 ```ini
 [Unit]
-Description=Job Portal FastAPI Backend
+Description=Job Info Nuxt3 FastAPI Backend
 After=network.target
 
 [Service]
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/job-portal/backend
-Environment="PATH=/var/www/job-portal/backend/venv/bin"
-ExecStart=/var/www/job-portal/backend/venv/bin/uvicorn app.Main:app --host 127.0.0.1 --port 8000
+WorkingDirectory=/var/www/job_info_nuxt3/backend
+Environment="PATH=/var/www/job_info_nuxt3/backend/venv/bin"
+# 使用 Gunicorn + Uvicorn Worker (建議 Worker 數量: 2 × CPU 核心數 + 1)
+ExecStart=/var/www/job_info_nuxt3/backend/venv/bin/gunicorn app.Main:app \
+  -w 3 \
+  -k uvicorn.workers.UvicornWorker \
+  --bind 127.0.0.1:8000 \
+  --access-logfile - \
+  --error-logfile -
 Restart=always
 RestartSec=5
 
@@ -153,9 +159,9 @@ WantedBy=multi-user.target
 ```bash
 # 啟動服務
 sudo systemctl daemon-reload
-sudo systemctl enable job-portal-backend
-sudo systemctl start job-portal-backend
-sudo systemctl status job-portal-backend
+sudo systemctl enable job_info_nuxt3-backend
+sudo systemctl start job_info_nuxt3-backend
+sudo systemctl status job_info_nuxt3-backend
 ```
 
 ---
@@ -163,7 +169,7 @@ sudo systemctl status job-portal-backend
 ## 步驟五：設定前端 (Nuxt)
 
 ```bash
-cd /var/www/job-portal/frontend-nuxt
+cd /var/www/job_info_nuxt3/frontend-nuxt
 
 # 安裝依賴
 npm ci
@@ -187,7 +193,7 @@ npm run build
 ### 建立 Systemd 服務
 
 ```bash
-sudo nano /etc/systemd/system/job-portal-frontend.service
+sudo nano /etc/systemd/system/job_info_nuxt3-frontend.service
 ```
 
 ```ini
@@ -199,7 +205,7 @@ After=network.target
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/job-portal/frontend-nuxt
+WorkingDirectory=/var/www/job_info_nuxt3/frontend-nuxt
 ExecStart=/usr/bin/node .output/server/index.mjs
 Environment="NODE_ENV=production"
 Environment="HOST=127.0.0.1"
@@ -213,9 +219,9 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable job-portal-frontend
-sudo systemctl start job-portal-frontend
-sudo systemctl status job-portal-frontend
+sudo systemctl enable job_info_nuxt3-frontend
+sudo systemctl start job_info_nuxt3-frontend
+sudo systemctl status job_info_nuxt3-frontend
 ```
 
 ---
@@ -223,7 +229,7 @@ sudo systemctl status job-portal-frontend
 ## 步驟六：設定 Nginx
 
 ```bash
-sudo nano /etc/nginx/sites-available/job-portal
+sudo nano /etc/nginx/sites-available/job_info_nuxt3
 ```
 
 ```nginx
@@ -263,7 +269,7 @@ server {
 
 ```bash
 # 啟用網站設定
-sudo ln -sf /etc/nginx/sites-available/job-portal /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/job_info_nuxt3 /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 
 # 測試設定
@@ -288,17 +294,17 @@ cloudflared tunnel login
 
 ```bash
 # 建立 tunnel
-cloudflared tunnel create job-portal
+cloudflared tunnel create job_info_nuxt3
 
 # 會輸出 Tunnel ID，記下來
-# 例如：Created tunnel job-portal with id xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+# 例如：Created tunnel job_info_nuxt3 with id xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
 ### 設定 DNS
 
 ```bash
 # 將網域指向 tunnel
-cloudflared tunnel route dns job-portal your-domain.com
+cloudflared tunnel route dns job_info_nuxt3 your-domain.com
 ```
 
 ### 建立設定檔
@@ -333,12 +339,12 @@ sudo systemctl status cloudflared
 
 ```bash
 # 設定正確的檔案權限
-sudo chown -R www-data:www-data /var/www/job-portal
-sudo chmod -R 755 /var/www/job-portal
+sudo chown -R www-data:www-data /var/www/job_info_nuxt3
+sudo chmod -R 755 /var/www/job_info_nuxt3
 
 # SQLite 資料庫需要寫入權限
-sudo chmod 664 /var/www/job-portal/backend/database/data/job_info.db
-sudo chmod 775 /var/www/job-portal/backend/database/data/
+sudo chmod 664 /var/www/job_info_nuxt3/backend/database/data/job_info.db
+sudo chmod 775 /var/www/job_info_nuxt3/backend/database/data/
 ```
 
 ---
@@ -352,7 +358,7 @@ sudo chmod 775 /var/www/job-portal/backend/database/data/
 crontab -e
 
 # 每天早上 8 點同步
-0 8 * * * cd /var/www/job-portal/backend && ./venv/bin/python database/scripts/sync_jobs.py >> /var/log/job-sync.log 2>&1
+0 8 * * * cd /var/www/job_info_nuxt3/backend && ./venv/bin/python database/scripts/sync_jobs.py >> /var/log/job-sync.log 2>&1
 ```
 
 ---
@@ -361,8 +367,8 @@ crontab -e
 
 ```bash
 # 檢查所有服務狀態
-sudo systemctl status job-portal-backend
-sudo systemctl status job-portal-frontend
+sudo systemctl status job_info_nuxt3-backend
+sudo systemctl status job_info_nuxt3-frontend
 sudo systemctl status nginx
 sudo systemctl status cloudflared
 
@@ -371,8 +377,8 @@ curl http://localhost:3000  # 前端
 curl http://localhost:8000  # 後端 API
 
 # 查看日誌
-sudo journalctl -u job-portal-backend -f
-sudo journalctl -u job-portal-frontend -f
+sudo journalctl -u job_info_nuxt3-backend -f
+sudo journalctl -u job_info_nuxt3-frontend -f
 sudo journalctl -u cloudflared -f
 ```
 
@@ -383,7 +389,7 @@ sudo journalctl -u cloudflared -f
 當有新版本需要部署時：
 
 ```bash
-cd /var/www/job-portal
+cd /var/www/job_info_nuxt3
 
 # 拉取最新程式碼
 git pull origin main
@@ -392,13 +398,13 @@ git pull origin main
 cd backend
 source venv/bin/activate
 pip install -r requirements.txt
-sudo systemctl restart job-portal-backend
+sudo systemctl restart job_info_nuxt3-backend
 
 # 更新前端
 cd ../frontend-nuxt
 npm ci
 npm run build
-sudo systemctl restart job-portal-frontend
+sudo systemctl restart job_info_nuxt3-frontend
 ```
 
 ---
@@ -407,11 +413,11 @@ sudo systemctl restart job-portal-frontend
 
 ```bash
 # 手動備份
-cp /var/www/job-portal/backend/database/data/job_info.db ~/backup/job_info_$(date +%Y%m%d).db
+cp /var/www/job_info_nuxt3/backend/database/data/job_info.db ~/backup/job_info_$(date +%Y%m%d).db
 
 # 設定自動備份 (每天凌晨 3 點)
 crontab -e
-0 3 * * * cp /var/www/job-portal/backend/database/data/job_info.db /backup/job_info_$(date +\%Y\%m\%d).db
+0 3 * * * cp /var/www/job_info_nuxt3/backend/database/data/job_info.db /backup/job_info_$(date +\%Y\%m\%d).db
 ```
 
 ---
@@ -422,16 +428,16 @@ crontab -e
 
 ```bash
 # 查看詳細錯誤
-sudo journalctl -u job-portal-backend -n 50 --no-pager
-sudo journalctl -u job-portal-frontend -n 50 --no-pager
+sudo journalctl -u job_info_nuxt3-backend -n 50 --no-pager
+sudo journalctl -u job_info_nuxt3-frontend -n 50 --no-pager
 ```
 
 ### SQLite 資料庫權限問題
 
 ```bash
 # 確保 www-data 有權限讀寫
-sudo chown www-data:www-data /var/www/job-portal/backend/database/data/job_info.db
-sudo chmod 664 /var/www/job-portal/backend/database/data/job_info.db
+sudo chown www-data:www-data /var/www/job_info_nuxt3/backend/database/data/job_info.db
+sudo chmod 664 /var/www/job_info_nuxt3/backend/database/data/job_info.db
 ```
 
 ### Cloudflared 無法連線
@@ -441,7 +447,7 @@ sudo chmod 664 /var/www/job-portal/backend/database/data/job_info.db
 cloudflared tunnel login
 
 # 檢查 tunnel 狀態
-cloudflared tunnel info job-portal
+cloudflared tunnel info job_info_nuxt3
 ```
 
 ---
@@ -468,7 +474,7 @@ cloudflared tunnel info job-portal
 ## 專案結構
 
 ```
-/var/www/job-portal/
+/var/www/job_info_nuxt3/
 ├── backend/
 │   ├── app/                    # FastAPI 應用程式
 │   ├── database/
