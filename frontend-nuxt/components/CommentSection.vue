@@ -97,7 +97,7 @@ const handleSubmit = async () => {
           <input 
             v-model="username" 
             type="text" 
-            placeholder="您的暱稱（可不填）" 
+            placeholder="您的暱稱（不填則為「匿名」）" 
             class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base"
           >
         </div>
