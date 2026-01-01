@@ -8,7 +8,7 @@
 
 - **職缺搜尋**: 瀏覽與搜尋政府公務人員職缺，支援多條件篩選
 - **職缺詳情**: 查看特定職缺的詳細資訊與歷史記錄
-- **留言系統**: 使用者可對職缺進行留言討論，整合 reCAPTCHA v3 防護
+- **留言系統**: 使用者可對職缺進行留言討論，整合 Cloudflare Turnstile 防護
 - **資料視覺化**: 互動式圖表展示職缺統計數據
 - **LINE AI Bot**: 透過 LINE 機器人查詢職缺資訊
 - **PWA 支援**: 可安裝為應用程式，支援離線瀏覽
@@ -32,7 +32,7 @@
 | [FastAPI](https://fastapi.tiangolo.com/) | 高效能 Python API 框架 |
 | MySQL + SQLAlchemy (Async) | 資料庫與 ORM |
 | `fastapi-csrf-protect` | CSRF 防護 |
-| Google reCAPTCHA | 防機器人驗證 |
+| Cloudflare Turnstile | 防機器人驗證 |
 | APScheduler | 排程任務 |
 
 ## 📁 專案結構
@@ -90,12 +90,10 @@ npm run dev
 
 ```env
 # 後端
-DATABASE_URL=mysql+pymysql://user:password@localhost/job_info
-ASYNC_DATABASE_URL=mysql+aiomysql://user:password@localhost/job_info
-GOOGLE_RECAPTCHA_SECRET_KEY=your_secret_key
+CLOUDFLARE_TURNSTILE_SECRET_KEY=your_secret_key
 
 # 前端
-NUXT_PUBLIC_RECAPTCHA_SITE_KEY=your_site_key
+NUXT_PUBLIC_TURNSTILE_SITE_KEY=your_site_key
 ```
 
 ## 📊 資料庫優化
@@ -110,7 +108,7 @@ mysql -u root -p job_info < backend/db_optimization.sql
 
 - **CSP (Content Security Policy)**: 嚴格的內容安全政策
 - **CSRF Token**: 防止跨站請求偽造
-- **reCAPTCHA v3**: 智慧型機器人防護
+- **Cloudflare Turnstile**: 智慧型機器人防護
 - **XSS 防護**: 輸入消毒與輸出編碼
 - **Rate Limiting**: API 請求限流
 

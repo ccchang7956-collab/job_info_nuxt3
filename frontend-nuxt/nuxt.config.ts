@@ -15,8 +15,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      // reCAPTCHA 金鑰必須透過環境變數設定，不使用硬編碼預設值
-      recaptchaSiteKey: process.env.NUXT_PUBLIC_RECAPTCHA_SITE_KEY || ''
+      // Cloudflare Turnstile 金鑰
+      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || ''
     }
   },
 
@@ -26,11 +26,10 @@ export default defineNuxtConfig({
         'default-src': ["'self'"],
         'script-src': [
           "'self'",
-          "'unsafe-inline'", // Required for Nuxt hydration and reCAPTCHA callbacks
+          "'unsafe-inline'", // Required for Nuxt hydration
           // 僅在開發模式允許 unsafe-eval
           ...(process.env.NODE_ENV === 'development' ? ["'unsafe-eval'"] : []),
-          "https://www.google.com",
-          "https://www.gstatic.com"
+          "https://challenges.cloudflare.com"
         ],
         'style-src': [
           "'self'",
@@ -39,14 +38,14 @@ export default defineNuxtConfig({
         ],
         'frame-src': [
           "'self'",
-          "https://www.google.com",
+          "https://challenges.cloudflare.com",
           "https://web3.dgpa.gov.tw"
         ],
         'connect-src': [
           "'self'",
           // 開發模式允許本地 API
           ...(process.env.NODE_ENV === 'development' ? ["http://localhost:8000"] : []),
-          "https://www.google.com"
+          "https://challenges.cloudflare.com"
         ],
         'img-src': [
           "'self'",
@@ -74,7 +73,8 @@ export default defineNuxtConfig({
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap' }
       ],
       script: [
-        { src: 'https://www.google.com/recaptcha/api.js?render=explicit', async: true, defer: true }
+        // Cloudflare Turnstile
+        { src: 'https://challenges.cloudflare.com/turnstile/v0/api.js', async: true, defer: true }
       ]
     }
   },

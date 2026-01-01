@@ -11,7 +11,7 @@ class CommentCreate(BaseModel):
     email: Optional[str] = Field(None, pattern=r'^[\w\.-]+@[\w\.-]+\.\w+$')
     job_all_data_id: Optional[int] = None
     parent_id: Optional[int] = None
-    recaptcha_token: str
+    turnstile_token: str
 
     class Config:
         from_attributes = True

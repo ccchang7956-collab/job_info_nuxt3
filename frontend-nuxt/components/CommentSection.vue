@@ -81,7 +81,7 @@ const handleSubmit = async () => {
       <!-- Comment Form -->
       <div ref="commentFormRef" class="bg-slate-50 p-6 rounded-xl border border-slate-200">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="font-bold text-slate-800">發表留言</h3>
+          <h3 class="font-bold text-slate-800 text-lg">發表留言</h3>
           <button 
             v-if="replyTo" 
             @click="cancelReply" 
@@ -93,28 +93,28 @@ const handleSubmit = async () => {
         </div>
 
         <div class="mb-4">
-          <label class="block text-xs font-medium text-slate-500 mb-1">暱稱 *</label>
+          <label class="block text-sm font-medium text-slate-600 mb-1.5">暱稱 <span class="text-slate-400 font-normal">(不填則顯示「匿名」)</span></label>
           <input 
             v-model="username" 
             type="text" 
-            placeholder="您的暱稱" 
-            class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-sm"
+            placeholder="您的暱稱（可不填）" 
+            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base"
           >
         </div>
 
         <div class="mb-4">
-          <label class="block text-xs font-medium text-slate-500 mb-1">留言內容 *</label>
+          <label class="block text-sm font-medium text-slate-600 mb-1.5">留言內容 *</label>
           <textarea 
             ref="messageTextareaRef"
             v-model="message" 
             rows="4" 
             placeholder="請輸入您的留言..." 
-            class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-sm resize-none"
+            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all text-base resize-none"
           ></textarea>
         </div>
 
         <div class="mb-6 flex justify-center">
-          <div id="recaptcha-container"></div>
+          <div id="turnstile-container"></div>
         </div>
 
         <div v-if="error" class="mb-4 text-center text-sm text-red-600 bg-red-50 py-2 rounded-lg">

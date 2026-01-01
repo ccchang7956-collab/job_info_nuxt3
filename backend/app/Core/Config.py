@@ -14,5 +14,5 @@ class Config:
     ASYNC_DATABASE_URL = os.getenv("ASYNC_DATABASE_URL", f"sqlite+aiosqlite:///{DB_PATH}")
     
     CORS_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",")
-    GOOGLE_RECAPTCHA_SECRET_KEY = os.getenv("GOOGLE_RECAPTCHA_SECRET_KEY", "")
+    CLOUDFLARE_TURNSTILE_SECRET_KEY = os.getenv("CLOUDFLARE_TURNSTILE_SECRET_KEY", "")
 

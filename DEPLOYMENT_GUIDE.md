@@ -96,7 +96,7 @@ pip install -r requirements.txt
 mkdir -p database/data
 
 # 複製 SQLite 資料庫（從本機 Mac 上傳到伺服器）
-scp ~/Project/job_info_nuxt3/backend/database/data/job_info.db chang@伺服器IP:/home/chang/job_info_nuxt3/backend/database/data/job_info.db
+scp ~/Project/job_info_nuxt3/backend/database/data/job_info.db chang@100.102.52.24:/home/chang/job_info_nuxt3/backend/database/data/job_info.db
 
 # 複製並編輯環境變數
 cp .env.example .env
@@ -118,8 +118,8 @@ CORS_ORIGINS=https://your-domain.com
 # CSRF
 CSRF_SECRET_KEY=你的隨機密鑰（至少32字元）
 
-# reCAPTCHA
-GOOGLE_RECAPTCHA_SECRET_KEY=你的密鑰
+# Cloudflare Turnstile
+CLOUDFLARE_TURNSTILE_SECRET_KEY=你的密鑰
 
 # 職缺同步 (選填)
 JOB_DATA_URL=https://www.dgpa.gov.tw/op/want/wantjob_today.xml
@@ -181,7 +181,7 @@ nano .env.production
 ### `.env.production` 設定
 
 ```env
-NUXT_PUBLIC_RECAPTCHA_SITE_KEY=你的_site_key
+NUXT_PUBLIC_TURNSTILE_SITE_KEY=你的_site_key
 ```
 
 ### 建置生產版本

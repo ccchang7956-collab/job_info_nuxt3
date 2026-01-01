@@ -19,7 +19,7 @@ export interface CommentCreate {
     message: string
     color: string
     parent_id: number | null
-    recaptcha_token: string
+    turnstile_token: string
     email?: string
 }
 

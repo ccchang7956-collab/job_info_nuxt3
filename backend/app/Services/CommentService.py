@@ -16,8 +16,8 @@ from app.Utils.FormatUtils import format_roc_date
 from cachetools import TTLCache
 from app.Core.Config import Config
 
-# Use config for reCAPTCHA key
-GOOGLE_RECAPTCHA_SECRET_KEY = Config.GOOGLE_RECAPTCHA_SECRET_KEY
+# Use config for Turnstile key
+CLOUDFLARE_TURNSTILE_SECRET_KEY = Config.CLOUDFLARE_TURNSTILE_SECRET_KEY
 
 # Cache for sysnam lists (1 hour)
 _sysnam_cache = TTLCache(maxsize=2, ttl=3600)
@@ -36,14 +36,14 @@ def sanitize_html(text: str) -> str:
 
 class CommentService:
     @staticmethod
-    async def verify_recaptcha(recaptcha_token: str, http_client: httpx.AsyncClient = None):
+    async def verify_turnstile(token: str, http_client: httpx.AsyncClient = None):
         """
-        使用 Google reCAPTCHA API 驗證 (非同步)
+        使用 Cloudflare Turnstile API 驗證 (非同步)
         """
-        url = "https://www.google.com/recaptcha/api/siteverify"
+        url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
         payload = {
-            "secret": GOOGLE_RECAPTCHA_SECRET_KEY,
-            "response": recaptcha_token,
+            "secret": CLOUDFLARE_TURNSTILE_SECRET_KEY,
+            "response": token,
         }
         
         if http_client:
@@ -55,7 +55,7 @@ class CommentService:
                 result = response.json()
         
         if not result.get("success"):
-            raise HTTPException(status_code=400, detail="reCAPTCHA 驗證失敗")
+            raise HTTPException(status_code=400, detail="Turnstile 驗證失敗")
 
     @staticmethod
     async def create_comment(db: AsyncSession, comment: CommentCreate) -> JobComments:

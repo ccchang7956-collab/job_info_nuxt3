@@ -18,7 +18,7 @@ async def submit_comment(
     db: AsyncSession = Depends(get_async_db)
 ):
     http_client = getattr(request.app.state, "http_client", None)
-    await CommentService.verify_recaptcha(comment.recaptcha_token, http_client)
+    await CommentService.verify_turnstile(comment.turnstile_token, http_client)
     
     try:
         return await CommentService.create_comment(db, comment)
