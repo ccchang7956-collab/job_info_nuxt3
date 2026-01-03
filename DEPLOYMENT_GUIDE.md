@@ -174,11 +174,11 @@ cd /home/chang/job_info_nuxt3/frontend-nuxt
 # 安裝依賴
 npm ci
 
-# 建立生產環境設定
-nano .env.production
+# 建立環境變數設定
+nano .env
 ```
 
-### `.env.production` 設定
+### `.env` 設定
 
 ```env
 NUXT_PUBLIC_TURNSTILE_SITE_KEY=你的_site_key
@@ -198,7 +198,7 @@ sudo nano /etc/systemd/system/job_info_nuxt3-frontend.service
 
 ```ini
 [Unit]
-Description=Job Portal Nuxt Frontend
+Description=Job Info Nuxt3 Frontend
 After=network.target
 
 [Service]
@@ -235,16 +235,20 @@ sudo nano /etc/nginx/sites-available/job_info_nuxt3
 ```nginx
 server {
     listen 80;
-    server_name localhost;  # Cloudflared 會處理 HTTPS
+    server_name nuxt3.opendgpa.site;
+
+    # Cloudflare 真實 IP 設定（搭配 Cloudflare Tunnel 使用）
+    set_real_ip_from 127.0.0.1;
+    real_ip_header CF-Connecting-IP;
 
     # 安全標頭
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
 
-    # 前端 (Nuxt)
+    # 前端 (Nuxt SSR - port 3001)
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3001;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -253,9 +257,10 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 300s;
     }
 
-    # 後端 API 代理（由 Nuxt 處理，這裡是備用）
+    # 後端 API (FastAPI - port 8002)
     location /api/ {
         proxy_pass http://127.0.0.1:8002/;
         proxy_http_version 1.1;
@@ -263,6 +268,8 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 300s;
+        client_max_body_size 10M;
     }
 }
 ```

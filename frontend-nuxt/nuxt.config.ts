@@ -81,13 +81,13 @@ export default defineNuxtConfig({
 
   routeRules: {
     // Special case: Home page jobs fetch maps to backend root
-    '/api/jobs': { proxy: 'http://localhost:8000/' },
+    '/api/jobs': { proxy: 'http://localhost:8002/' },
 
-    // General API proxy: /api/xxx -> http://localhost:8000/xxx
-    '/api/**': { proxy: 'http://localhost:8000/**' },
+    // General API proxy: /api/xxx -> http://localhost:8002/xxx
+    '/api/**': { proxy: 'http://localhost:8002/**' },
 
     // LINE Bot webhook
-    '/line_ai_bot/**': { proxy: 'http://localhost:8000/line_ai_bot/**' }
+    '/line_ai_bot/**': { proxy: 'http://localhost:8002/line_ai_bot/**' }
   },
 
   pwa: {
