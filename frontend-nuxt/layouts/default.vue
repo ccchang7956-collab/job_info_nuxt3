@@ -14,7 +14,7 @@ const updateDate = computed(() => updateDateData.value?.date || '無法取得')
 useHead({
   link: [
     { rel: 'manifest', href: '/manifest.webmanifest' },
-    { rel: 'apple-touch-icon', href: '/pwa-192x192.png' }
+    { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
   ],
   meta: [
     { name: 'theme-color', content: '#337AB7' }
@@ -29,7 +29,7 @@ useHead({
         <!-- Left Side: Logo -->
         <div class="logo flex-shrink-0">
           <NuxtLink to="/" class="flex items-center gap-2 text-2xl font-bold text-white hover:text-primary-100 transition-colors">
-            <img src="/logo.png" alt="開放事求人 Logo" class="w-10 h-10 object-contain" />
+            <img src="/logo.png" alt="開放事求人 Logo" class="w-12 h-12 object-contain" />
             <span class="hidden sm:inline whitespace-nowrap">開放事求人</span>
           </NuxtLink>
         </div>
