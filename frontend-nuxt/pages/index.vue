@@ -511,15 +511,7 @@ useSeoMeta({
     <!-- Results Section -->
     <section>
       <!-- Loading State -->
-      <div v-if="loading" class="flex flex-col items-center justify-center py-32 text-slate-400">
-        <div class="relative">
-          <div class="w-16 h-16 border-4 border-slate-100 border-t-primary-500 rounded-full animate-spin"></div>
-          <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-8 h-8 bg-white rounded-full"></div>
-          </div>
-        </div>
-        <p class="mt-4 font-medium text-slate-500 animate-pulse">正在載入職缺資料...</p>
-      </div>
+      <LoadingSpinner v-if="loading" message="正在載入職缺資料..." />
       
       <!-- Error State -->
       <div v-else-if="error" class="bg-red-50 border border-red-100 text-red-600 p-8 rounded-2xl text-center shadow-sm">

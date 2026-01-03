@@ -43,11 +43,8 @@ const refreshJobDetails = async () => {
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-5xl">
-    <!-- Loading State (Client-side only if hydration takes time, but SSR should handle it) -->
-    <div v-if="!job && !error" class="flex flex-col items-center justify-center py-20 text-slate-400">
-      <div class="w-10 h-10 border-4 border-slate-200 border-l-primary-500 rounded-full animate-spin mb-4"></div>
-      <p class="font-medium">正在載入職缺詳細資料...</p>
-    </div>
+    <!-- Loading State -->
+    <LoadingSpinner v-if="!job && !error" message="正在載入職缺詳細資料..." />
     
     <div v-else-if="error" class="bg-red-50 border border-red-100 text-red-600 p-8 rounded-xl text-center">
       <p class="mb-4 text-lg font-medium">{{ error }}</p>

@@ -374,10 +374,7 @@ useSeoMeta({
     </div>
 
     <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-slate-400">
-      <div class="w-10 h-10 border-4 border-slate-200 border-l-primary-500 rounded-full animate-spin mb-4"></div>
-      <p class="font-medium">正在載入留言...</p>
-    </div>
+    <LoadingSpinner v-if="loading" message="正在載入留言..." />
 
     <!-- Error State -->
     <div v-else-if="error" class="bg-red-50 border border-red-100 text-red-600 p-8 rounded-xl text-center">
