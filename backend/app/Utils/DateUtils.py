@@ -54,13 +54,16 @@ async def fetch_latest_update_date():
             row = result.fetchone()
             if row and row[0]:
                 dt = row[0]
+                # 如果是字符串，解析為 datetime
+                if isinstance(dt, str):
+                    dt = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S')
                 roc_year = dt.year - 1911
                 formatted_date = f"{roc_year:03d}/{dt.month:02d}/{dt.day:02d}"
                 return formatted_date
-            return "114/02/22"
+            return "無資料"
         except Exception as e:
             logging.error(f"Error fetching update date: {e}")
-            return "114/02/22"
+            return "無資料"
 
 async def get_latest_update_date():
     return await cache.get_value()
