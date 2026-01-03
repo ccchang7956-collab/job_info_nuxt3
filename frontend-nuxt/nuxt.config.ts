@@ -44,7 +44,7 @@ export default defineNuxtConfig({
         'connect-src': [
           "'self'",
           // 開發模式允許本地 API
-          ...(process.env.NODE_ENV === 'development' ? ["http://localhost:8000"] : []),
+          ...(process.env.NODE_ENV === 'development' ? ["http://localhost:8002"] : []),
           "https://challenges.cloudflare.com"
         ],
         'img-src': [

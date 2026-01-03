@@ -54,9 +54,19 @@ async def fetch_latest_update_date():
             row = result.fetchone()
             if row and row[0]:
                 dt = row[0]
-                # 如果是字符串，解析為 datetime
+                # 如果是字符串，嘗試解析為 datetime
                 if isinstance(dt, str):
-                    dt = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S')
+                    # 嘗試多種常見格式
+                    for fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d', '%Y/%m/%d %H:%M:%S', '%Y/%m/%d']:
+                        try:
+                            dt = datetime.strptime(dt, fmt)
+                            break
+                        except ValueError:
+                            continue
+                    else:
+                        # 如果都解析失敗，記錄錯誤
+                        logging.warning(f"無法解析日期格式: {dt}")
+                        return "無資料"
                 roc_year = dt.year - 1911
                 formatted_date = f"{roc_year:03d}/{dt.month:02d}/{dt.day:02d}"
                 return formatted_date
