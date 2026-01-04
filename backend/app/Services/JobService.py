@@ -44,6 +44,16 @@ def get_roc_dates() -> Tuple[str, str]:
     return roc_today, roc_yesterday
 
 
+def escape_like_pattern(value: str) -> str:
+    """
+    轉義 LIKE 查詢中的特殊字元 (% 和 _)
+    防止使用者輸入這些字元影響查詢結果
+    """
+    if not value:
+        return value
+    return value.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+
+
 def parse_rank_range(rank_str: str) -> Tuple[int, int]:
     """
     解析職等字串，提取最小與最大職等
@@ -113,16 +123,18 @@ class JobService:
             conditions.append(JobAllData.date_to >= roc_today)
 
         if org:
-            conditions.append(JobAllData.org_name.like(f"%{org}%"))
+            escaped_org = escape_like_pattern(org)
+            conditions.append(JobAllData.org_name.like(f"%{escaped_org}%", escape='\\'))
         if title:
-            conditions.append(JobAllData.title.like(f"%{title}%"))
+            escaped_title = escape_like_pattern(title)
+            conditions.append(JobAllData.title.like(f"%{escaped_title}%", escape='\\'))
         if sysnam:
             sysnam_list = [s.strip() for s in sysnam.split(",")]
             conditions.append(JobAllData.sysnam.in_(sysnam_list))
 
         if places:
             place_list = [p.strip() for p in places.split(",")]
-            place_conditions = [JobAllData.work_place_type.like(f"%{p}%") for p in place_list]
+            place_conditions = [JobAllData.work_place_type.like(f"%{escape_like_pattern(p)}%", escape='\\') for p in place_list]
             if place_conditions:
                 conditions.append(or_(*place_conditions))
 

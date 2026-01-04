@@ -97,11 +97,18 @@ class CommentService:
         if not input_str:
             return ""
         # 移除危險字元
-        cleaned = re.sub(r'[<>"\';\\]', '', input_str.strip())
+        cleaned = re.sub(r'[<>"\';]', '', input_str.strip())
         # 限制長度
         if len(cleaned) > max_length:
             cleaned = cleaned[:max_length]
         return cleaned
+
+    @staticmethod
+    def escape_like_pattern(value: str) -> str:
+        """轉義 LIKE 查詢中的特殊字元 (% 和 _)"""
+        if not value:
+            return value
+        return value.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
 
     @staticmethod
     def validate_sysnam_list(sysnam_string: str) -> List[str]:
@@ -170,16 +177,19 @@ class CommentService:
             conditions.append(JobComments.is_deleted == 0)
 
         if search_org:
-            conditions.append(JobAllData.org_name.like(f"%{search_org}%"))
+            escaped_org = CommentService.escape_like_pattern(search_org)
+            conditions.append(JobAllData.org_name.like(f"%{escaped_org}%", escape='\\'))
         
         if search_title:
-             conditions.append(JobAllData.title.like(f"%{search_title}%"))
+            escaped_title = CommentService.escape_like_pattern(search_title)
+            conditions.append(JobAllData.title.like(f"%{escaped_title}%", escape='\\'))
         
         if search_sysnam_list:
             conditions.append(JobAllData.sysnam.in_(search_sysnam_list))
         
         if search_message:
-            conditions.append(JobComments.message.like(f"%{search_message}%"))
+            escaped_message = CommentService.escape_like_pattern(search_message)
+            conditions.append(JobComments.message.like(f"%{escaped_message}%", escape='\\'))
 
         if conditions:
             stmt = stmt.where(*conditions)

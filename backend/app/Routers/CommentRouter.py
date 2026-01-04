@@ -22,8 +22,12 @@ async def submit_comment(
     
     try:
         return await CommentService.create_comment(db, comment)
+    except HTTPException:
+        raise  # 重新拋出已處理的 HTTP 例外
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"留言提交失敗: {str(e)}")
+        import logging
+        logging.error(f"留言提交失敗: {str(e)}")
+        raise HTTPException(status_code=400, detail="留言提交失敗，請稍後再試")
 
 @router.get("/list", response_model=CommentListResponse)
 async def get_comments_list(
