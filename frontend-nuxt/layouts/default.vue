@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { 
   CalendarIcon,
   InformationCircleIcon, 
@@ -10,8 +10,13 @@ import {
   XMarkIcon
 } from '@heroicons/vue/24/outline'
 
+const route = useRoute()
+
 const { data: updateDateData } = await useFetch('/api/metadata/last-update')
 const updateDate = computed(() => updateDateData.value?.date || '無法取得')
+
+// 動態年份
+const currentYear = new Date().getFullYear()
 
 // 手機版選單狀態
 const isMobileMenuOpen = ref(false)
@@ -23,6 +28,11 @@ const toggleMobileMenu = () => {
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
+
+// 路由變更時自動關閉選單
+watch(() => route.path, () => {
+  closeMobileMenu()
+})
 
 // PWA Manifest
 useHead({
@@ -166,7 +176,7 @@ useHead({
     <footer class="bg-white border-t border-slate-200 text-slate-600 py-8 mt-auto">
       <div class="container mx-auto px-4 text-center text-sm space-y-3 flex flex-col items-center">
         <p>
-          © 2024 本網站使用
+          © {{ currentYear }} 本網站使用
           <a href="https://data.gov.tw/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 underline">政府資料開放平臺</a>
           之
           <a href="https://data.gov.tw/dataset/7229" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 underline">行政院人事行政總處事求人機關徵才資料</a>。

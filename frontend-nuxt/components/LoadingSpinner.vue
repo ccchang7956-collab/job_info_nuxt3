@@ -31,7 +31,11 @@ const currentSize = computed(() => sizeClasses[props.size])
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center py-32 text-slate-400">
+  <div 
+    role="status" 
+    :aria-label="message"
+    class="flex flex-col items-center justify-center py-32 text-slate-400"
+  >
     <div class="relative">
       <!-- 外環 - 旋轉動畫 -->
       <div 
