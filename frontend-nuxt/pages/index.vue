@@ -74,6 +74,9 @@ const isPlaceModalOpen = ref(false)
 const isRankModalOpen = ref(false)
 const isSearchExpanded = ref(false)
 
+// 標記：用於避免 handleSearch 和 watch 同時觸發請求競爭
+const skipNextWatch = ref(false)
+
 // Use shared date formatting utilities
 const { isNewJob, isExpired } = useFormatDate()
 
@@ -202,6 +205,8 @@ const fetchJobs = async (isSearch = false) => {
 // Actions
 const handleSearch = () => {
   pagination.value.current_page = 1
+  // 設定標記，讓 watch 不要在 URL 更新後再次觸發搜尋
+  skipNextWatch.value = true
   fetchJobs(true)
 }
 
@@ -261,6 +266,11 @@ const handlePerPageChange = () => {
 // Watchers
 watch(() => route.query, (newQuery, oldQuery) => {
   if (JSON.stringify(newQuery) === JSON.stringify(oldQuery)) return
+  // 如果是由 handleSearch 觸發的 URL 更新，跳過這次 watch
+  if (skipNextWatch.value) {
+    skipNextWatch.value = false
+    return
+  }
   initFromUrl()
   fetchJobs()
 })
