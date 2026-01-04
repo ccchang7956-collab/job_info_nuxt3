@@ -22,7 +22,8 @@ const getClasses = (type: string) => {
 </script>
 
 <template>
-  <Teleport to="body">
+  <ClientOnly>
+    <Teleport to="body">
     <div class="fixed top-4 left-1/2 -translate-x-1/2 z-[10000] flex flex-col gap-2 pointer-events-none items-center w-full max-w-md px-4">
       <TransitionGroup 
         enter-active-class="transform ease-out duration-300 transition" 
@@ -67,4 +68,5 @@ const getClasses = (type: string) => {
       </TransitionGroup>
     </div>
   </Teleport>
+  </ClientOnly>
 </template>
