@@ -134,7 +134,7 @@ const jobInfoFields = computed(() => [
 
     <!-- Job Title Header -->
     <header class="mb-4 sm:mb-0 px-0 sm:px-6 py-0 sm:py-5 border-0 sm:border-b border-slate-200 bg-transparent sm:bg-gradient-to-r sm:from-primary-600 sm:to-primary-700 text-center sm:text-left">
-      <h1 class="text-2xl sm:text-3xl font-bold text-white">{{ job.title }}</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 sm:text-white">{{ job.title }}</h1>
       <h2 class="block sm:hidden text-xl text-slate-600 font-bold mt-1">{{ job.org_name }}</h2>
     </header>
 
