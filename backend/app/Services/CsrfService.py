@@ -68,11 +68,15 @@ def get_csrf_token_response() -> JSONResponse:
     """Generate a response with CSRF token in both body and cookie."""
     token = generate_csrf_token()
     response = JSONResponse(content={"csrf_token": token})
+    
+    # 根據環境設定 secure 標記
+    is_production = os.getenv("ENVIRONMENT", "production") == "production"
+    
     response.set_cookie(
         key=CSRF_COOKIE_NAME,
         value=token,
         httponly=False,  # Frontend needs to read it
-        secure=False,    # Allow HTTP for dev
+        secure=is_production,  # 生產環境強制 HTTPS
         samesite="lax",
         max_age=3600     # 1 hour
     )
