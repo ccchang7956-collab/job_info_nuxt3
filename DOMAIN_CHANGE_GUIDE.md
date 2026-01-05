@@ -48,18 +48,10 @@ ingress:
   - hostname: opendgpa.shibaalin.com
     service: http://127.0.0.1:80
   
-  # 舊網域（可保留一段時間做重定向）
-  - hostname: nuxt3.opendgpa.site
-    service: http://127.0.0.1:80
-  
   # 其他網域...
   - hostname: autovoucher.opendgpa.site
     service: http://127.0.0.1:80
   - hostname: vego2.opendgpa.site
-    service: http://127.0.0.1:80
-  - hostname: www.opendgpa.site
-    service: http://127.0.0.1:80
-  - hostname: opendgpa.site
     service: http://127.0.0.1:80
   - service: http_status:404
 ```
@@ -83,8 +75,7 @@ sudo nano /etc/nginx/sites-available/job_info_nuxt3
 ```nginx
 server {
     listen 80;
-    # 新增新網域，保留舊網域
-    server_name opendgpa.shibaalin.com nuxt3.opendgpa.site;
+    server_name opendgpa.shibaalin.com;
     
     # ... 其他設定保持不變
 }
@@ -132,31 +123,7 @@ grep -r "nuxt3.opendgpa.site" --include="*.vue" --include="*.ts" --include="*.js
 
 ---
 
-## 步驟六：（可選）設定舊網域重定向
-
-如果想讓舊網域自動跳轉到新網域，創建 Nginx 設定：
-
-```bash
-sudo nano /etc/nginx/sites-available/old-domain-redirect
-```
-
-```nginx
-server {
-    listen 80;
-    server_name nuxt3.opendgpa.site;
-    return 301 https://opendgpa.shibaalin.com$request_uri;
-}
-```
-
-```bash
-sudo ln -s /etc/nginx/sites-available/old-domain-redirect /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-```
-
----
-
-## 步驟七：驗證
+## 步驟六：驗證
 
 1. 開啟 `https://opendgpa.shibaalin.com`
 2. 確認網站正常運作
@@ -168,13 +135,3 @@ sudo systemctl reload nginx
 ## Google Analytics
 
 如果已整合 GA4，**不需要修改**。GA4 會自動追蹤新網域的流量。
-
----
-
-## 完成後的清理（可選）
-
-過渡期結束後，可移除舊網域設定：
-
-1. 從 Cloudflare DNS 刪除舊的 CNAME
-2. 從 cloudflared config.yml 移除舊 hostname
-3. 從 Nginx 移除舊 server_name
