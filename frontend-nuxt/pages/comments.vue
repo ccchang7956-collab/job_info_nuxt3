@@ -60,6 +60,9 @@ const filters = ref<FilterState>({
 const isSearchExpanded = ref(false)
 const isSysnamModalOpen = ref(false)
 
+// 標記：用於避免請求競爭
+const skipNextWatch = ref(false)
+
 // Trigger search when sysnam changes via modal
 watch(() => filters.value.search_sysnam, () => {
   handleSearch()
@@ -159,6 +162,8 @@ const fetchComments = async (isSearch = false) => {
 
 const handleSearch = () => {
   pagination.value.current_page = 1
+  // 設定標記，讓 watch 不要在 URL 更新後再次觸發搜尋
+  skipNextWatch.value = true
   updateUrl()
   fetchComments(true)
 }
@@ -172,6 +177,8 @@ const clearFilters = () => {
     show_deleted: false
   }
   pagination.value.current_page = 1
+  // 設定標記避免請求競爭
+  skipNextWatch.value = true
   updateUrl()
   fetchComments()
   addToast('已清空所有搜尋條件', 'info')
@@ -180,6 +187,8 @@ const clearFilters = () => {
 const changePage = (page: number) => {
   if (page < 1 || page > pagination.value.total_pages) return
   pagination.value.current_page = page
+  // 設定標記避免請求競爭
+  skipNextWatch.value = true
   updateUrl()
   fetchComments()
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -187,6 +196,11 @@ const changePage = (page: number) => {
 
 watch(() => route.query, (newQuery, oldQuery) => {
   if (JSON.stringify(newQuery) === JSON.stringify(oldQuery)) return
+  // 如果是由 handleSearch/changePage 觸發的 URL 更新，跳過這次 watch
+  if (skipNextWatch.value) {
+    skipNextWatch.value = false
+    return
+  }
   initFromUrl()
   fetchComments()
 })
