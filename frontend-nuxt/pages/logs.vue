@@ -24,6 +24,9 @@ const totalPages = ref(0)
 const totalCount = ref(0)
 const pageRange = ref<number[]>([])
 
+// 標記：用於避免請求競爭
+const skipNextWatch = ref(false)
+
 // Helper to build query params
 const buildParams = () => {
   return {
@@ -82,26 +85,37 @@ const fetchLogs = async () => {
 const changePage = (page: number) => {
   if (page < 1 || page > totalPages.value) return
   currentPage.value = page
+  // 設定標記避免請求競爭
+  skipNextWatch.value = true
   updateUrl()
   fetchLogs()
 }
 
 const handleFilterChange = () => {
   currentPage.value = 1
+  // 設定標記避免請求競爭
+  skipNextWatch.value = true
   updateUrl()
   fetchLogs()
 }
 
 // Watch for URL changes (e.g. back button)
-watch(() => route.query, (newQuery) => {
+watch(() => route.query, (newQuery, oldQuery) => {
+  // 如果 query 沒有變化，不做任何事
+  if (JSON.stringify(newQuery) === JSON.stringify(oldQuery)) return
+  
+  // 如果是由 changePage/handleFilterChange 觸發的 URL 更新，跳過這次 watch
+  if (skipNextWatch.value) {
+    skipNextWatch.value = false
+    return
+  }
+  
   const newPage = parseInt(newQuery.page as string) || 1
   const newAction = (newQuery.action as string) || ''
   
-  if (newPage !== currentPage.value || newAction !== selectedAction.value) {
-    currentPage.value = newPage
-    selectedAction.value = newAction
-    fetchLogs()
-  }
+  currentPage.value = newPage
+  selectedAction.value = newAction
+  fetchLogs()
 })
 
 // SEO
