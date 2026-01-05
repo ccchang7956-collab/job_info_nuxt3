@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 import type { JobDetailResponse } from '@/types'
@@ -9,8 +9,10 @@ const router = useRouter()
 
 const jobId = route.params.id as string
 
-// SSR Data Fetching
-const { data, error: fetchError } = await useFetch<JobDetailResponse>(`/api/Active_job_openings/${jobId}`)
+// SSR Data Fetching（禁用快取）
+const { data, error: fetchError, refresh } = await useFetch<JobDetailResponse>(`/api/Active_job_openings/${jobId}`, {
+  cache: 'no-store'
+})
 
 const job = computed(() => data.value?.job)
 const comments = computed(() => data.value?.comments || [])
@@ -26,6 +28,14 @@ if (fetchError.value) {
     error.value = `無法取得職缺詳細資料: ${err.message}`
   }
 }
+
+// 客戶端導航時清除快取並重新載入
+onMounted(async () => {
+  if (import.meta.client) {
+    clearNuxtData()
+    await refresh()
+  }
+})
 
 // SEO
 useSeoMeta({
