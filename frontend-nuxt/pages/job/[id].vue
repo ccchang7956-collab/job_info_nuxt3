@@ -45,9 +45,10 @@ useSeoMeta({
   ogDescription: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。` : '公務人員職缺詳細資訊',
 })
 
-// Refresh function for comments
+// Refresh function for comments - 留言成功後呼叫
 const refreshJobDetails = async () => {
-  await refreshNuxtData()
+  clearNuxtData()
+  await refresh()
 }
 </script>
 
