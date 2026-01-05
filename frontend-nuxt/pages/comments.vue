@@ -111,9 +111,7 @@ const initFromUrl = () => {
 initFromUrl()
 
 const { data: initialData, error: initialError } = await useFetch<CommentListResponse>('/api/comments/list', {
-  query: buildParams(),
-  // 禁用快取，確保每次導航都重新載入最新資料
-  getCachedData: () => null
+  query: buildParams()
 })
 
 if (initialData.value) {
