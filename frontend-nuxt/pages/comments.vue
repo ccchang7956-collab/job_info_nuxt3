@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
   ChatBubbleLeftRightIcon, 
@@ -159,6 +159,14 @@ const fetchComments = async (isSearch = false) => {
     loading.value = false
   }
 }
+
+// 客戶端導航時重新載入最新資料
+onMounted(() => {
+  // 客戶端渲染時重新載入，確保顯示最新資料
+  if (import.meta.client) {
+    fetchComments()
+  }
+})
 
 const handleSearch = () => {
   pagination.value.current_page = 1
