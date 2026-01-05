@@ -111,7 +111,9 @@ const initFromUrl = () => {
 initFromUrl()
 
 const { data: initialData, error: initialError } = await useFetch<CommentListResponse>('/api/comments/list', {
-  query: buildParams()
+  query: buildParams(),
+  // 完全禁用快取，確保每次都取得最新資料
+  cache: 'no-store'
 })
 
 if (initialData.value) {
