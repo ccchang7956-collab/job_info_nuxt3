@@ -228,6 +228,10 @@ useSeoMeta({
       <div v-show="isDevLogOpen" class="p-6 bg-slate-50/50">
         <ul class="space-y-3 text-slate-600 text-sm">
           <li class="flex gap-3">
+            <span class="text-slate-400 font-mono">2026-01-05</span>
+            <span>[新增]網站改版成可用PWA版本，可以用“加入主畫面”變成一個偽APP</span>
+          </li>
+          <li class="flex gap-3">
             <span class="text-slate-400 font-mono">2025-7-26</span>
             <span>[異動]統計排行調整</span>
           </li>
