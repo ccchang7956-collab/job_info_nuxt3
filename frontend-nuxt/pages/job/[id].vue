@@ -41,6 +41,66 @@ useSeoMeta({
   ogDescription: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。` : '公務人員職缺詳細資訊',
 })
 
+// Schema.org Structured Data
+// Schema.org Structured Data
+useHead(() => {
+  if (!job.value) return {}
+
+  const convertRocDate = (dateStr: string) => {
+    if (!dateStr) return ''
+    const parts = dateStr.split('/')
+    if (parts.length !== 3) return dateStr
+    const year = parseInt(parts[0]) + 1911
+    return `${year}-${parts[1]}-${parts[2]}`
+  }
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    'title': job.value.title,
+    'hiringOrganization': {
+      '@type': 'Organization',
+      'name': job.value.org_name || job.value.org,
+      'logo': 'https://opendgpa.shibaalin.com/pwa-192x192.png'
+    },
+    'datePosted': convertRocDate(job.value.date_from),
+    'validThrough': convertRocDate(job.value.date_to),
+    'jobLocation': {
+      '@type': 'Place',
+      'address': {
+        '@type': 'PostalAddress',
+        'addressLocality': job.value.work_place_type,
+        'streetAddress': job.value.work_address || job.value.work_place_type,
+        'addressCountry': 'TW'
+      }
+    },
+    'description': `
+      <h3>工作項目</h3>
+      <p>${job.value.work_item || '無'}</p>
+      <h3>資格條件</h3>
+      <p>${job.value.work_quality || '無'}</p>
+      <p>機關：${job.value.org_name || job.value.org}</p>
+      <p>職系：${job.value.sysnam}</p>
+      <p>職等：${job.value.rank}</p>
+    `,
+    'employmentType': 'FULL_TIME',
+    'identifier': {
+      '@type': 'PropertyValue',
+      'name': job.value.org_name || job.value.org,
+      'value': job.value.id
+    }
+  }
+
+  return {
+    script: [
+      {
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(schema)
+      }
+    ]
+  }
+})
+
 // Refresh function for comments - 留言成功後呼叫
 const refreshJobDetails = async () => {
   clearNuxtData()

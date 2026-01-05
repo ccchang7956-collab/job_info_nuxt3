@@ -100,6 +100,9 @@ export default defineNuxtConfig({
     // General API proxy: /api/xxx -> http://localhost:8002/xxx
     '/api/**': { proxy: 'http://localhost:8002/**' },
 
+    // Sitemap proxy
+    '/sitemap.xml': { proxy: 'http://localhost:8002/sitemap.xml' },
+
     // LINE Bot webhook
     '/line_ai_bot/**': { proxy: 'http://localhost:8002/line_ai_bot/**' }
   },
