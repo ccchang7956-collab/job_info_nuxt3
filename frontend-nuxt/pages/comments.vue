@@ -162,11 +162,13 @@ const fetchComments = async (isSearch = false) => {
   }
 }
 
-// 客戶端導航時重新載入最新資料
-onMounted(() => {
-  // 客戶端渲染時重新載入，確保顯示最新資料
+// 客戶端導航時清除快取並重新載入最新資料
+onMounted(async () => {
   if (import.meta.client) {
-    fetchComments()
+    // 清除此頁面的快取資料
+    clearNuxtData()
+    // 重新載入最新資料
+    await fetchComments()
   }
 })
 
