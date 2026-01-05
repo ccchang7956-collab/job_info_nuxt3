@@ -164,11 +164,33 @@ const trackClick = () => {
 
 ---
 
-## 步驟七：驗證安裝
+## 步驟七：驗證安裝確認
 
-1. 部署後開啟網站
-2. 在 Google Analytics 的 **即時報表** 中應該能看到活動
-3. 使用瀏覽器開發者工具 → Network → 搜尋 `google-analytics` 確認請求
+部署完成後，請依序進行以下檢查：
+
+### 1. 使用 Google Analytics 即時報表
+
+最直接的方式：
+1. 開啟您的網站：`https://opendgpa.shibaalin.com`
+2. 同時開啟 [Google Analytics 後台](https://analytics.google.com)
+3. 進入 **報表** > **即時**
+4. 應該要在幾秒鐘內看到 "過去 30 分鐘內的使用者" 數字至少為 1
+
+### 2. 使用瀏覽器開發者工具 (Chrome DevTools)
+
+1. 在網站上按 `F12` 或 `右鍵 > 檢查` 開啟開發者工具
+2. 切換到 **Network (網路)** 分頁
+3. 在搜尋過濾框輸入 `collect` 或 `google-analytics`
+4. 重新整理頁面
+5. 如果設定成功，應該會看到發往 `www.google-analytics.com/g/collect` 的請求，狀態碼為 `200` 或 `204`
+
+### 3. 使用 Google Analytics Debugger (Chrome 擴充功能)
+
+更專業的除錯方式：
+1. 安裝 Chrome 擴充功能：[Google Analytics Debugger](https://chrome.google.com/webstore/detail/google-analytics-debugger/jnkmfdileelhofjcijamephohjechjna)
+2. 開啟擴充功能（點擊圖示顯示 ON）
+3. 開啟開發者工具的 **Console (主控台)** 分頁
+4. 重新整理頁面，您會看到詳細的 GA4 事件紀錄，例如 `Processing field: ...`
 
 ---
 
