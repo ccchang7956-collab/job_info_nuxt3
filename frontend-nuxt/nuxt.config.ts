@@ -10,8 +10,13 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
     '@nuxtjs/tailwindcss',
-    'nuxt-security'
+    'nuxt-security',
+    'nuxt-gtag'
   ],
+
+  gtag: {
+    id: 'G-216TMW7GFM'
+  },
 
   runtimeConfig: {
     public: {
@@ -30,7 +35,8 @@ export default defineNuxtConfig({
           // 僅在開發模式允許 unsafe-eval
           ...(process.env.NODE_ENV === 'development' ? ["'unsafe-eval'"] : []),
           "https://challenges.cloudflare.com",
-          "https://static.cloudflareinsights.com" // Cloudflare 分析
+          "https://static.cloudflareinsights.com", // Cloudflare 分析
+          "https://www.googletagmanager.com" // Google Analytics
         ],
         'style-src': [
           "'self'",
@@ -46,13 +52,20 @@ export default defineNuxtConfig({
           "'self'",
           // 開發模式允許本地 API
           ...(process.env.NODE_ENV === 'development' ? ["http://localhost:8002"] : []),
-          "https://challenges.cloudflare.com"
+          "https://challenges.cloudflare.com",
+          "https://www.google-analytics.com",
+          "https://analytics.google.com",
+          "https://stats.g.doubleclick.net"
         ],
         'img-src': [
           "'self'",
           "data:",
           "https:",
-          "blob:"
+          "blob:",
+          "https://www.google-analytics.com",
+          "https://*.google-analytics.com",
+          "https://*.analytics.google.com",
+          "https://*.googletagmanager.com"
         ],
         'font-src': [
           "'self'",
