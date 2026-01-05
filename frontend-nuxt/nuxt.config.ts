@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   ],
 
   gtag: {
-    id: 'G-216TMW7GFM'
+    id: process.env.NUXT_PUBLIC_GTAG_ID || 'G-216TMW7GFM'
   },
 
   runtimeConfig: {
