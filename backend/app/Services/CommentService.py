@@ -105,10 +105,14 @@ class CommentService:
 
     @staticmethod
     def escape_like_pattern(value: str) -> str:
-        """轉義 LIKE 查詢中的特殊字元 (% 和 _)"""
+        """
+        轉義 LIKE 查詢中的特殊字元 (% 和 _)
+        使用 SQLite 預設的 \ 轉義字元
+        """
         if not value:
             return value
-        return value.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+        # 先轉義反斜線，再轉義 % 和 _
+        return value.replace('%', '[%]').replace('_', '[_]')
 
     @staticmethod
     def validate_sysnam_list(sysnam_string: str) -> List[str]:
@@ -178,18 +182,18 @@ class CommentService:
 
         if search_org:
             escaped_org = CommentService.escape_like_pattern(search_org)
-            conditions.append(JobAllData.org_name.like(f"%{escaped_org}%", escape='\\'))
+            conditions.append(JobAllData.org_name.like(f"%{escaped_org}%"))
         
         if search_title:
             escaped_title = CommentService.escape_like_pattern(search_title)
-            conditions.append(JobAllData.title.like(f"%{escaped_title}%", escape='\\'))
+            conditions.append(JobAllData.title.like(f"%{escaped_title}%"))
         
         if search_sysnam_list:
             conditions.append(JobAllData.sysnam.in_(search_sysnam_list))
         
         if search_message:
             escaped_message = CommentService.escape_like_pattern(search_message)
-            conditions.append(JobComments.message.like(f"%{escaped_message}%", escape='\\'))
+            conditions.append(JobComments.message.like(f"%{escaped_message}%"))
 
         if conditions:
             stmt = stmt.where(*conditions)

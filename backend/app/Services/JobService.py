@@ -47,11 +47,11 @@ def get_roc_dates() -> Tuple[str, str]:
 def escape_like_pattern(value: str) -> str:
     """
     轉義 LIKE 查詢中的特殊字元 (% 和 _)
-    防止使用者輸入這些字元影響查詢結果
+    使用方括號包裝模式（SQLite 支援）
     """
     if not value:
         return value
-    return value.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_')
+    return value.replace('%', '[%]').replace('_', '[_]')
 
 
 def parse_rank_range(rank_str: str) -> Tuple[int, int]:
@@ -124,17 +124,17 @@ class JobService:
 
         if org:
             escaped_org = escape_like_pattern(org)
-            conditions.append(JobAllData.org_name.like(f"%{escaped_org}%", escape='\\'))
+            conditions.append(JobAllData.org_name.like(f"%{escaped_org}%"))
         if title:
             escaped_title = escape_like_pattern(title)
-            conditions.append(JobAllData.title.like(f"%{escaped_title}%", escape='\\'))
+            conditions.append(JobAllData.title.like(f"%{escaped_title}%"))
         if sysnam:
             sysnam_list = [s.strip() for s in sysnam.split(",")]
             conditions.append(JobAllData.sysnam.in_(sysnam_list))
 
         if places:
             place_list = [p.strip() for p in places.split(",")]
-            place_conditions = [JobAllData.work_place_type.like(f"%{escape_like_pattern(p)}%", escape='\\') for p in place_list]
+            place_conditions = [JobAllData.work_place_type.like(f"%{escape_like_pattern(p)}%") for p in place_list]
             if place_conditions:
                 conditions.append(or_(*place_conditions))
 
