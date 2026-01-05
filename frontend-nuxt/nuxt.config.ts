@@ -114,7 +114,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: null, // 禁用 navigateFallback 避免 non-precached-url 錯誤
+      navigateFallback: '/',
       globPatterns: ['**/*.{js,css,html,png,svg,ico}']
     },
     devOptions: {
