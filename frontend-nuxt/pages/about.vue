@@ -232,6 +232,10 @@ useSeoMeta({
             <span>[新增]網站改版成可用PWA版本，可以用“加入主畫面”變成一個偽APP</span>
           </li>
           <li class="flex gap-3">
+            <span class="text-slate-400 font-mono">2026-01-05</span>
+            <span>[新增]增加每個職缺的「狀態」標籤，例如：曾開缺、有留言等等。</span>
+          </li>
+          <li class="flex gap-3">
             <span class="text-slate-400 font-mono">2025-7-26</span>
             <span>[異動]統計排行調整</span>
           </li>
