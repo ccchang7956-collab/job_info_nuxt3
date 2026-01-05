@@ -29,7 +29,8 @@ export default defineNuxtConfig({
           "'unsafe-inline'", // Required for Nuxt hydration
           // 僅在開發模式允許 unsafe-eval
           ...(process.env.NODE_ENV === 'development' ? ["'unsafe-eval'"] : []),
-          "https://challenges.cloudflare.com"
+          "https://challenges.cloudflare.com",
+          "https://static.cloudflareinsights.com" // Cloudflare 分析
         ],
         'style-src': [
           "'self'",
@@ -113,7 +114,7 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
+      navigateFallback: null, // 禁用 navigateFallback 避免 non-precached-url 錯誤
       globPatterns: ['**/*.{js,css,html,png,svg,ico}']
     },
     devOptions: {
