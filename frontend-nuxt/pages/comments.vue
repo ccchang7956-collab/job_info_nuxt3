@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { 
   ChatBubbleLeftRightIcon, 
@@ -162,15 +162,8 @@ const fetchComments = async (isSearch = false) => {
   }
 }
 
-// 客戶端導航時清除快取並重新載入最新資料
-onMounted(async () => {
-  if (import.meta.client) {
-    // 清除此頁面的快取資料
-    clearNuxtData()
-    // 重新載入最新資料
-    await fetchComments()
-  }
-})
+// 注意：cache: 'no-store' 已禁用瀏覽器快取
+// 客戶端導航時 Nuxt 會自動重新執行 useFetch
 
 const handleSearch = () => {
   pagination.value.current_page = 1

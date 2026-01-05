@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 import type { JobDetailResponse } from '@/types'
@@ -29,13 +29,9 @@ if (fetchError.value) {
   }
 }
 
-// 客戶端導航時清除快取並重新載入
-onMounted(async () => {
-  if (import.meta.client) {
-    clearNuxtData()
-    await refresh()
-  }
-})
+// 客戶端導航時清除快取（僅當 SSR 資料可能過期時）
+// 注意：cache: 'no-store' 會讓 useFetch 不使用瀏覽器快取
+// 但 Nuxt 內部仍可能有快取，所以留言成功後需要手動 refresh
 
 // SEO
 useSeoMeta({
