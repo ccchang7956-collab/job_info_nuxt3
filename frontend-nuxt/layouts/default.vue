@@ -190,5 +190,6 @@ useHead({
     </footer>
 
     <Toast />
+    <DomainMigrationModal />
   </div>
 </template>
