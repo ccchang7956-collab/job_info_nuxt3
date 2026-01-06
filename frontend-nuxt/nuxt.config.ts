@@ -80,6 +80,9 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      meta: [
+        { name: 'google-site-verification', content: 'NqVWpaQNA2zQaG0iXjwamdwnSy0BX-GZ4Og4sWFKTGY' }
+      ],
       link: [
         { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
