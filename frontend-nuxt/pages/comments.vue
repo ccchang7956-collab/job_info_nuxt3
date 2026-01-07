@@ -256,7 +256,7 @@ useSeoMeta({
         </div>
         
         <!-- Action Buttons -->
-        <div class="flex gap-2">
+        <div class="flex gap-2 justify-end">
           <button 
             type="button"
             @click="isSearchExpanded = !isSearchExpanded" 
