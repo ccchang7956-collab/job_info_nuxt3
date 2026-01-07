@@ -419,7 +419,7 @@ useSeoMeta({
           <!-- Blue Header Section - Org Name -->
           <div class="bg-primary-600 px-5 py-5 flex items-center justify-between gap-3 rounded-t-xl">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
-              <span class="text-2xl font-bold text-white truncate">{{ comment.org_name }}</span>
+              <span class="text-2xl font-bold text-white break-words">{{ comment.org_name }}</span>
             </div>
             <svg class="w-8 h-8 text-blue-200 group-hover:text-white group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
