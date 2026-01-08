@@ -34,7 +34,7 @@ watch(() => route.path, () => {
   closeMobileMenu()
 })
 
-// PWA Manifest
+// PWA Manifest + WebSite Schema
 useHead({
   link: [
     { rel: 'manifest', href: '/manifest.webmanifest' },
@@ -42,6 +42,18 @@ useHead({
   ],
   meta: [
     { name: 'theme-color', content: '#337AB7' }
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        'name': '開放事求人',
+        'alternateName': '公務人員職缺查詢',
+        'url': 'https://opendgpa.shibaalin.com'
+      })
+    }
   ]
 })
 </script>
