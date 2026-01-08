@@ -278,9 +278,9 @@ watch(() => route.query, (newQuery, oldQuery) => {
 // SEO
 useSeoMeta({
   title: '開放事求人 - 公務人員職缺查詢',
-  description: '查詢最新公務人員職缺，提供機關、職稱、職系、地點等多種篩選條件。',
+  description: '公務人員職缺查詢網站，支援 PWA 安裝。提供歷史開缺紀錄、重複開缺追蹤、留言討論、統計圖表等功能。',
   ogTitle: '開放事求人 - 公務人員職缺查詢',
-  ogDescription: '查詢最新公務人員職缺，提供機關、職稱、職系、地點等多種篩選條件。',
+  ogDescription: '公務人員職缺查詢網站，支援 PWA 安裝。提供歷史開缺紀錄、重複開缺追蹤、留言討論、統計圖表等功能。',
 })
 </script>
 
