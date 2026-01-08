@@ -81,7 +81,15 @@ export default defineNuxtConfig({
   app: {
     head: {
       meta: [
-        { name: 'google-site-verification', content: 'NqVWpaQNA2zQaG0iXjwamdwnSy0BX-GZ4Og4sWFKTGY' }
+        { name: 'google-site-verification', content: 'NqVWpaQNA2zQaG0iXjwamdwnSy0BX-GZ4Og4sWFKTGY' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: '開放事求人' },
+        { property: 'og:image', content: 'https://opendgpa.shibaalin.com/og-image.png' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:locale', content: 'zh_TW' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:image', content: 'https://opendgpa.shibaalin.com/og-image.png' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -94,7 +102,10 @@ export default defineNuxtConfig({
       script: [
         // Cloudflare Turnstile
         { src: 'https://challenges.cloudflare.com/turnstile/v0/api.js', async: true, defer: true }
-      ]
+      ],
+      htmlAttrs: {
+        lang: 'zh-TW'
+      }
     }
   },
 

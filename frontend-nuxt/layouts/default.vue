@@ -51,7 +51,15 @@ useHead({
         '@type': 'WebSite',
         'name': '開放事求人',
         'alternateName': '公務人員職缺查詢',
-        'url': 'https://opendgpa.shibaalin.com'
+        'url': 'https://opendgpa.shibaalin.com',
+        'potentialAction': {
+          '@type': 'SearchAction',
+          'target': {
+            '@type': 'EntryPoint',
+            'urlTemplate': 'https://opendgpa.shibaalin.com/?org={search_term_string}'
+          },
+          'query-input': 'required name=search_term_string'
+        }
       })
     }
   ]
