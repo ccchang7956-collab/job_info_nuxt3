@@ -82,6 +82,8 @@ export default defineNuxtConfig({
     head: {
       meta: [
         { name: 'google-site-verification', content: 'NqVWpaQNA2zQaG0iXjwamdwnSy0BX-GZ4Og4sWFKTGY' },
+        { name: 'robots', content: 'index,follow' },
+        { name: 'language', content: 'zh-TW' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: '開放事求人' },
         { property: 'og:image', content: 'https://opendgpa.shibaalin.com/og-image.png' },

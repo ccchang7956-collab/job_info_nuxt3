@@ -35,16 +35,35 @@ if (fetchError.value) {
 
 // SEO
 useSeoMeta({
-  title: () => job.value ? `${job.value.title} - ${job.value.org_name} - 開放事求人` : '職缺詳細資料 - 開放事求人',
-  description: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。工作地點：${job.value.work_place_type}。` : '公務人員職缺詳細資訊',
-  ogTitle: () => job.value ? `${job.value.title} - ${job.value.org_name}` : '職缺詳細資料',
-  ogDescription: () => job.value ? `${job.value.org_name} ${job.value.title} 職缺詳情。` : '公務人員職缺詳細資訊',
+  title: () => job.value 
+    ? `開放事求人｜${job.value.org_name}(${job.value.title})｜職缺詳情 - 人事行政總處事求人開放資料` 
+    : '職缺詳細資料 - 開放事求人',
+  description: () => job.value 
+    ? `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。資料來源：行政院人事行政總處事求人開放資料。`
+    : '公務人員職缺詳細資訊',
+  keywords: () => job.value 
+    ? `事求人, 人事行政總處事求人, 公務員職缺, 政府職缺, ${job.value.org_name}, ${job.value.title}, ${job.value.sysnam}, 開放事求人`
+    : '事求人, 公務員職缺, 政府職缺',
+  robots: 'index,follow',
+  ogTitle: () => job.value 
+    ? `開放事求人｜${job.value.org_name}(${job.value.title})｜職缺詳情`
+    : '職缺詳細資料',
+  ogDescription: () => job.value 
+    ? `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。`
+    : '公務人員職缺詳細資訊',
+  ogUrl: `https://opendgpa.shibaalin.com/job/${jobId}`,
+  ogType: 'article',
 })
 
-// Schema.org Structured Data
-// Schema.org Structured Data
+// Canonical URL + Schema.org Structured Data
 useHead(() => {
-  if (!job.value) return {}
+  const baseHead = {
+    link: [
+      { rel: 'canonical', href: `https://opendgpa.shibaalin.com/job/${jobId}` }
+    ]
+  }
+  
+  if (!job.value) return baseHead
 
   const convertRocDate = (dateStr: string) => {
     if (!dateStr) return ''
@@ -57,41 +76,34 @@ useHead(() => {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
-    'title': job.value.title,
-    'hiringOrganization': {
-      '@type': 'Organization',
-      'name': job.value.org_name || job.value.org,
-      'logo': 'https://opendgpa.shibaalin.com/pwa-192x192.png'
+    'title': `${job.value.org_name}(${job.value.title})`,
+    'description': `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。資料來源：行政院人事行政總處事求人開放資料。`,
+    'identifier': {
+      '@type': 'PropertyValue',
+      'name': '開放事求人',
+      'value': String(job.value.id)
     },
     'datePosted': convertRocDate(job.value.date_from),
     'validThrough': convertRocDate(job.value.date_to),
+    'employmentType': 'FULL_TIME',
+    'hiringOrganization': {
+      '@type': 'Organization',
+      'name': job.value.org_name || job.value.org,
+      'sameAs': 'https://web3.dgpa.gov.tw/want03front/AP/WANTF00001.ASPX'
+    },
     'jobLocation': {
       '@type': 'Place',
       'address': {
         '@type': 'PostalAddress',
         'addressLocality': job.value.work_place_type,
         'streetAddress': job.value.work_address || job.value.work_place_type,
-        'addressCountry': 'TW'
+        'addressRegion': '台灣'
       }
-    },
-    'description': `
-      <h3>工作項目</h3>
-      <p>${job.value.work_item || '無'}</p>
-      <h3>資格條件</h3>
-      <p>${job.value.work_quality || '無'}</p>
-      <p>機關：${job.value.org_name || job.value.org}</p>
-      <p>職系：${job.value.sysnam}</p>
-      <p>職等：${job.value.rank}</p>
-    `,
-    'employmentType': 'FULL_TIME',
-    'identifier': {
-      '@type': 'PropertyValue',
-      'name': job.value.org_name || job.value.org,
-      'value': job.value.id
     }
   }
 
   return {
+    ...baseHead,
     script: [
       {
         type: 'application/ld+json',
