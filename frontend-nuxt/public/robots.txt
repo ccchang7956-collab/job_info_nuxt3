@@ -1,4 +1,22 @@
+# 歡迎所有搜尋引擎爬蟲
 User-Agent: *
 Allow: /
 
+# 歡迎 AI 爬蟲（ChatGPT、Claude、Google Gemini）
+User-Agent: GPTBot
+Allow: /
+
+User-Agent: ChatGPT-User
+Allow: /
+
+User-Agent: ClaudeBot
+Allow: /
+
+User-Agent: Google-Extended
+Allow: /
+
+User-Agent: PerplexityBot
+Allow: /
+
+# Sitemap 和 LLMs.txt
 Sitemap: https://opendgpa.shibaalin.com/sitemap.xml

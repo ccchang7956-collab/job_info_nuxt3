@@ -1,0 +1,35 @@
+# 開放事求人
+
+> 人事行政總處事求人開放資料查詢平台，提供台灣公務員職缺搜尋服務。
+
+## 網站說明
+
+本站為非官方的人事行政總處事求人開放資料查詢平台，資料來源為政府資料開放平臺之「行政院人事行政總處事求人機關徵才資料」。
+
+## 主要功能
+
+- 公務員職缺搜尋與篩選
+- 歷史開缺紀錄追蹤
+- 重複開缺提醒
+- 職缺留言討論區
+- 統計圖表分析
+- PWA 網頁應用程式（可安裝到手機）
+
+## 網站地圖
+
+- 首頁（職缺列表）: https://opendgpa.shibaalin.com/
+- 職缺詳情: https://opendgpa.shibaalin.com/job/[id]
+- 留言討論: https://opendgpa.shibaalin.com/comments
+- 統計圖表: https://opendgpa.shibaalin.com/charts
+- 更新日誌: https://opendgpa.shibaalin.com/logs
+- 關於本站: https://opendgpa.shibaalin.com/about
+
+## 資料來源
+
+- 政府資料開放平臺: https://data.gov.tw/
+- 行政院人事行政總處事求人: https://web3.dgpa.gov.tw/want03front/AP/WANTF00001.ASPX
+
+## 聯絡方式
+
+- 網站: https://opendgpa.shibaalin.com
+- 關於頁面: https://opendgpa.shibaalin.com/about

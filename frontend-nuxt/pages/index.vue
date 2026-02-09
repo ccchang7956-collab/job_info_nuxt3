@@ -287,10 +287,53 @@ useSeoMeta({
   ogType: 'website',
 })
 
-// Canonical URL
+// Canonical URL + FAQ Schema
 useHead({
   link: [
     { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/' }
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': '如何搜尋公務員職缺？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '在開放事求人首頁使用關鍵字搜尋，可依機關、職系、職稱、地點等條件篩選，快速找到適合的公務員職缺。'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': '開放事求人的資料來源是什麼？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '資料來源為政府資料開放平臺之「行政院人事行政總處事求人機關徵才資料」，每日自動同步更新，確保資料即時性。'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': '什麼是重複開缺？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '當相同機關、相同職稱的職缺重複出現時，系統會標示為「重複開缺」，幫助您判斷該職位可能較不穩定或流動率較高。'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': '可以在手機上使用嗎？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '是的，開放事求人支援 PWA（漸進式網頁應用程式），可以安裝到手機桌面像 App 一樣使用，並支援離線瀏覽已查看過的職缺。'
+            }
+          }
+        ]
+      })
+    }
   ]
 })
 </script>
