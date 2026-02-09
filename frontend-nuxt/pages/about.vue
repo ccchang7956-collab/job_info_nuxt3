@@ -125,10 +125,53 @@ useSeoMeta({
   ogType: 'website',
 })
 
-// Canonical URL
+// Canonical URL + FAQ Schema
 useHead({
   link: [
     { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/about' }
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        'mainEntity': [
+          {
+            '@type': 'Question',
+            'name': '開放事求人是什麼？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '開放事求人是一個人事行政總處事求人開放資料查詢平台，提供公務員職缺搜尋、歷史開缺追蹤、留言討論、統計圖表等功能。'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': '與官方事求人網站有什麼不同？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '開放事求人提供歷史開缺紀錄追蹤、重複開缺提醒、職缺留言討論、統計圖表分析等官方網站沒有的功能，並支援 PWA 安裝到手機。'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': '資料來源是什麼？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '本站資料來源為政府資料開放平臺之「行政院人事行政總處事求人機關徵才資料」，每日自動同步更新。'
+            }
+          },
+          {
+            '@type': 'Question',
+            'name': '可以在手機上使用嗎？',
+            'acceptedAnswer': {
+              '@type': 'Answer',
+              'text': '是的，開放事求人支援 PWA（漸進式網頁應用程式），可以安裝到手機桌面像 App 一樣使用，並支援離線瀏覽。'
+            }
+          }
+        ]
+      })
+    }
   ]
 })
 </script>
