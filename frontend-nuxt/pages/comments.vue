@@ -212,10 +212,21 @@ watch(() => route.query, (newQuery, oldQuery) => {
 
 // SEO
 useSeoMeta({
-  title: '看留言 - 開放事求人',
-  description: '瀏覽所有公務人員職缺的留言討論，分享職場心得與情報。',
-  ogTitle: '看留言 - 開放事求人',
-  ogDescription: '瀏覽所有公務人員職缺的留言討論，分享職場心得與情報。',
+  title: '職缺留言討論 - 開放事求人｜人事行政總處事求人',
+  description: '瀏覽公務員職缺留言討論，分享職場心得與情報。人事行政總處事求人開放資料社群討論區。',
+  keywords: '事求人, 職缺留言, 公務員心得, 人事行政總處事求人, 公務員討論, 開放事求人',
+  robots: 'index,follow',
+  ogTitle: '職缺留言討論 - 開放事求人｜人事行政總處事求人',
+  ogDescription: '瀏覽公務員職缺留言討論，分享職場心得與情報。',
+  ogUrl: 'https://opendgpa.shibaalin.com/comments',
+  ogType: 'website',
+})
+
+// Canonical URL
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/comments' }
+  ]
 })
 </script>
 

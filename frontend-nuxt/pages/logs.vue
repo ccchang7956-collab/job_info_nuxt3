@@ -120,10 +120,21 @@ watch(() => route.query, (newQuery, oldQuery) => {
 
 // SEO
 useSeoMeta({
-  title: '更新日誌 - 開放事求人',
-  description: '查看開放事求人網站的資料更新紀錄。',
+  title: '更新日誌 - 開放事求人｜資料更新紀錄',
+  description: '查看開放事求人網站的資料更新紀錄，追蹤人事行政總處事求人開放資料同步狀態。',
+  keywords: '事求人, 更新日誌, 資料更新, 開放事求人',
+  robots: 'index,follow',
   ogTitle: '更新日誌 - 開放事求人',
   ogDescription: '查看開放事求人網站的資料更新紀錄。',
+  ogUrl: 'https://opendgpa.shibaalin.com/logs',
+  ogType: 'website',
+})
+
+// Canonical URL
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/logs' }
+  ]
 })
 </script>
 

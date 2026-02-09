@@ -209,10 +209,21 @@ onMounted(() => {
 
 // SEO
 useSeoMeta({
-  title: '統計圖表 - 開放事求人',
-  description: '查看公務人員職缺的各項統計數據，包含機關、職系、地點等開缺排行。',
-  ogTitle: '統計圖表 - 開放事求人',
-  ogDescription: '查看公務人員職缺的各項統計數據，包含機關、職系、地點等開缺排行。',
+  title: '職缺統計圖表 - 開放事求人｜人事行政總處事求人',
+  description: '公務員職缺統計分析，包含機關、職系、地點開缺排行。人事行政總處事求人開放資料視覺化呈現。',
+  keywords: '事求人, 職缺統計, 開缺分析, 人事行政總處事求人, 公務員職缺圖表, 開放事求人',
+  robots: 'index,follow',
+  ogTitle: '職缺統計圖表 - 開放事求人｜人事行政總處事求人',
+  ogDescription: '公務員職缺統計分析，包含機關、職系、地點開缺排行。',
+  ogUrl: 'https://opendgpa.shibaalin.com/charts',
+  ogType: 'website',
+})
+
+// Canonical URL
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/charts' }
+  ]
 })
 </script>
 

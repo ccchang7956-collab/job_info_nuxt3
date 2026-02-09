@@ -277,10 +277,21 @@ watch(() => route.query, (newQuery, oldQuery) => {
 
 // SEO
 useSeoMeta({
-  title: '開放事求人 - 公務人員職缺查詢',
-  description: '公務人員職缺查詢網站，支援 PWA 安裝。提供歷史開缺紀錄、重複開缺追蹤、留言討論、統計圖表等功能。',
-  ogTitle: '開放事求人 - 公務人員職缺查詢',
-  ogDescription: '公務人員職缺查詢網站，支援 PWA 安裝。提供歷史開缺紀錄、重複開缺追蹤、留言討論、統計圖表等功能。',
+  title: '開放事求人 - 人事行政總處事求人開放資料｜公務員職缺查詢',
+  description: '最即時的人事行政總處事求人開放資料查詢平台。提供公務員職缺搜尋、歷史開缺、留言討論、統計圖表。支援 PWA 安裝。',
+  keywords: '事求人, 人事行政總處事求人, 公務員職缺, 政府職缺, 開放資料, 公務人員, 職缺查詢, 開放事求人',
+  robots: 'index,follow',
+  ogTitle: '開放事求人 - 人事行政總處事求人開放資料｜公務員職缺查詢',
+  ogDescription: '最即時的人事行政總處事求人開放資料查詢平台。提供公務員職缺搜尋、歷史開缺、留言討論、統計圖表。',
+  ogUrl: 'https://opendgpa.shibaalin.com/',
+  ogType: 'website',
+})
+
+// Canonical URL
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/' }
+  ]
 })
 </script>
 
