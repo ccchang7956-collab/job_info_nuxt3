@@ -99,6 +99,12 @@ export default defineNuxtConfig({
         { rel: 'manifest', href: '/manifest.webmanifest' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        // 預連接 API 伺服器 - 加速資料載入
+        { rel: 'preconnect', href: 'https://opendgpa.shibaalin.com' },
+        { rel: 'dns-prefetch', href: 'https://opendgpa.shibaalin.com' },
+        // 預連接 Cloudflare - 加速 Turnstile 載入
+        { rel: 'preconnect', href: 'https://challenges.cloudflare.com' },
+        { rel: 'dns-prefetch', href: 'https://challenges.cloudflare.com' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap' }
       ],
       script: [

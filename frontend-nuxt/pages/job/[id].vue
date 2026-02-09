@@ -53,6 +53,14 @@ useSeoMeta({
     : '公務人員職缺詳細資訊',
   ogUrl: `https://opendgpa.shibaalin.com/job/${jobId}`,
   ogType: 'article',
+  // 文章更新時間 - 與對手同等規格
+  articleModifiedTime: () => {
+    if (!job.value?.date_from) return undefined
+    const parts = job.value.date_from.split('/')
+    if (parts.length !== 3) return undefined
+    const year = parseInt(parts[0]) + 1911
+    return `${year}-${parts[1]}-${parts[2]}`
+  },
 })
 
 // Canonical URL + Schema.org Structured Data (JobPosting + BreadcrumbList)
