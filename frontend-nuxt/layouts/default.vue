@@ -34,7 +34,7 @@ watch(() => route.path, () => {
   closeMobileMenu()
 })
 
-// PWA Manifest + WebSite Schema
+// PWA Manifest + WebSite Schema + Organization Schema
 useHead({
   link: [
     { rel: 'manifest', href: '/manifest.webmanifest' },
@@ -50,8 +50,10 @@ useHead({
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         'name': '開放事求人',
-        'alternateName': '公務人員職缺查詢',
+        'alternateName': ['公務人員職缺查詢', '人事行政總處事求人開放資料'],
         'url': 'https://opendgpa.shibaalin.com',
+        'description': '最即時的人事行政總處事求人開放資料查詢平台，提供公務員職缺搜尋、歷史開缺、留言討論、統計圖表。',
+        'inLanguage': 'zh-TW',
         'potentialAction': {
           '@type': 'SearchAction',
           'target': {
@@ -60,6 +62,18 @@ useHead({
           },
           'query-input': 'required name=search_term_string'
         }
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        'name': '開放事求人',
+        'alternateName': 'Open DGPA Jobs',
+        'url': 'https://opendgpa.shibaalin.com',
+        'logo': 'https://opendgpa.shibaalin.com/pwa-512x512.png',
+        'description': '人事行政總處事求人開放資料查詢平台'
       })
     }
   ]

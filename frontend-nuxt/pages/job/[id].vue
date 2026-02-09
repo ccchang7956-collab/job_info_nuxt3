@@ -55,7 +55,7 @@ useSeoMeta({
   ogType: 'article',
 })
 
-// Canonical URL + Schema.org Structured Data
+// Canonical URL + Schema.org Structured Data (JobPosting + BreadcrumbList)
 useHead(() => {
   const baseHead = {
     link: [
@@ -73,7 +73,8 @@ useHead(() => {
     return `${year}-${parts[1]}-${parts[2]}`
   }
 
-  const schema = {
+  // JobPosting Schema
+  const jobPostingSchema = {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     'title': `${job.value.org_name}(${job.value.title})`,
@@ -102,12 +103,42 @@ useHead(() => {
     }
   }
 
+  // BreadcrumbList Schema - 讓 Google 顯示階層導航
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': '首頁',
+        'item': 'https://opendgpa.shibaalin.com/'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': '職缺列表',
+        'item': 'https://opendgpa.shibaalin.com/'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': `${job.value.org_name}(${job.value.title})`,
+        'item': `https://opendgpa.shibaalin.com/job/${jobId}`
+      }
+    ]
+  }
+
   return {
     ...baseHead,
     script: [
       {
         type: 'application/ld+json',
-        innerHTML: JSON.stringify(schema)
+        innerHTML: JSON.stringify(jobPostingSchema)
+      },
+      {
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(breadcrumbSchema)
       }
     ]
   }
