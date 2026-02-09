@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 import type { JobDetailResponse } from '@/types'
@@ -149,6 +149,20 @@ const refreshJobDetails = async () => {
   clearNuxtData()
   await refresh()
 }
+
+// 浮動返回按鈕 - 捲動超過 200px 後顯示
+const showFloatingBack = ref(false)
+const handleScroll = () => {
+  showFloatingBack.value = window.scrollY > 200
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
@@ -187,5 +201,17 @@ const refreshJobDetails = async () => {
         @refresh="refreshJobDetails" 
       />
     </div>
+
+    <!-- 浮動返回按鈕（手機版，捲動後顯示）-->
+    <Transition name="fade">
+      <button
+        v-if="showFloatingBack"
+        @click="router.back()"
+        class="md:hidden fixed bottom-6 left-4 z-50 flex items-center gap-2 px-4 py-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 active:scale-95 transition-all"
+      >
+        <ArrowLeftIcon class="w-5 h-5" />
+        <span class="text-sm font-medium">返回</span>
+      </button>
+    </Transition>
   </div>
 </template>
