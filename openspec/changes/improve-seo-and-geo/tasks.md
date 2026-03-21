@@ -34,8 +34,8 @@
 
 ## 6. 驗證
 
-- [ ] 6.1 使用 Google Rich Results Test 驗證 JobPosting Schema
-- [ ] 6.2 使用 Google Rich Results Test 驗證 FAQPage Schema
-- [ ] 6.3 確認所有頁面的 meta tags 正確輸出
-- [ ] 6.4 確認 `robots.txt` 和 `llms-full.txt` 可正常存取
-- [ ] 6.5 確認 `sitemap.xml` 包含完整的 lastmod/priority 資訊
+- [x] 6.1 使用 Google Rich Results Test 驗證 JobPosting Schema
+- [x] 6.2 使用 Google Rich Results Test 驗證 FAQPage Schema
+- [x] 6.3 確認所有頁面的 meta tags 正確輸出
+- [x] 6.4 確認 `robots.txt` 和 `llms-full.txt` 可正常存取
+- [x] 6.5 確認 `sitemap.xml` 包含完整的 lastmod/priority 資訊
