@@ -106,7 +106,8 @@ useHead(() => {
         '@type': 'PostalAddress',
         'addressLocality': job.value.work_place_type,
         'streetAddress': job.value.work_address || job.value.work_place_type,
-        'addressRegion': '台灣'
+        'addressRegion': '台灣',
+        'addressCountry': 'TW'
       }
     }
   }
