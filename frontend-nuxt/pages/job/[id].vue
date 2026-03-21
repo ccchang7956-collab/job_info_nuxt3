@@ -189,7 +189,7 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <article v-else-if="job" itemscope itemtype="https://schema.org/JobPosting">
+    <article v-else-if="job">
       <JobInfoCard :job="job" :duplicates="duplicates">
         <template #header-actions>
           <button 
