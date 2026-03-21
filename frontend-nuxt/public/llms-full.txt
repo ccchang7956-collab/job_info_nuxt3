@@ -1,0 +1,121 @@
+# 開放事求人
+
+> 非官方的人事行政總處事求人開放資料查詢平台，提供台灣公務員職缺搜尋服務。
+
+## 網站說明
+
+本站為非官方的人事行政總處事求人開放資料查詢平台，資料來源為政府資料開放平臺之「行政院人事行政總處事求人機關徵才資料」。每日自動同步更新（約 12:30 和 00:30 各一次），資料從 2024 年 11 月開始收錄至今。
+
+本站已收錄超過 2024 年 11 月以來的所有歷史職缺，不同於官方事求人只顯示目前開放中的職缺。
+
+## 主要功能
+
+- **公務員職缺搜尋與篩選**：依機關名稱、職稱、職系、地點、職等範圍搜尋
+- **歷史開缺紀錄追蹤**：查詢特定機關或職位在過去的開缺紀錄
+- **重複開缺提醒**：標示同一機關相同職位重複出現的職缺，協助判斷職位穩定性
+- **職缺留言討論區**：使用者可對職缺進行匿名留言，分享業界資訊
+- **統計圖表分析**：機關開缺排行、職系開缺分析、每日開缺趨勢、工作地點分佈
+- **PWA 網頁應用程式**：可安裝到手機主畫面，支援離線瀏覽
+- **LINE AI Bot**：透過 LINE 聊天機器人查詢職缺，支援自然語言搜尋
+
+## 網站地圖
+
+- **首頁（職缺列表）**: https://opendgpa.shibaalin.com/
+- **職缺詳情頁**: https://opendgpa.shibaalin.com/job/[id]
+- **留言討論**: https://opendgpa.shibaalin.com/comments
+- **統計圖表**: https://opendgpa.shibaalin.com/charts
+- **更新日誌**: https://opendgpa.shibaalin.com/logs
+- **關於本站**: https://opendgpa.shibaalin.com/about
+- **隱私權政策**: https://opendgpa.shibaalin.com/privacy-policy
+
+## 搜尋功能說明
+
+首頁支援以下篩選條件：
+
+| 欄位 | URL 參數 | 說明 |
+|------|----------|------|
+| 機關名稱 | `org` | 機關名稱（模糊搜尋） |
+| 職稱 | `title` | 職稱（模糊搜尋） |
+| 職系 | `sysnam` | 職系分類（如：綜合行政、資訊處理） |
+| 地點 | `places` | 工作地點（如：臺北市、新北市） |
+| 最低職等 | `min_rank` | 1-14 |
+| 最高職等 | `max_rank` | 1-14 |
+| 包含歷史 | `include_history` | true/false，是否包含已截止職缺 |
+| 包含非正式 | `include_parttime` | true/false，是否包含非正式公務人員 |
+| 排序欄位 | `sort` | org/title/sysnam/rank/place/date_from |
+| 排序方向 | `order` | asc/desc |
+| 頁碼 | `page` | 分頁頁碼 |
+| 每頁筆數 | `per_page` | 預設 15 |
+
+搜尋範例：
+- 搜尋臺北市機關 IT 職缺：`/?org=&sysnam=資訊處理&places=臺北市`
+- 搜尋特定機關所有歷史開缺：`/?org=內政部&include_history=true`
+
+## 職缺資料欄位
+
+每個職缺包含以下資訊：
+
+| 欄位 | 說明 |
+|------|------|
+| id | 職缺唯一識別碼 |
+| org | 機關簡稱 |
+| org_name | 機關全名 |
+| title | 職稱 |
+| sysnam | 職系 |
+| rank | 職等（如：6等 - 7等） |
+| place | 工作地點 |
+| work_address | 詳細工作地址 |
+| date_from | 開缺日（民國年月日，格式：YYY/MM/DD） |
+| date_to | 截止日（民國年月日，格式：YYY/MM/DD） |
+| announce_date | 公告日期 |
+| history_count | 相同職位歷史開缺次數 |
+| comment_count | 留言數量 |
+
+## API 端點（已代理至前端域名）
+
+| 端點 | 說明 |
+|------|------|
+| GET `/api/jobs` | 職缺列表（支援篩選分頁） |
+| GET `/api/Active_job_openings/{id}` | 職缺詳情（含留言和歷史開缺） |
+| GET `/api/comments/list` | 留言列表 |
+| GET `/api/job_openings_chart` | 機關開缺統計圖表 |
+| GET `/api/job_openings_chart_by_sysnam` | 職系開缺統計圖表 |
+| GET `/api/job_openings_daily_chart` | 每日開缺趨勢 |
+| GET `/api/job_openings_workplace_chart` | 工作地點分佈 |
+| GET `/api/metadata/last-update` | 資料最後更新時間 |
+| GET `/sitemap.xml` | XML Sitemap |
+
+## 技術架構
+
+- **前端**：Nuxt 3（Vue 3）SSR 框架，支援搜尋引擎爬蟲
+- **後端**：FastAPI（Python），連接 MySQL 資料庫
+- **資料庫**：MySQL，儲存職缺、留言、更新日誌
+- **PWA**：Service Worker 支援離線使用
+
+## 資料來源與授權
+
+- **政府資料開放平臺**：https://data.gov.tw/dataset/7229
+- **行政院人事行政總處事求人**：https://web3.dgpa.gov.tw/want03front/AP/WANTF00001.ASPX
+- 資料採用政府資料開放授權條款（Open Government Data License），使用者得自由使用、散布或修改本資料
+
+## 常見問題
+
+**Q: 這是官方網站嗎？**
+A: 否，這是非官方的第三方平台，資料來源為政府的開放資料集。
+
+**Q: 資料多久更新一次？**
+A: 每日約 12:30 和 00:30 各更新一次，與人事行政總處的開放資料同步。
+
+**Q: 可以查詢已截止的職缺嗎？**
+A: 可以。在首頁搜尋時勾選「包含歷史職缺」即可查詢截止的職缺，資料從 2024 年 11 月開始收錄。
+
+**Q: 如何使用手機版？**
+A: 網站支援 PWA，可在手機瀏覽器點選「加入主畫面」，安裝後可像 App 一樣使用。
+
+**Q: 留言是否需要帳號？**
+A: 目前留言為匿名制，不需要帳號，但需通過 Cloudflare Turnstile 的機器人驗證。
+
+## 聯絡方式
+
+- 網站：https://opendgpa.shibaalin.com
+- 關於頁面（含聯絡表單）：https://opendgpa.shibaalin.com/about

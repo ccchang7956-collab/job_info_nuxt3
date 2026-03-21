@@ -20,3 +20,7 @@ Allow: /
 
 # Sitemap 和 LLMs.txt
 Sitemap: https://opendgpa.shibaalin.com/sitemap.xml
+
+# LLMs.txt（AI 爬蟲參考文件）
+LLMs: https://opendgpa.shibaalin.com/llms.txt
+LLMs-full: https://opendgpa.shibaalin.com/llms-full.txt

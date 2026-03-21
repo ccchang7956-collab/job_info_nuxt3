@@ -189,7 +189,7 @@ onUnmounted(() => {
       </button>
     </div>
 
-    <div v-else-if="job">
+    <article v-else-if="job" itemscope itemtype="https://schema.org/JobPosting">
       <JobInfoCard :job="job" :duplicates="duplicates">
         <template #header-actions>
           <button 
@@ -208,7 +208,7 @@ onUnmounted(() => {
         :job-id="job.id" 
         @refresh="refreshJobDetails" 
       />
-    </div>
+    </article>
 
     <!-- 浮動返回按鈕（手機版，捲動後顯示）-->
     <Transition name="fade">

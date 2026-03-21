@@ -287,7 +287,7 @@ useSeoMeta({
   ogType: 'website',
 })
 
-// Canonical URL + FAQ Schema
+// Canonical URL + WebSite Schema + Organization Schema
 useHead({
   link: [
     { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/' }
@@ -333,9 +333,48 @@ useHead({
           }
         ]
       })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        'name': '開放事求人',
+        'alternateName': '人事行政總處事求人開放資料查詢平台',
+        'url': 'https://opendgpa.shibaalin.com/',
+        'description': '台灣公務人員職缺查詢平台，資料來源為行政院人事行政總處事求人開放資料。',
+        'potentialAction': {
+          '@type': 'SearchAction',
+          'target': {
+            '@type': 'EntryPoint',
+            'urlTemplate': 'https://opendgpa.shibaalin.com/?org={search_term_string}'
+          },
+          'query-input': 'required name=search_term_string'
+        }
+      })
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        'name': '開放事求人',
+        'url': 'https://opendgpa.shibaalin.com/',
+        'logo': {
+          '@type': 'ImageObject',
+          'url': 'https://opendgpa.shibaalin.com/pwa-512x512.png',
+          'width': 512,
+          'height': 512
+        },
+        'description': '非官方的人事行政總處事求人開放資料查詢平台，提供公務員職缺搜尋、歷史開缺追蹤、留言討論、統計圖表等功能。',
+        'sameAs': [
+          'https://job.ccchang.tw'
+        ]
+      })
     }
   ]
 })
+
 </script>
 
 <template>
@@ -573,7 +612,7 @@ useHead({
     </div>
 
     <!-- Results Section -->
-    <section>
+    <section aria-label="職缺搜尋結果">
       <!-- Loading State -->
       <LoadingSpinner v-if="loading" message="正在載入職缺資料..." />
       

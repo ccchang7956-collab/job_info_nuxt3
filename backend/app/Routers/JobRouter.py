@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Depends
+from fastapi import APIRouter, Query, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.Core.Database import get_async_db
 from app.Services.JobService import JobService
@@ -10,6 +10,7 @@ router = APIRouter()
 
 @router.get("/", response_model=JobListResponse)
 async def get_jobs(
+    response: Response,
     page: int = Query(1, ge=1, le=1000),
     per_page: int = Query(15, ge=1, le=100),
     org: str = Query(None, max_length=100),
@@ -33,6 +34,9 @@ async def get_jobs(
         max_rank_int = int(max_rank) if max_rank and max_rank.strip() != "" else None
     except ValueError:
         max_rank_int = None
+
+    # 加入 Cache-Control 標頭，讓搜尋引擎和 AI 爬蟲能快取結果（5 分鐘）
+    response.headers["Cache-Control"] = "public, max-age=300"
 
     return await JobService.get_jobs(
         db=db,

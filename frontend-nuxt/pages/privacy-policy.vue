@@ -3,9 +3,18 @@ import { ShieldCheckIcon, ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 useSeoMeta({
   title: '隱私權政策 - 開放事求人',
-  description: '開放事求人網站的隱私權政策說明',
+  description: '開放事求人網站的隱私權政策說明，包含個人資料蒐集方式、Google Analytics 使用，以及 Cookie 政策。',
+  robots: 'index,follow',
   ogTitle: '隱私權政策 - 開放事求人',
-  ogDescription: '開放事求人網站的隱私權政策說明'
+  ogDescription: '開放事求人網站的隱私權政策說明。',
+  ogUrl: 'https://opendgpa.shibaalin.com/privacy-policy',
+  ogType: 'website',
+})
+
+useHead({
+  link: [
+    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/privacy-policy' }
+  ]
 })
 </script>
 

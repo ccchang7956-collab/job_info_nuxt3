@@ -105,7 +105,10 @@ export default defineNuxtConfig({
         // 預連接 Cloudflare - 加速 Turnstile 載入
         { rel: 'preconnect', href: 'https://challenges.cloudflare.com' },
         { rel: 'dns-prefetch', href: 'https://challenges.cloudflare.com' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap' }
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap' },
+        // LLMs.txt - AI 爬蟲發現文件
+        { rel: 'alternate', type: 'text/plain', href: '/llms.txt', title: 'LLMs.txt' },
+        { rel: 'alternate', type: 'text/plain', href: '/llms-full.txt', title: 'LLMs-Full.txt' }
       ],
       script: [
         // Cloudflare Turnstile

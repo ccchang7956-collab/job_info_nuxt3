@@ -24,20 +24,31 @@ Sitemap: {SITE_DOMAIN}/sitemap.xml
 """
 
     @staticmethod
+    def _format_lastmod(date_str: str | None) -> str:
+        """將 announce_date 格式 (YYYYMMDD) 轉換成 ISO 8601 格式 (YYYY-MM-DD)"""
+        if not date_str or len(date_str) != 8:
+            return datetime.now().strftime('%Y-%m-%d')
+        try:
+            return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
+        except Exception:
+            return datetime.now().strftime('%Y-%m-%d')
+
+    @staticmethod
     async def get_sitemap_xml(db: AsyncSession) -> str:
         # Check cache first
         if "sitemap" in sitemap_cache:
             return sitemap_cache["sitemap"]
 
         base_url = SITE_DOMAIN
+        today_str = datetime.now().strftime('%Y-%m-%d')
         
-        # Static routes (使用新版路由)
+        # 靜態路由設定（priority 和 changefreq）
         static_routes = [
-            "/",
-            "/comments",
-            "/charts",
-            "/about",
-            "/privacy-policy",
+            {"path": "/", "priority": "1.0", "changefreq": "daily"},
+            {"path": "/comments", "priority": "0.7", "changefreq": "daily"},
+            {"path": "/charts", "priority": "0.7", "changefreq": "daily"},
+            {"path": "/about", "priority": "0.5", "changefreq": "monthly"},
+            {"path": "/privacy-policy", "priority": "0.3", "changefreq": "yearly"},
         ]
         
         xml_content = ['<?xml version="1.0" encoding="UTF-8"?>']
@@ -46,9 +57,10 @@ Sitemap: {SITE_DOMAIN}/sitemap.xml
         # Add static routes
         for route in static_routes:
             xml_content.append('<url>')
-            xml_content.append(f'<loc>{base_url}{route}</loc>')
-            xml_content.append('<changefreq>daily</changefreq>')
-            xml_content.append('<priority>0.8</priority>')
+            xml_content.append(f'<loc>{base_url}{route["path"]}</loc>')
+            xml_content.append(f'<lastmod>{today_str}</lastmod>')
+            xml_content.append(f'<changefreq>{route["changefreq"]}</changefreq>')
+            xml_content.append(f'<priority>{route["priority"]}</priority>')
             xml_content.append('</url>')
             
         # Add dynamic job routes (Active jobs only)
@@ -58,20 +70,23 @@ Sitemap: {SITE_DOMAIN}/sitemap.xml
             roc_today = f"{roc_year}{today.strftime('%m%d')}"
             
             stmt = (
-                select(JobAllData.id)
+                select(JobAllData.id, JobAllData.announce_date)
                 .where(JobAllData.date_to >= roc_today)
                 .order_by(desc(JobAllData.date_from))
                 .limit(5000)
             )
             
             result = await db.execute(stmt)
-            jobs = result.scalars().all()
+            jobs = result.all()
             
-            for job_id in jobs:
+            for row in jobs:
+                job_id = row.id
+                lastmod = SeoService._format_lastmod(row.announce_date)
                 xml_content.append('<url>')
                 xml_content.append(f'<loc>{base_url}/job/{job_id}</loc>')
+                xml_content.append(f'<lastmod>{lastmod}</lastmod>')
                 xml_content.append('<changefreq>weekly</changefreq>')
-                xml_content.append('<priority>0.6</priority>')
+                xml_content.append('<priority>0.8</priority>')
                 xml_content.append('</url>')
                 
         except Exception as e:
