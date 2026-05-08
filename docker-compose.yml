@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend-nuxt
+      dockerfile: Dockerfile
+    container_name: job_info_frontend
+    restart: always
+    environment:
+      - NUXT_PUBLIC_TURNSTILE_SITE_KEY=${NUXT_PUBLIC_TURNSTILE_SITE_KEY}
+      - NUXT_PUBLIC_GTAG_ID=${NUXT_PUBLIC_GTAG_ID}
+      - BACKEND_URL=http://backend:8002
+    depends_on:
+      - backend
+    networks:
+      - job_info_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: job_info_backend
+    restart: always
+    environment:
+      - ENVIRONMENT=production
+    volumes:
+      - ./backend/database:/app/database # 掛載資料庫資料夾避免資料流失
+    networks:
+      - job_info_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: job_info_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - job_info_network
+
+networks:
+  job_info_network:
+    driver: bridge

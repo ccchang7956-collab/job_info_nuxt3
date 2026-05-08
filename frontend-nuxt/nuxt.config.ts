@@ -122,16 +122,16 @@ export default defineNuxtConfig({
 
   routeRules: {
     // Special case: Home page jobs fetch maps to backend root
-    '/api/jobs': { proxy: 'http://localhost:8002/' },
+    '/api/jobs': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/` },
 
-    // General API proxy: /api/xxx -> http://localhost:8002/xxx
-    '/api/**': { proxy: 'http://localhost:8002/**' },
+    // General API proxy: /api/xxx -> backend/xxx
+    '/api/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/**` },
 
     // Sitemap proxy
-    '/sitemap.xml': { proxy: 'http://localhost:8002/sitemap.xml' },
+    '/sitemap.xml': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/sitemap.xml` },
 
     // LINE Bot webhook
-    '/line_ai_bot/**': { proxy: 'http://localhost:8002/line_ai_bot/**' }
+    '/line_ai_bot/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/line_ai_bot/**` }
   },
 
   pwa: {
