@@ -71,7 +71,7 @@ sudo apt-get install -y git
 ```bash
 # 假設專案放在 /opt/job_info_nuxt3
 cd /opt
-sudo git clone <你的_Git_Repository_網址> job_info_nuxt3
+sudo git clone https://github.com/ccchang7956-collab/job_info_nuxt3.git
 cd job_info_nuxt3
 ```
 
@@ -87,21 +87,19 @@ cd job_info_nuxt3
 
 ## 3. 設定環境變數
 
-在專案根目錄 (`/opt/job_info_nuxt3`) 建立一個 `.env` 檔案給 Docker Compose 使用：
+請在專案根目錄 (`/opt/job_info_nuxt3`) 建立一個 `.env` 檔案給 Docker Compose 使用：
 
 ```bash
-# 複製前端的 .env 或者手動建立
+# 建立一個新的 .env 檔案
 nano .env
 ```
 
-請在裡面填入前端所需的環境變數（這會在 Docker Compose 啟動時傳入 `frontend` 容器）：
+**重點說明：** 您需要將原本開發環境中 **`backend/.env`** 與 **`frontend-nuxt/.env`** 的內容「合併」貼進這個根目錄的 `.env` 中。我已經修改了 Docker 設定，讓前後端容器都能自動讀取這個共用的 `.env` 檔案。
 
-```env
-NUXT_PUBLIC_TURNSTILE_SITE_KEY=你的_Turnstile_Site_Key
-NUXT_PUBLIC_GTAG_ID=你的_Google_Analytics_ID
-```
-
-*(提示: 若後端也需要密碼或 Token，可以在這裡一併加入，並修改 docker-compose.yml 掛載進去)*
+> ⚠️ **特別注意 (資料庫設定)：**
+> 檢查您貼過來的環境變數中是否有 `DATABASE_URL=mysql+aiomysql://root...` 這一行。
+> 因為您原本使用的是 SQLite 資料庫（位於 `backend/database/data/` 並且我們已經將它掛載到容器），**如果您想要繼續在 Docker 內使用原本的 SQLite 資料庫，請將 `.env` 中的 `DATABASE_URL` 註解掉或是刪除**，讓程式自動 fallback 去讀取 SQLite。
+> 如果不刪除，Backend 容器啟動時會嘗試去連線 localhost 的 MySQL 而導致連線失敗。
 
 ---
 

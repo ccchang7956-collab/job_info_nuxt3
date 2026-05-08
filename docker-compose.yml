@@ -7,9 +7,8 @@ services:
       dockerfile: Dockerfile
     container_name: job_info_frontend
     restart: always
+    env_file: .env
     environment:
-      - NUXT_PUBLIC_TURNSTILE_SITE_KEY=${NUXT_PUBLIC_TURNSTILE_SITE_KEY}
-      - NUXT_PUBLIC_GTAG_ID=${NUXT_PUBLIC_GTAG_ID}
       - BACKEND_URL=http://backend:8002
     depends_on:
       - backend
@@ -22,6 +21,7 @@ services:
       dockerfile: Dockerfile
     container_name: job_info_backend
     restart: always
+    env_file: .env
     environment:
       - ENVIRONMENT=production
     volumes:
