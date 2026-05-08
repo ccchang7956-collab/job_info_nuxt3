@@ -1,21 +1,22 @@
 # 歡迎所有搜尋引擎爬蟲
-User-Agent: *
+User-agent: *
 Allow: /
+Disallow: /logs
 
 # 歡迎 AI 爬蟲（ChatGPT、Claude、Google Gemini）
-User-Agent: GPTBot
+User-agent: GPTBot
 Allow: /
 
-User-Agent: ChatGPT-User
+User-agent: ChatGPT-User
 Allow: /
 
-User-Agent: ClaudeBot
+User-agent: ClaudeBot
 Allow: /
 
-User-Agent: Google-Extended
+User-agent: Google-Extended
 Allow: /
 
-User-Agent: PerplexityBot
+User-agent: PerplexityBot
 Allow: /
 
 # Sitemap 和 LLMs.txt

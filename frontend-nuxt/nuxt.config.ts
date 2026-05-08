@@ -157,8 +157,9 @@ export default defineNuxtConfig({
       ]
     },
     workbox: {
-      navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}']
+      // 不設 navigateFallback：SSR 模式每個路由有獨立 HTML，不需要 fallback
+      // 設定此項會讓 Googlebot 的 WRS 把所有頁面都渲染成首頁，導致無法建立索引
+      globPatterns: ['**/*.{js,css,png,svg,ico}'] // 移除 html，避免 Service Worker 快取頁面
     },
     devOptions: {
       enabled: true,  // 開發模式也啟用 manifest 避免 404 警告
