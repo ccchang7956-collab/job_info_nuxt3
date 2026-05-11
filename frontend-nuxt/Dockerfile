@@ -1,18 +1,18 @@
-# Build stage
-FROM node:18-alpine AS builder
+# Build stage（需要 Node 20+ 以支援 Nuxt 4 / Vite 7）
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# 安裝依賴
+# 安裝依賴（用 npm install 避免 Alpine musl 上 optional deps 的 bug）
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # 複製原始碼並編譯
 COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 

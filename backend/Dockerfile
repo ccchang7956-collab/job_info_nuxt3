@@ -17,5 +17,10 @@ COPY . .
 # 暴露 FastAPI 埠
 EXPOSE 8002
 
-# 啟動命令
-CMD ["python", "run.py"]
+# 使用 gunicorn + uvicorn worker 啟動（正式環境，不使用 reload）
+CMD ["gunicorn", "app.Main:app", \
+     "-w", "2", \
+     "-k", "uvicorn.workers.UvicornWorker", \
+     "--bind", "0.0.0.0:8002", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-"]
