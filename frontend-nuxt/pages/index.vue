@@ -287,10 +287,11 @@ useSeoMeta({
   ogType: 'website',
 })
 
-// Canonical URL + WebSite Schema + Organization Schema
-useHead(() => ({
+// Canonical URL（固定為根路徑，不跟隨查詢參數，防止分頁稀釋 PageRank）
+// + WebSite / Organization / FAQPage / Dataset / SpeakableSpecification Schema
+useHead({
   link: [
-    { rel: 'canonical', href: `https://opendgpa.shibaalin.com${route.fullPath === '/' ? '/' : route.fullPath}` }
+    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/' }
   ],
   script: [
     {
@@ -371,9 +372,53 @@ useHead(() => ({
           'https://job.ccchang.tw'
         ]
       })
+    },
+    {
+      // Dataset Schema — 讓 AI 搜尋引擎認知本站為政府開放資料的查詢平台
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Dataset',
+        'name': '台灣公務員職缺開放資料查詢',
+        'description': '人事行政總處事求人機關徵才資料，每日自動更新，涵蓋 2024 年 11 月至今的歷史職缺，提供公務員職缺搜尋、歷史開缺追蹤等功能。',
+        'url': 'https://opendgpa.shibaalin.com/',
+        'creator': {
+          '@type': 'Organization',
+          'name': '開放事求人',
+          'url': 'https://opendgpa.shibaalin.com/'
+        },
+        'license': 'https://data.gov.tw/license',
+        'isAccessibleForFree': true,
+        'temporalCoverage': '2024-11-01/',
+        'spatialCoverage': {
+          '@type': 'Place',
+          'name': '台灣'
+        },
+        'distribution': [
+          {
+            '@type': 'DataDownload',
+            'contentUrl': 'https://opendgpa.shibaalin.com/sitemap.xml',
+            'encodingFormat': 'application/xml'
+          }
+        ]
+      })
+    },
+    {
+      // SpeakableSpecification — 讓 AI 語音/摘要引擎知道哪些內容是重點
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        'name': '開放事求人 - 公務人員職缺查詢',
+        'url': 'https://opendgpa.shibaalin.com/',
+        'speakable': {
+          '@type': 'SpeakableSpecification',
+          'cssSelector': ['h1', 'p.page-description']
+        }
+      })
     }
   ]
-}))
+})
 
 </script>
 
@@ -383,13 +428,12 @@ useHead(() => ({
     <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3 mb-2">
-          <span class="sr-only">開放事求人 - 最新公務人員職缺查詢</span>
           <div class="p-2 bg-primary-100 rounded-lg">
             <BriefcaseIcon class="w-8 h-8 text-primary-600" aria-hidden="true" />
           </div>
-          <span aria-hidden="true">看職缺</span>
+          看職缺 — 公務人員職缺查詢
         </h1>
-        <p class="text-slate-500 text-lg">瀏覽全台最新公務人員職缺資訊</p>
+        <p class="text-slate-500 text-lg page-description">瀏覽全台最新公務人員職缺資訊，資料來源為人事行政總處事求人開放資料</p>
       </div>
       <div class="inline-flex items-center gap-2 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
         <span class="text-slate-600 font-medium">總職缺：</span>

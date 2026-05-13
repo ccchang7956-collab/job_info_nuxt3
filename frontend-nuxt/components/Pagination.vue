@@ -69,7 +69,6 @@ const perPageOptions = [15, 30, 50, 100]
       <NuxtLink 
         v-if="currentPage > 1"
         :to="{ query: { ...$route.query, page: currentPage - 1 } }"
-        @click.prevent="changePage(currentPage - 1)"
         class="p-2 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 transition-all bg-white"
         aria-label="上一頁"
       >
@@ -91,7 +90,6 @@ const perPageOptions = [15, 30, 50, 100]
       <NuxtLink 
         v-if="currentPage < totalPages"
         :to="{ query: { ...$route.query, page: currentPage + 1 } }"
-        @click.prevent="changePage(currentPage + 1)"
         class="p-2 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 transition-all bg-white"
         aria-label="下一頁"
       >

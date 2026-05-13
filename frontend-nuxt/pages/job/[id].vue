@@ -9,10 +9,11 @@ const router = useRouter()
 
 const jobId = route.params.id as string
 
-// SSR Data Fetching（禁用快取）
-const { data, error: fetchError, refresh } = await useFetch<JobDetailResponse>(`/api/Active_job_openings/${jobId}`, {
-  cache: 'no-store'
-})
+// SSR Data Fetching
+// 注意：不設 cache: 'no-store'，讓 nuxt.config 的 swr: 60 快取生效
+// 加速 Googlebot 爬取（避免每次都等後端即時回應消耗爬取配額）
+// 留言刷新時使用 refresh() 強制更新即可
+const { data, error: fetchError, refresh } = await useFetch<JobDetailResponse>(`/api/Active_job_openings/${jobId}`)
 
 const job = computed(() => data.value?.job)
 const comments = computed(() => data.value?.comments || [])
@@ -29,18 +30,19 @@ if (fetchError.value) {
   }
 }
 
-// 客戶端導航時清除快取（僅當 SSR 資料可能過期時）
-// 注意：cache: 'no-store' 會讓 useFetch 不使用瀏覽器快取
-// 但 Nuxt 內部仍可能有快取，所以留言成功後需要手動 refresh
+// 留言提交成功後呼叫 refresh() 強制重取最新資料（包含新留言）
 
 // SEO
 useSeoMeta({
   title: () => job.value 
     ? `開放事求人｜${job.value.org_name}(${job.value.title})｜職缺詳情 - 人事行政總處事求人開放資料` 
     : '職缺詳細資料 - 開放事求人',
-  description: () => job.value 
-    ? `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。資料來源：行政院人事行政總處事求人開放資料。`
-    : '公務人員職缺詳細資訊',
+  description: () => {
+    if (!job.value) return '公務人員職缺詳細資訊'
+    const desc = `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。資料來源：行政院人事行政總處事求人開放資料。`
+    // 限制 description 長度 <= 80 個中文字（約 160 bytes），避免 Google 截斷
+    return desc.length > 80 ? desc.slice(0, 77) + '...' : desc
+  },
   keywords: () => job.value 
     ? `事求人, 人事行政總處事求人, 公務員職缺, 政府職缺, ${job.value.org_name}, ${job.value.title}, ${job.value.sysnam}, 開放事求人`
     : '事求人, 公務員職缺, 政府職缺',
@@ -109,7 +111,15 @@ useHead(() => {
         'addressRegion': '台灣',
         'addressCountry': 'TW'
       }
-    }
+    },
+    // 地理限制 — 提升 Google Jobs 豐富摘要出現機率
+    'applicantLocationRequirements': {
+      '@type': 'Country',
+      'name': 'TW'
+    },
+    'jobBenefits': '政府機關公務員職位，享有公務人員保障與福利',
+    'industry': '政府機關',
+    'occupationalCategory': job.value.sysnam || '公務人員'
   }
 
   // BreadcrumbList Schema - 讓 Google 顯示階層導航
