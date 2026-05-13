@@ -66,11 +66,20 @@ const perPageOptions = [15, 30, 50, 100]
   >
     <!-- Page Controls -->
     <div class="flex items-center gap-2">
+      <NuxtLink 
+        v-if="currentPage > 1"
+        :to="{ query: { ...$route.query, page: currentPage - 1 } }"
+        @click.prevent="changePage(currentPage - 1)"
+        class="p-2 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 transition-all bg-white"
+        aria-label="上一頁"
+      >
+        <ChevronLeftIcon class="w-5 h-5" />
+      </NuxtLink>
       <button 
+        v-else
         type="button"
-        :disabled="currentPage === 1" 
-        @click="changePage(currentPage - 1)"
-        class="p-2 rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
+        disabled 
+        class="p-2 flex items-center justify-center rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
       >
         <ChevronLeftIcon class="w-5 h-5" />
       </button>
@@ -79,11 +88,20 @@ const perPageOptions = [15, 30, 50, 100]
         第 {{ currentPage }} 頁 / 共 {{ totalPages }} 頁
       </span>
       
+      <NuxtLink 
+        v-if="currentPage < totalPages"
+        :to="{ query: { ...$route.query, page: currentPage + 1 } }"
+        @click.prevent="changePage(currentPage + 1)"
+        class="p-2 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 transition-all bg-white"
+        aria-label="下一頁"
+      >
+        <ChevronRightIcon class="w-5 h-5" />
+      </NuxtLink>
       <button 
+        v-else
         type="button"
-        :disabled="currentPage === totalPages" 
-        @click="changePage(currentPage + 1)"
-        class="p-2 rounded-lg border border-slate-200 hover:bg-white hover:border-primary-300 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
+        disabled 
+        class="p-2 flex items-center justify-center rounded-lg border border-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
       >
         <ChevronRightIcon class="w-5 h-5" />
       </button>

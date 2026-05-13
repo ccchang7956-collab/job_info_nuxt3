@@ -89,9 +89,11 @@ export default defineNuxtConfig({
         { property: 'og:image', content: 'https://opendgpa.shibaalin.com/og-image.png' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
+        { property: 'og:image:alt', content: '開放事求人 - 公務人員職缺查詢系統' },
         { property: 'og:locale', content: 'zh_TW' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:image', content: 'https://opendgpa.shibaalin.com/og-image.png' }
+        { name: 'twitter:image', content: 'https://opendgpa.shibaalin.com/og-image.png' },
+        { name: 'twitter:image:alt', content: '開放事求人 - 公務人員職缺查詢系統' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -121,6 +123,9 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    // SSR SWR Caching - 加速 Googlebot 爬取，快取 60 秒
+    '/job/**': { swr: 60 },
+
     // Special case: Home page jobs fetch maps to backend root
     '/api/jobs': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/` },
 

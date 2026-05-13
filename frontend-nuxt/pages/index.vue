@@ -288,9 +288,9 @@ useSeoMeta({
 })
 
 // Canonical URL + WebSite Schema + Organization Schema
-useHead({
+useHead(() => ({
   link: [
-    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/' }
+    { rel: 'canonical', href: `https://opendgpa.shibaalin.com${route.fullPath === '/' ? '/' : route.fullPath}` }
   ],
   script: [
     {
@@ -373,20 +373,21 @@ useHead({
       })
     }
   ]
-})
+}))
 
 </script>
 
 <template>
-  <div class="page-container">
+  <main class="page-container">
     <!-- Header -->
     <div class="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3 mb-2">
+          <span class="sr-only">開放事求人 - 最新公務人員職缺查詢</span>
           <div class="p-2 bg-primary-100 rounded-lg">
-            <BriefcaseIcon class="w-8 h-8 text-primary-600" />
+            <BriefcaseIcon class="w-8 h-8 text-primary-600" aria-hidden="true" />
           </div>
-          看職缺
+          <span aria-hidden="true">看職缺</span>
         </h1>
         <p class="text-slate-500 text-lg">瀏覽全台最新公務人員職缺資訊</p>
       </div>
@@ -818,5 +819,5 @@ useHead({
       :isOpen="isRankModalOpen" 
       @close="isRankModalOpen = false" 
     />
-  </div>
+  </main>
 </template>
