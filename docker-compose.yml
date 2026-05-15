@@ -24,6 +24,7 @@ services:
     env_file: .env
     environment:
       - ENVIRONMENT=production
+      - TZ=Asia/Taipei
     volumes:
       - ./backend/database:/app/database # 掛載資料庫資料夾避免資料流失
     networks:
@@ -51,6 +52,8 @@ services:
     container_name: job_info_backend_cron
     restart: always
     env_file: .env
+    environment:
+      - TZ=Asia/Taipei
     volumes:
       - ./backend/database:/app/database
     networks:
