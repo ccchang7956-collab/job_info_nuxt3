@@ -32,12 +32,10 @@ UNIQUE_COLUMN = 'view_url'
 # --- 函式：載入 .env 設定並取得 SQLite 路徑 ---
 def load_env_config():
     """載入 .env 檔案並設定 SQLite 資料庫路徑"""
-    # script_dir = backend/database/scripts/
+    # script_dir = backend/scripts/
     script_dir = os.path.abspath(os.path.dirname(__file__))
-    # database_dir = backend/database/
-    database_dir = os.path.dirname(script_dir)
     # backend_dir = backend/
-    backend_dir = os.path.dirname(database_dir)
+    backend_dir = os.path.dirname(script_dir)
     
     dotenv_path = os.path.join(backend_dir, '.env')
 
@@ -48,7 +46,7 @@ def load_env_config():
     job_data_url = os.getenv('JOB_DATA_URL')
     
     # SQLite 資料庫路徑 (在 backend/database/data/ 目錄下)
-    db_path = os.path.join(database_dir, 'data', 'job_info.db')
+    db_path = os.path.join(backend_dir, 'database', 'data', 'job_info.db')
     
     # 也可以從環境變數讀取
     db_path_env = os.getenv('SQLITE_DB_PATH')

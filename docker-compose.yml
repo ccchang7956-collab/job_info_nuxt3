@@ -44,6 +44,22 @@ services:
     networks:
       - job_info_network
 
+  backend-cron:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: job_info_backend_cron
+    restart: always
+    env_file: .env
+    volumes:
+      - ./backend/database:/app/database
+    networks:
+      - job_info_network
+    # 執行我們自製的 Python 排程器
+    command: python scripts/cron_runner.py
+    depends_on:
+      - backend
+
 networks:
   job_info_network:
     driver: bridge
