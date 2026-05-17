@@ -139,6 +139,15 @@ export default defineNuxtConfig({
     '/line_ai_bot/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/line_ai_bot/**` }
   },
 
+  nitro: {
+    storage: {
+      cache: {
+        driver: 'lruCache',
+        max: 1000 // 限制 SWR 快取的記憶體使用量，避免爬蟲造成 memory leak
+      }
+    }
+  },
+
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
