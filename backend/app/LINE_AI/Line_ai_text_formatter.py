@@ -181,7 +181,7 @@ def create_job_flex_message_dict(all_job_listings: List[Dict[str, Any]]) -> Opti
             detail_url = None
             if job_id: # 首選 URL - 使用環境變數設定的網域
                 import os
-                site_domain = os.getenv("SITE_DOMAIN", "https://nuxt3.opendgpa.site")
+                site_domain = os.getenv("SITE_DOMAIN", "https://opendgpa.shibaalin.com").rstrip("/")
                 detail_url = f"{site_domain}/job/{job_id}"
             
             if not detail_url: # 備援 1: 使用資料庫中的 view_url 或 url_link

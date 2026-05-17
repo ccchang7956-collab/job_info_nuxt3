@@ -1,5 +1,6 @@
 # 歡迎所有搜尋引擎爬蟲
 User-agent: *
+Content-Signal: search=yes,ai-input=yes,ai-train=yes
 Allow: /
 Disallow: /logs
 

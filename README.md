@@ -2,7 +2,7 @@
 
 本專案是一個現代化的網頁應用程式，用於查詢與瀏覽台灣公務人員職缺。專案採用 **Nuxt 3** 前端框架搭配 **FastAPI** 後端，提供優異的效能、SEO 及開發體驗。
 
-🔗 **線上版本**: [開放事求人](https://job.ccchang.tw)
+🔗 **線上版本**: [開放事求人](https://opendgpa.shibaalin.com)
 
 ## ✨ 功能特色
 
@@ -152,4 +152,3 @@ mysql -u root -p job_info < backend/db_optimization.sql
 ---
 
 *最後更新: 2025-12-30*
-

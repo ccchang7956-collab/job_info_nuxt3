@@ -8,6 +8,8 @@ const route = useRoute()
 const router = useRouter()
 
 const jobId = route.params.id as string
+const siteUrl = useSiteUrl()
+const jobUrl = `${siteUrl}/job/${jobId}`
 
 // SSR Data Fetching
 // 注意：不設 cache: 'no-store'，讓 nuxt.config 的 swr: 60 快取生效
@@ -53,7 +55,7 @@ useSeoMeta({
   ogDescription: () => job.value 
     ? `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。`
     : '公務人員職缺詳細資訊',
-  ogUrl: `https://opendgpa.shibaalin.com/job/${jobId}`,
+  ogUrl: jobUrl,
   ogType: 'article',
   // 文章更新時間 - 與對手同等規格
   articleModifiedTime: () => {
@@ -69,7 +71,7 @@ useSeoMeta({
 useHead(() => {
   const baseHead = {
     link: [
-      { rel: 'canonical', href: `https://opendgpa.shibaalin.com/job/${jobId}` }
+      { rel: 'canonical', href: jobUrl }
     ]
   }
   
@@ -88,6 +90,7 @@ useHead(() => {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
     'title': `${job.value.org_name}(${job.value.title})`,
+    'url': jobUrl,
     'description': `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。資料來源：行政院人事行政總處事求人開放資料。`,
     'identifier': {
       '@type': 'PropertyValue',
@@ -131,19 +134,19 @@ useHead(() => {
         '@type': 'ListItem',
         'position': 1,
         'name': '首頁',
-        'item': 'https://opendgpa.shibaalin.com/'
+        'item': `${siteUrl}/`
       },
       {
         '@type': 'ListItem',
         'position': 2,
         'name': '職缺列表',
-        'item': 'https://opendgpa.shibaalin.com/'
+        'item': `${siteUrl}/`
       },
       {
         '@type': 'ListItem',
         'position': 3,
         'name': `${job.value.org_name}(${job.value.title})`,
-        'item': `https://opendgpa.shibaalin.com/job/${jobId}`
+        'item': jobUrl
       }
     ]
   }

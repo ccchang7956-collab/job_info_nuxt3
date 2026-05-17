@@ -210,6 +210,8 @@ watch(() => route.query, (newQuery, oldQuery) => {
   fetchComments()
 })
 
+const pageUrl = useAbsoluteUrl('/comments')
+
 // SEO
 useSeoMeta({
   title: '職缺留言討論 - 開放事求人｜人事行政總處事求人',
@@ -218,14 +220,14 @@ useSeoMeta({
   robots: 'index,follow',
   ogTitle: '職缺留言討論 - 開放事求人｜人事行政總處事求人',
   ogDescription: '瀏覽公務員職缺留言討論，分享職場心得與情報。',
-  ogUrl: 'https://opendgpa.shibaalin.com/comments',
+  ogUrl: pageUrl,
   ogType: 'website',
 })
 
 // Canonical URL
 useHead({
   link: [
-    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/comments' }
+    { rel: 'canonical', href: pageUrl }
   ]
 })
 </script>

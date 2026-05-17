@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
       args:
         BACKEND_URL: http://backend:8002  # build time 傳入，讓 nuxt routeRules proxy 正確設定
+        NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-https://opendgpa.shibaalin.com}
     container_name: job_info_frontend
     restart: always
     env_file: .env

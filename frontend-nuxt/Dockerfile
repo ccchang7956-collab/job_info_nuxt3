@@ -5,7 +5,9 @@ WORKDIR /app
 
 # BACKEND_URL 必須在 build time 傳入，nuxt.config.ts 的 routeRules proxy 在建置時固化
 ARG BACKEND_URL=http://backend:8002
+ARG NUXT_PUBLIC_SITE_URL=https://opendgpa.shibaalin.com
 ENV BACKEND_URL=$BACKEND_URL
+ENV NUXT_PUBLIC_SITE_URL=$NUXT_PUBLIC_SITE_URL
 
 # 安裝依賴（用 npm install 避免 Alpine musl 上 optional deps 的 bug）
 COPY package*.json ./

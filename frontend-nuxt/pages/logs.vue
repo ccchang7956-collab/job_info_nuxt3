@@ -118,6 +118,8 @@ watch(() => route.query, (newQuery, oldQuery) => {
   fetchLogs()
 })
 
+const pageUrl = useAbsoluteUrl('/logs')
+
 // SEO - 更新日誌對搜尋使用者無直接價值，設為 noindex 節省 Crawl Budget
 useSeoMeta({
   title: '更新日誌 - 開放事求人｜資料更新紀錄',
@@ -126,14 +128,14 @@ useSeoMeta({
   robots: 'noindex,follow',
   ogTitle: '更新日誌 - 開放事求人',
   ogDescription: '查看開放事求人網站的資料更新紀錄。',
-  ogUrl: 'https://opendgpa.shibaalin.com/logs',
+  ogUrl: pageUrl,
   ogType: 'website',
 })
 
 // Canonical URL
 useHead({
   link: [
-    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/logs' }
+    { rel: 'canonical', href: pageUrl }
   ]
 })
 </script>

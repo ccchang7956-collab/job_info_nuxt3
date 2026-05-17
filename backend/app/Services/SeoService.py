@@ -3,35 +3,46 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 from cachetools import TTLCache
 from app.Models.Models import JobAllData
+from app.Utils.FormatUtils import convert_to_gregorian_date
 import logging
 import os
+from typing import Optional
+from xml.sax.saxutils import escape
 
 # Cache sitemap for 1 hour (3600 seconds)
 sitemap_cache = TTLCache(maxsize=1, ttl=3600)
 
-# 從環境變數讀取網站網域
-SITE_DOMAIN = os.getenv("SITE_DOMAIN", "https://nuxt3.opendgpa.site")
+SITE_DOMAIN = os.getenv("SITE_DOMAIN", "https://opendgpa.shibaalin.com").rstrip("/")
 
 class SeoService:
     @staticmethod
     def get_robots_txt() -> str:
         return f"""User-agent: *
+Content-Signal: search=yes,ai-input=yes,ai-train=yes
 Allow: /
 Disallow: /admin/
 Disallow: /logs
 
 Sitemap: {SITE_DOMAIN}/sitemap.xml
+LLMs: {SITE_DOMAIN}/llms.txt
+LLMs-full: {SITE_DOMAIN}/llms-full.txt
 """
 
     @staticmethod
-    def _format_lastmod(date_str: str | None) -> str:
-        """將 announce_date 格式 (YYYYMMDD) 轉換成 ISO 8601 格式 (YYYY-MM-DD)"""
-        if not date_str or len(date_str) != 8:
+    def _format_lastmod(date_str: Optional[str]) -> str:
+        """將民國日期 (YYYMMDD) 或西元日期 (YYYYMMDD) 轉成 ISO 8601 日期。"""
+        if not date_str:
             return datetime.now().strftime('%Y-%m-%d')
-        try:
-            return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
-        except Exception:
-            return datetime.now().strftime('%Y-%m-%d')
+
+        normalized = date_str.replace("/", "").replace("-", "")
+        if len(normalized) == 7 and normalized.isdigit():
+            converted = convert_to_gregorian_date(normalized)
+            return converted or datetime.now().strftime('%Y-%m-%d')
+
+        if len(normalized) == 8 and normalized.isdigit():
+            return f"{normalized[:4]}-{normalized[4:6]}-{normalized[6:8]}"
+
+        return datetime.now().strftime('%Y-%m-%d')
 
     @staticmethod
     async def get_sitemap_xml(db: AsyncSession) -> str:
@@ -57,7 +68,7 @@ Sitemap: {SITE_DOMAIN}/sitemap.xml
         # Add static routes
         for route in static_routes:
             xml_content.append('<url>')
-            xml_content.append(f'<loc>{base_url}{route["path"]}</loc>')
+            xml_content.append(f'<loc>{escape(base_url + route["path"])}</loc>')
             xml_content.append(f'<lastmod>{today_str}</lastmod>')
             xml_content.append(f'<changefreq>{route["changefreq"]}</changefreq>')
             xml_content.append(f'<priority>{route["priority"]}</priority>')
@@ -83,7 +94,7 @@ Sitemap: {SITE_DOMAIN}/sitemap.xml
                 job_id = row.id
                 lastmod = SeoService._format_lastmod(row.announce_date)
                 xml_content.append('<url>')
-                xml_content.append(f'<loc>{base_url}/job/{job_id}</loc>')
+                xml_content.append(f'<loc>{escape(f"{base_url}/job/{job_id}")}</loc>')
                 xml_content.append(f'<lastmod>{lastmod}</lastmod>')
                 xml_content.append('<changefreq>weekly</changefreq>')
                 xml_content.append('<priority>0.8</priority>')

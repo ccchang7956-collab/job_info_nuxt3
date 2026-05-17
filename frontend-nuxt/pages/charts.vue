@@ -207,6 +207,8 @@ onMounted(() => {
   fetchChartData()
 })
 
+const pageUrl = useAbsoluteUrl('/charts')
+
 // SEO
 useSeoMeta({
   title: '職缺統計圖表 - 開放事求人｜人事行政總處事求人',
@@ -215,14 +217,14 @@ useSeoMeta({
   robots: 'index,follow',
   ogTitle: '職缺統計圖表 - 開放事求人｜人事行政總處事求人',
   ogDescription: '公務員職缺統計分析，包含機關、職系、地點開缺排行。',
-  ogUrl: 'https://opendgpa.shibaalin.com/charts',
+  ogUrl: pageUrl,
   ogType: 'website',
 })
 
 // Canonical URL
 useHead({
   link: [
-    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/charts' }
+    { rel: 'canonical', href: pageUrl }
   ]
 })
 </script>

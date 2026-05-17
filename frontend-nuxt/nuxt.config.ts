@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 // Force rebuild for tailwind config changes (Timestamp: 2024-12-25 15:30)
+const siteUrl = (process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_DOMAIN || 'https://opendgpa.shibaalin.com').replace(/\/$/, '')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -21,7 +23,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Cloudflare Turnstile 金鑰
-      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || ''
+      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+      siteUrl
     }
   },
 
@@ -86,13 +89,13 @@ export default defineNuxtConfig({
         { name: 'language', content: 'zh-TW' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: '開放事求人' },
-        { property: 'og:image', content: 'https://opendgpa.shibaalin.com/og-image.png' },
+        { property: 'og:image', content: `${siteUrl}/og-image.png` },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
         { property: 'og:image:alt', content: '開放事求人 - 公務人員職缺查詢系統' },
         { property: 'og:locale', content: 'zh_TW' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:image', content: 'https://opendgpa.shibaalin.com/og-image.png' },
+        { name: 'twitter:image', content: `${siteUrl}/og-image.png` },
         { name: 'twitter:image:alt', content: '開放事求人 - 公務人員職缺查詢系統' }
       ],
       link: [
@@ -102,8 +105,8 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         // 預連接 API 伺服器 - 加速資料載入
-        { rel: 'preconnect', href: 'https://opendgpa.shibaalin.com' },
-        { rel: 'dns-prefetch', href: 'https://opendgpa.shibaalin.com' },
+        { rel: 'preconnect', href: siteUrl },
+        { rel: 'dns-prefetch', href: siteUrl },
         // 預連接 Cloudflare - 加速 Turnstile 載入
         { rel: 'preconnect', href: 'https://challenges.cloudflare.com' },
         { rel: 'dns-prefetch', href: 'https://challenges.cloudflare.com' },

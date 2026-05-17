@@ -275,6 +275,9 @@ watch(() => route.query, (newQuery, oldQuery) => {
   fetchJobs()
 })
 
+const siteUrl = useSiteUrl()
+const homeUrl = `${siteUrl}/`
+
 // SEO
 useSeoMeta({
   title: '開放事求人 - 人事行政總處事求人開放資料｜公務員職缺查詢',
@@ -283,7 +286,7 @@ useSeoMeta({
   robots: 'index,follow',
   ogTitle: '開放事求人 - 人事行政總處事求人開放資料｜公務員職缺查詢',
   ogDescription: '最即時的人事行政總處事求人開放資料查詢平台。提供公務員職缺搜尋、歷史開缺、留言討論、統計圖表。',
-  ogUrl: 'https://opendgpa.shibaalin.com/',
+  ogUrl: homeUrl,
   ogType: 'website',
 })
 
@@ -291,7 +294,7 @@ useSeoMeta({
 // + WebSite / Organization / FAQPage / Dataset / SpeakableSpecification Schema
 useHead({
   link: [
-    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/' }
+    { rel: 'canonical', href: homeUrl }
   ],
   script: [
     {
@@ -342,13 +345,13 @@ useHead({
         '@type': 'WebSite',
         'name': '開放事求人',
         'alternateName': '人事行政總處事求人開放資料查詢平台',
-        'url': 'https://opendgpa.shibaalin.com/',
+        'url': homeUrl,
         'description': '台灣公務人員職缺查詢平台，資料來源為行政院人事行政總處事求人開放資料。',
         'potentialAction': {
           '@type': 'SearchAction',
           'target': {
             '@type': 'EntryPoint',
-            'urlTemplate': 'https://opendgpa.shibaalin.com/?org={search_term_string}'
+            'urlTemplate': `${siteUrl}/?org={search_term_string}`
           },
           'query-input': 'required name=search_term_string'
         }
@@ -360,17 +363,14 @@ useHead({
         '@context': 'https://schema.org',
         '@type': 'Organization',
         'name': '開放事求人',
-        'url': 'https://opendgpa.shibaalin.com/',
+        'url': homeUrl,
         'logo': {
           '@type': 'ImageObject',
-          'url': 'https://opendgpa.shibaalin.com/pwa-512x512.png',
+          'url': `${siteUrl}/pwa-512x512.png`,
           'width': 512,
           'height': 512
         },
-        'description': '非官方的人事行政總處事求人開放資料查詢平台，提供公務員職缺搜尋、歷史開缺追蹤、留言討論、統計圖表等功能。',
-        'sameAs': [
-          'https://job.ccchang.tw'
-        ]
+        'description': '非官方的人事行政總處事求人開放資料查詢平台，提供公務員職缺搜尋、歷史開缺追蹤、留言討論、統計圖表等功能。'
       })
     },
     {
@@ -381,11 +381,11 @@ useHead({
         '@type': 'Dataset',
         'name': '台灣公務員職缺開放資料查詢',
         'description': '人事行政總處事求人機關徵才資料，每日自動更新，涵蓋 2024 年 11 月至今的歷史職缺，提供公務員職缺搜尋、歷史開缺追蹤等功能。',
-        'url': 'https://opendgpa.shibaalin.com/',
+        'url': homeUrl,
         'creator': {
           '@type': 'Organization',
           'name': '開放事求人',
-          'url': 'https://opendgpa.shibaalin.com/'
+          'url': homeUrl
         },
         'license': 'https://data.gov.tw/license',
         'isAccessibleForFree': true,
@@ -397,7 +397,7 @@ useHead({
         'distribution': [
           {
             '@type': 'DataDownload',
-            'contentUrl': 'https://opendgpa.shibaalin.com/sitemap.xml',
+            'contentUrl': `${siteUrl}/sitemap.xml`,
             'encodingFormat': 'application/xml'
           }
         ]
@@ -410,7 +410,7 @@ useHead({
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         'name': '開放事求人 - 公務人員職缺查詢',
-        'url': 'https://opendgpa.shibaalin.com/',
+        'url': homeUrl,
         'speakable': {
           '@type': 'SpeakableSpecification',
           'cssSelector': ['h1', 'p.page-description']

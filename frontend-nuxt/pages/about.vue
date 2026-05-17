@@ -113,6 +113,8 @@ const submitForm = async () => {
   }
 }
 
+const pageUrl = useAbsoluteUrl('/about')
+
 // SEO
 useSeoMeta({
   title: '關於本站 - 開放事求人｜人事行政總處事求人開放資料',
@@ -121,14 +123,14 @@ useSeoMeta({
   robots: 'index,follow',
   ogTitle: '關於本站 - 開放事求人｜人事行政總處事求人開放資料',
   ogDescription: '了解開放事求人網站的緣起與特色功能。',
-  ogUrl: 'https://opendgpa.shibaalin.com/about',
+  ogUrl: pageUrl,
   ogType: 'website',
 })
 
 // Canonical URL + FAQ Schema
 useHead({
   link: [
-    { rel: 'canonical', href: 'https://opendgpa.shibaalin.com/about' }
+    { rel: 'canonical', href: pageUrl }
   ],
   script: [
     {
