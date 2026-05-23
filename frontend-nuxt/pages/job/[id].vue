@@ -6,6 +6,7 @@ import type { JobDetailResponse } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
+const { isExpired } = useFormatDate()
 
 const jobId = route.params.id as string
 const siteUrl = useSiteUrl()
@@ -26,6 +27,9 @@ const error = ref<string | null>(null)
 if (fetchError.value) {
   const err = fetchError.value
   if (err.statusCode) {
+    setResponseStatus(err.statusCode)
+  }
+  if (err.statusCode) {
     error.value = `無法取得職缺詳細資料 (${err.statusCode}): ${err.statusMessage || err.message}`
   } else {
     error.value = `無法取得職缺詳細資料: ${err.message}`
@@ -34,37 +38,126 @@ if (fetchError.value) {
 
 // 留言提交成功後呼叫 refresh() 強制重取最新資料（包含新留言）
 
+const normalizeText = (value?: string | null) => String(value || '').replace(/\s+/g, ' ').trim()
+const normalizeMultilineText = (value?: string | null) => String(value || '').replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim()
+const cleanValue = (value?: string | null) => normalizeText(value).replace(/^[,，\s-]+/, '')
+const hasMeaningfulValue = (value?: string | null) => {
+  const text = cleanValue(value)
+  return !!text && text !== '無' && text !== '-'
+}
+
+const truncateText = (value: string, maxLength = 115) => (
+  value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value
+)
+
+const escapeHtml = (value: string) => value
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;')
+
+const toJsonLd = (value: Record<string, any>) => JSON.stringify(value).replace(/</g, '\\u003c')
+
+const convertRocDate = (dateStr?: string | null) => {
+  const normalized = String(dateStr || '').replace(/[/-]/g, '').trim()
+  if (!normalized) return ''
+
+  if (/^\d{7}$/.test(normalized)) {
+    const year = parseInt(normalized.slice(0, 3), 10) + 1911
+    return `${year}-${normalized.slice(3, 5)}-${normalized.slice(5, 7)}`
+  }
+
+  if (/^\d{8}$/.test(normalized)) {
+    return `${normalized.slice(0, 4)}-${normalized.slice(4, 6)}-${normalized.slice(6, 8)}`
+  }
+
+  const parts = String(dateStr || '').split('/')
+  if (parts.length === 3) {
+    const year = parseInt(parts[0], 10) + 1911
+    return `${year}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
+  }
+
+  return ''
+}
+
+const convertRocDateEndOfDay = (dateStr?: string | null) => {
+  const date = convertRocDate(dateStr)
+  return date ? `${date}T23:59:59+08:00` : ''
+}
+
+const jobOrganizationName = computed(() => cleanValue(job.value?.org_name || job.value?.org))
+const jobTitleText = computed(() => cleanValue(job.value?.title) || '公務人員職缺')
+const jobLocationText = computed(() => cleanValue(job.value?.work_address || job.value?.work_place_type || job.value?.place))
+const isJobExpired = computed(() => job.value ? isExpired(job.value.date_to) : true)
+
+const jobMetaDescription = computed(() => {
+  if (!job.value) return '公務人員職缺詳細資訊'
+
+  const details = [
+    `${jobOrganizationName.value}${jobTitleText.value ? `招募${jobTitleText.value}` : ''}`,
+    hasMeaningfulValue(job.value.sysnam) ? `職系：${cleanValue(job.value.sysnam)}` : '',
+    hasMeaningfulValue(job.value.rank) ? `職等：${cleanValue(job.value.rank)}` : '',
+    jobLocationText.value ? `地點：${jobLocationText.value}` : '',
+    hasMeaningfulValue(job.value.date_to) ? `報名至：${job.value.date_to}` : ''
+  ].filter(Boolean).join('，')
+
+  return truncateText(`${details}。資料來源：行政院人事行政總處事求人開放資料。`)
+})
+
+const buildHtmlSection = (label: string, value?: string | null) => {
+  const text = normalizeMultilineText(value)
+  if (!text) return ''
+  return `<p>${label}：${escapeHtml(text).replace(/\n/g, '<br>')}</p>`
+}
+
+const jobPostingDescription = computed(() => {
+  if (!job.value) return ''
+
+  const introParts = [
+    `${jobOrganizationName.value}招募${jobTitleText.value}`,
+    hasMeaningfulValue(job.value.sysnam) ? `職系${cleanValue(job.value.sysnam)}` : '',
+    hasMeaningfulValue(job.value.rank) ? `職等${cleanValue(job.value.rank)}` : '',
+    jobLocationText.value ? `工作地點${jobLocationText.value}` : '',
+    hasMeaningfulValue(job.value.date_from) && hasMeaningfulValue(job.value.date_to)
+      ? `公告期間${job.value.date_from}至${job.value.date_to}`
+      : ''
+  ].filter(Boolean).join('，')
+
+  return [
+    `<p>${escapeHtml(introParts)}。</p>`,
+    buildHtmlSection('條件資格', job.value.work_quality),
+    buildHtmlSection('工作項目', job.value.work_item),
+    buildHtmlSection('報名與聯絡方式', job.value.contact_method)
+  ].join('')
+})
+
+const employmentType = computed(() => {
+  const source = normalizeText(`${job.value?.type || ''} ${job.value?.person_kind || ''} ${job.value?.title || ''}`)
+  if (/兼職|兼任|部分工時|工讀/.test(source)) return 'PART_TIME'
+  if (/臨時|代理/.test(source)) return 'TEMPORARY'
+  if (/約僱|約用|約聘|聘用|聘僱|僱用/.test(source)) return 'CONTRACTOR'
+  return 'FULL_TIME'
+})
+
 // SEO
 useSeoMeta({
   title: () => job.value 
-    ? `開放事求人｜${job.value.org_name}(${job.value.title})｜職缺詳情 - 人事行政總處事求人開放資料` 
+    ? `開放事求人｜${jobOrganizationName.value}(${jobTitleText.value})｜職缺詳情 - 人事行政總處事求人開放資料` 
     : '職缺詳細資料 - 開放事求人',
-  description: () => {
-    if (!job.value) return '公務人員職缺詳細資訊'
-    const desc = `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。資料來源：行政院人事行政總處事求人開放資料。`
-    // 限制 description 長度 <= 80 個中文字（約 160 bytes），避免 Google 截斷
-    return desc.length > 80 ? desc.slice(0, 77) + '...' : desc
-  },
+  description: () => jobMetaDescription.value,
   keywords: () => job.value 
-    ? `事求人, 人事行政總處事求人, 公務員職缺, 政府職缺, ${job.value.org_name}, ${job.value.title}, ${job.value.sysnam}, 開放事求人`
+    ? ['事求人', '人事行政總處事求人', '公務員職缺', '政府職缺', jobOrganizationName.value, jobTitleText.value, cleanValue(job.value.sysnam), '開放事求人'].filter(Boolean).join(', ')
     : '事求人, 公務員職缺, 政府職缺',
-  robots: 'index,follow',
+  robots: () => job.value && !isJobExpired.value ? 'index,follow' : 'noindex,follow',
   ogTitle: () => job.value 
-    ? `開放事求人｜${job.value.org_name}(${job.value.title})｜職缺詳情`
+    ? `開放事求人｜${jobOrganizationName.value}(${jobTitleText.value})｜職缺詳情`
     : '職缺詳細資料',
-  ogDescription: () => job.value 
-    ? `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。`
-    : '公務人員職缺詳細資訊',
+  ogDescription: () => jobMetaDescription.value,
   ogUrl: jobUrl,
   ogType: 'article',
   // 文章更新時間 - 與對手同等規格
-  articleModifiedTime: () => {
-    if (!job.value?.date_from) return undefined
-    const parts = job.value.date_from.split('/')
-    if (parts.length !== 3) return undefined
-    const year = parseInt(parts[0]) + 1911
-    return `${year}-${parts[1]}-${parts[2]}`
-  },
+  articleModifiedTime: () => convertRocDate(job.value?.announce_date || job.value?.date_from) || undefined,
 })
 
 // Canonical URL + Schema.org Structured Data (JobPosting + BreadcrumbList)
@@ -77,52 +170,42 @@ useHead(() => {
   
   if (!job.value) return baseHead
 
-  const convertRocDate = (dateStr: string) => {
-    if (!dateStr) return ''
-    const parts = dateStr.split('/')
-    if (parts.length !== 3) return dateStr
-    const year = parseInt(parts[0]) + 1911
-    return `${year}-${parts[1]}-${parts[2]}`
-  }
-
   // JobPosting Schema
   const jobPostingSchema = {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
-    'title': `${job.value.org_name}(${job.value.title})`,
+    'title': jobTitleText.value,
     'url': jobUrl,
-    'description': `${job.value.org_name}(${job.value.title}) - ${job.value.sysnam}(${job.value.rank})，地點：${job.value.work_address || job.value.work_place_type}。資料來源：行政院人事行政總處事求人開放資料。`,
+    'description': jobPostingDescription.value,
     'identifier': {
       '@type': 'PropertyValue',
-      'name': '開放事求人',
+      'name': jobOrganizationName.value || '開放事求人',
       'value': String(job.value.id)
     },
-    'datePosted': convertRocDate(job.value.date_from),
-    'validThrough': convertRocDate(job.value.date_to),
-    'employmentType': 'FULL_TIME',
+    'datePosted': convertRocDate(job.value.announce_date || job.value.date_from),
+    'validThrough': convertRocDateEndOfDay(job.value.date_to),
+    'employmentType': employmentType.value,
     'hiringOrganization': {
       '@type': 'Organization',
-      'name': job.value.org_name || job.value.org,
+      'name': jobOrganizationName.value || '未提供機關名稱',
       'sameAs': 'https://web3.dgpa.gov.tw/want03front/AP/WANTF00001.ASPX'
     },
     'jobLocation': {
       '@type': 'Place',
       'address': {
         '@type': 'PostalAddress',
-        'addressLocality': job.value.work_place_type,
-        'streetAddress': job.value.work_address || job.value.work_place_type,
-        'addressRegion': '台灣',
+        'addressLocality': cleanValue(job.value.work_place_type || job.value.place) || '台灣',
+        'streetAddress': jobLocationText.value || '台灣',
+        'addressRegion': cleanValue(job.value.work_place_type || job.value.place) || '台灣',
         'addressCountry': 'TW'
       }
     },
-    // 地理限制 — 提升 Google Jobs 豐富摘要出現機率
-    'applicantLocationRequirements': {
-      '@type': 'Country',
-      'name': 'TW'
-    },
     'jobBenefits': '政府機關公務員職位，享有公務人員保障與福利',
     'industry': '政府機關',
-    'occupationalCategory': job.value.sysnam || '公務人員'
+    'occupationalCategory': cleanValue(job.value.sysnam) || '公務人員',
+    'responsibilities': normalizeMultilineText(job.value.work_item) || undefined,
+    'qualifications': normalizeMultilineText(job.value.work_quality) || undefined,
+    'directApply': false
   }
 
   // BreadcrumbList Schema - 讓 Google 顯示階層導航
@@ -145,7 +228,7 @@ useHead(() => {
       {
         '@type': 'ListItem',
         'position': 3,
-        'name': `${job.value.org_name}(${job.value.title})`,
+        'name': `${jobOrganizationName.value}(${jobTitleText.value})`,
         'item': jobUrl
       }
     ]
@@ -156,11 +239,11 @@ useHead(() => {
     script: [
       {
         type: 'application/ld+json',
-        innerHTML: JSON.stringify(jobPostingSchema)
+        innerHTML: toJsonLd(jobPostingSchema)
       },
       {
         type: 'application/ld+json',
-        innerHTML: JSON.stringify(breadcrumbSchema)
+        innerHTML: toJsonLd(breadcrumbSchema)
       }
     ]
   }

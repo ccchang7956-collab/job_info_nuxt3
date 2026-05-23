@@ -47,6 +47,7 @@ export interface Job {
     work_quality?: string
     work_address?: string
     contact_method?: string
+    type?: string
     work_kind?: string
     person_kind?: string
     quota_regular?: number
@@ -151,6 +152,7 @@ export interface JobDetailResponse {
     job: Job
     comments: Comment[]
     duplicates: Job[]
+    is_expired?: boolean
 }
 
 export interface Toast {
