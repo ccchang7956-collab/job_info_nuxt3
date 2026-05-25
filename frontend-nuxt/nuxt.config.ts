@@ -126,8 +126,9 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    // SSR SWR Caching - 加速 Googlebot 爬取，快取 60 秒
-    '/job/**': { swr: 60 },
+    // SSR + SWR Caching - 職缺詳細頁
+    // swr: 120 讓後端有足夠時間暖好快取，避免 Googlebot 第一次抓到空殼頁
+    '/job/**': { swr: 120 },
 
     // Special case: Home page jobs fetch maps to backend root
     '/api/jobs': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/` },
@@ -135,11 +136,15 @@ export default defineNuxtConfig({
     // General API proxy: /api/xxx -> backend/xxx
     '/api/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/**` },
 
-    // Sitemap proxy
+    // Sitemap proxy - 讓 Googlebot 直接從後端取得最新 Sitemap
     '/sitemap.xml': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/sitemap.xml` },
 
     // LINE Bot webhook
-    '/line_ai_bot/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/line_ai_bot/**` }
+    '/line_ai_bot/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/line_ai_bot/**` },
+
+    // 靜態頁面 - 降低爬取壓力
+    '/about': { prerender: false },
+    '/privacy-policy': { prerender: false },
   },
 
   nitro: {

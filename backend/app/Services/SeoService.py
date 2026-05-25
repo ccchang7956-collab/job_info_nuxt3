@@ -1,6 +1,6 @@
 from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime
+from datetime import datetime, timedelta
 from cachetools import TTLCache
 from app.Models.Models import JobAllData
 from app.Utils.FormatUtils import convert_to_gregorian_date
@@ -9,8 +9,9 @@ import os
 from typing import Optional
 from xml.sax.saxutils import escape
 
-# Cache sitemap for 1 hour (3600 seconds)
-sitemap_cache = TTLCache(maxsize=1, ttl=3600)
+# Cache sitemap for 30 minutes (1800 seconds)
+# 縮短快cache，讓失效 URL 更快實際被清除，减少 Googlebot 抓到 404 的機率
+sitemap_cache = TTLCache(maxsize=1, ttl=1800)
 
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "https://opendgpa.shibaalin.com").rstrip("/")
 
@@ -29,20 +30,23 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
 """
 
     @staticmethod
-    def _format_lastmod(date_str: Optional[str]) -> str:
-        """將民國日期 (YYYMMDD) 或西元日期 (YYYYMMDD) 轉成 ISO 8601 日期。"""
-        if not date_str:
-            return datetime.now().strftime('%Y-%m-%d')
-
-        normalized = date_str.replace("/", "").replace("-", "")
-        if len(normalized) == 7 and normalized.isdigit():
-            converted = convert_to_gregorian_date(normalized)
-            return converted or datetime.now().strftime('%Y-%m-%d')
-
-        if len(normalized) == 8 and normalized.isdigit():
-            return f"{normalized[:4]}-{normalized[4:6]}-{normalized[6:8]}"
-
-        return datetime.now().strftime('%Y-%m-%d')
+    def _format_lastmod(date_str=None, fallback_date_str=None) -> str:
+        """將民國日期 (YYYMMDD) 或西元日期 (YYYYMMDD) 轉成 ISO 8601 日期。
+        優先使用 date_str，若為空則嘗試 fallback_date_str，
+        兩者都為空才回傳 None（由呼叫方決定要旧 fallback）。
+        不再使用 datetime.now() 作為 fallback，
+        避免 Google 誤以為每次都有新內容更新。"""
+        for ds in [date_str, fallback_date_str]:
+            if not ds:
+                continue
+            normalized = str(ds).replace("/", "").replace("-", "").strip()
+            if len(normalized) == 7 and normalized.isdigit():
+                converted = convert_to_gregorian_date(normalized)
+                if converted:
+                    return converted
+            if len(normalized) == 8 and normalized.isdigit():
+                return f"{normalized[:4]}-{normalized[4:6]}-{normalized[6:8]}"
+        return None  # 反將簡算不失效的笛選
 
     @staticmethod
     async def get_sitemap_xml(db: AsyncSession) -> str:
@@ -73,33 +77,38 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             xml_content.append(f'<changefreq>{route["changefreq"]}</changefreq>')
             xml_content.append(f'<priority>{route["priority"]}</priority>')
             xml_content.append('</url>')
-            
-        # Add dynamic job routes (Active jobs only)
+
+        # Add dynamic job routes (active jobs only, exclude jobs expiring tomorrow or earlier)
         try:
             today = datetime.now()
-            roc_year = today.year - 1911
-            roc_today = f"{roc_year}{today.strftime('%m%d')}"
-            
+            tomorrow = today + timedelta(days=1)
+            roc_year_tomorrow = tomorrow.year - 1911
+            # 排除明天就截止的職缺，避免 Googlebot 抓取快取時剛好遇到過期
+            roc_tomorrow = f"{roc_year_tomorrow}{tomorrow.strftime('%m%d')}"
+
             stmt = (
-                select(JobAllData.id, JobAllData.announce_date)
-                .where(JobAllData.date_to >= roc_today)
+                select(JobAllData.id, JobAllData.announce_date, JobAllData.date_from)
+                .where(JobAllData.date_to >= roc_tomorrow)
                 .order_by(desc(JobAllData.date_from))
                 .limit(5000)
             )
-            
+
             result = await db.execute(stmt)
             jobs = result.all()
-            
+
             for row in jobs:
                 job_id = row.id
-                lastmod = SeoService._format_lastmod(row.announce_date)
+                # 優先用公告日期，其次用開始日期，不再 fallback 到 now()
+                # 避免 Google 誤認為每天都有新內容
+                lastmod = SeoService._format_lastmod(row.announce_date, row.date_from)
                 xml_content.append('<url>')
                 xml_content.append(f'<loc>{escape(f"{base_url}/job/{job_id}")}</loc>')
-                xml_content.append(f'<lastmod>{lastmod}</lastmod>')
+                if lastmod:
+                    xml_content.append(f'<lastmod>{lastmod}</lastmod>')
                 xml_content.append('<changefreq>weekly</changefreq>')
                 xml_content.append('<priority>0.8</priority>')
                 xml_content.append('</url>')
-                
+
         except Exception as e:
             logging.error(f"Error generating sitemap: {e}")
             

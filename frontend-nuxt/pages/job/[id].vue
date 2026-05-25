@@ -13,8 +13,8 @@ const siteUrl = useSiteUrl()
 const jobUrl = `${siteUrl}/job/${jobId}`
 
 // SSR Data Fetching
-// 注意：不設 cache: 'no-store'，讓 nuxt.config 的 swr: 60 快取生效
-// 加速 Googlebot 爬取（避免每次都等後端即時回應消耗爬取配額）
+// 注意：不設 cache: 'no-store'，讓 nuxt.config 的 swr: 120 快取生效
+// swr: 120 讓後端有足夠時間暖好快取，Googlebot 第一次抓取時能得到完整 HTML
 // 留言刷新時使用 refresh() 強制更新即可
 const { data, error: fetchError, refresh } = await useFetch<JobDetailResponse>(`/api/Active_job_openings/${jobId}`)
 
@@ -149,7 +149,9 @@ useSeoMeta({
   keywords: () => job.value 
     ? ['事求人', '人事行政總處事求人', '公務員職缺', '政府職缺', jobOrganizationName.value, jobTitleText.value, cleanValue(job.value.sysnam), '開放事求人'].filter(Boolean).join(', ')
     : '事求人, 公務員職缺, 政府職缺',
-  robots: () => job.value && !isJobExpired.value ? 'index,follow' : 'noindex,follow',
+  // 只有確認職缺已過期才設 noindex；API 失敗（job.value=null）時保持 index
+  // 避免後端短暫錯誤導致 Googlebot 看到 noindex 而永久拒絕收錄
+  robots: () => (job.value && isJobExpired.value) ? 'noindex,follow' : 'index,follow',
   ogTitle: () => job.value 
     ? `開放事求人｜${jobOrganizationName.value}(${jobTitleText.value})｜職缺詳情`
     : '職缺詳細資料',
@@ -272,6 +274,23 @@ onUnmounted(() => {
 
 <template>
   <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- SEO 麵包屑導覽列（HTML nav，讓 Google 看到真實導覽結構）-->
+    <nav aria-label="breadcrumb" class="mb-4 text-sm text-slate-500">
+      <ol class="flex items-center flex-wrap gap-1">
+        <li>
+          <NuxtLink to="/" class="hover:text-primary-600 transition-colors">首頁</NuxtLink>
+        </li>
+        <li class="text-slate-300">›</li>
+        <li>
+          <NuxtLink to="/" class="hover:text-primary-600 transition-colors">職缺列表</NuxtLink>
+        </li>
+        <li v-if="job" class="text-slate-300">›</li>
+        <li v-if="job" class="text-slate-600 font-medium truncate max-w-xs" aria-current="page">
+          {{ jobOrganizationName }}（{{ jobTitleText }}）
+        </li>
+      </ol>
+    </nav>
+
     <!-- Loading State -->
     <LoadingSpinner v-if="!job && !error" message="正在載入職缺詳細資料..." />
     
@@ -298,6 +317,36 @@ onUnmounted(() => {
           </button>
         </template>
       </JobInfoCard>
+
+      <!-- 同機關相關職缺區塊（增加內部連結，提升 SEO 深度）-->
+      <aside
+        v-if="duplicates && duplicates.length > 0"
+        class="mt-6 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+        aria-label="同機關相關職缺"
+      >
+        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50">
+          <h2 class="text-base font-semibold text-slate-700">
+            {{ jobOrganizationName }} 的其他職缺
+          </h2>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          <li
+            v-for="dup in duplicates.slice(0, 6)"
+            :key="dup.id"
+            class="px-6 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
+          >
+            <div class="min-w-0">
+              <NuxtLink
+                :to="`/job/${dup.id}`"
+                class="text-primary-600 hover:underline font-medium text-sm truncate block"
+              >
+                {{ dup.title || dup.org_name }}
+              </NuxtLink>
+              <p class="text-xs text-slate-400 mt-0.5">{{ dup.date_from }} ~ {{ dup.date_to }}</p>
+            </div>
+          </li>
+        </ul>
+      </aside>
 
       <!-- Comment Section -->
       <CommentSection 

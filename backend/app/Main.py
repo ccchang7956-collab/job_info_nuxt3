@@ -5,7 +5,10 @@ import uuid
 import httpx
 from pathlib import Path
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -75,6 +78,37 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, lifespan=lifespan)
 
+# ===========================================================================
+# 全域 Exception Handlers — 避免 5xx 讓 Googlebot 判定頁面不存在
+# ===========================================================================
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """統一 HTTP 錯誤回應格式"""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail, "status_code": exc.status_code}
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """422 請求參數驗證失敗 — 回傳易讀錯誤訊息"""
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": str(exc), "status_code": 422}
+    )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    """未預期例外 — 回傳 503 Service Unavailable
+    使用 503 而非 500，讓 Google 知道這是暫時性服務中斷，
+    不會將頁面標記為 permanent error 並降低收錄意願。"""
+    logger.exception(f"Unhandled exception on {request.url.path}: {exc}")
+    return JSONResponse(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        content={"detail": "Service temporarily unavailable", "status_code": 503}
+    )
+
 # Static files
 # Assuming static files are in backend/app/static. 
 # Since we moved Main.py to backend/app/Main.py, parent is backend/app.
@@ -130,8 +164,17 @@ async def add_security_headers(request: Request, call_next):
     # 快取控制
     if request.method == "GET" and response.status_code == 200:
         path = str(request.url.path)
-        # API 路徑：不快取（每次驗證）
-        if path == "/" or path.startswith("/api/"):
+        # 首頁 API 和靜態首頁：不快取
+        if path == "/":
+            response.headers["Cache-Control"] = "no-cache, must-revalidate"
+        # 職缺詳細頁 API：允許 Googlebot 快取 60 秒，之後可以顯示 stale 內容（等候後端更新）
+        elif path.startswith("/Active_job_openings/"):
+            response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
+        # Sitemap / robots.txt：可以快取較長時間
+        elif path in ("/sitemap.xml", "/robots.txt"):
+            response.headers["Cache-Control"] = "public, max-age=1800"
+        # 其他 API 路徑：不快取
+        elif path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-cache, must-revalidate"
         # 靜態資源：快取 1 小時
         else:
