@@ -173,9 +173,11 @@ class ChartService:
                 JobAllData,
                 func.count(JobComments.id).label("comment_count")
             )
-            .outerjoin(JobComments, JobAllData.id == JobComments.job_all_data_id)
-            .where(JobComments.is_deleted == 0)
-            .group_by(JobAllData.id) # Group by all columns or primary key
+            .outerjoin(
+                JobComments,
+                (JobAllData.id == JobComments.job_all_data_id) & (JobComments.is_deleted == 0)
+            )
+            .group_by(JobAllData.id)
             .order_by(desc("comment_count"))
             .limit(10)
         )

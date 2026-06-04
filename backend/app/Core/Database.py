@@ -53,8 +53,9 @@ def set_sqlite_pragma_async(dbapi_connection, connection_record):
 AsyncSessionLocal = async_sessionmaker(bind=async_engine, class_=AsyncSession, expire_on_commit=False)
 
 async def get_async_db():
-    db = AsyncSessionLocal()
-    try:
-        yield db
-    finally:
-        await db.close()
+    async with AsyncSessionLocal() as db:
+        try:
+            yield db
+        except Exception:
+            await db.rollback()
+            raise

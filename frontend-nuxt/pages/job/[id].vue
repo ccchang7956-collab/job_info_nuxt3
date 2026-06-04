@@ -28,8 +28,6 @@ if (fetchError.value) {
   const err = fetchError.value
   if (err.statusCode) {
     setResponseStatus(err.statusCode)
-  }
-  if (err.statusCode) {
     error.value = `無法取得職缺詳細資料 (${err.statusCode}): ${err.statusMessage || err.message}`
   } else {
     error.value = `無法取得職缺詳細資料: ${err.message}`

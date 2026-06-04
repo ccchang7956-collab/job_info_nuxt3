@@ -37,7 +37,12 @@ export const useComments = (jobId: number, emitRefresh: () => void) => {
         }
     }
 
-    const renderTurnstile = () => {
+    const renderTurnstile = (attempt = 0) => {
+        const MAX_ATTEMPTS = 20
+        if (attempt >= MAX_ATTEMPTS) {
+            console.warn('Turnstile 載入超時，請重新整理頁面')
+            return
+        }
         if (window.turnstile && window.turnstile.render) {
             try {
                 const container = document.getElementById('turnstile-container')
@@ -58,7 +63,7 @@ export const useComments = (jobId: number, emitRefresh: () => void) => {
                 console.error('Turnstile render error:', e)
             }
         } else {
-            setTimeout(renderTurnstile, 500)
+            setTimeout(() => renderTurnstile(attempt + 1), 500)
         }
     }
 

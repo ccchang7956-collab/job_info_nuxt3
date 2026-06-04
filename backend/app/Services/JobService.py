@@ -5,11 +5,14 @@ from datetime import datetime, timedelta
 import hashlib
 import json
 import re
+import pytz
 from typing import List, Dict, Any, Tuple
 from cachetools import TTLCache
 from app.Utils.FormatUtils import format_place, format_roc_date, format_rank_display
 from app.Models.Models import JobAllData, JobComments
 import logging
+
+_TAIPEI_TZ = pytz.timezone("Asia/Taipei")
 
 # 使用 cachetools 的 TTLCache
 _query_cache = TTLCache(maxsize=1000, ttl=300)
@@ -242,37 +245,29 @@ class JobService:
                 # Transform to dict
                 job_dict = {
                     "id": job.id,
-                    "org": job.org_name, # Keep 'org' for backward compatibility if needed
-                    "org_name": job.org_name, # Added for Pydantic schema
+                    "org": job.org_name,           # 向下相容欄位
+                    "org_name": job.org_name,
                     "title": job.title,
                     "sysnam": job.sysnam,
                     "rank": job.rank,
-                    "place": job.work_place_type, # Keep 'place' for backward compatibility
-                    "work_place_type": job.work_place_type, # Added for Pydantic schema
-                    "work_item": job.work_item, # Added for Pydantic schema
-                    "date_from": job.date_from,
-                    "date_to": job.date_to,
-                    "link": job.view_url, # Keep 'link' for backward compatibility
-                    "view_url": job.view_url, # Added for Pydantic schema
-                    "announce_date": job.announce_date, # Added for Pydantic schema
-                    "contact_method": job.contact_method, # Added for Pydantic schema
-                    # Personnel fields
+                    "work_place_type": job.work_place_type,
+                    "place": format_place(job.work_place_type),  # 格式化後的地點
+                    "work_item": job.work_item,
+                    "date_from": format_roc_date(job.date_from),  # 格式化民國日期
+                    "date_to": format_roc_date(job.date_to),
+                    "link": job.view_url,           # 向下相容欄位
+                    "view_url": job.view_url,
+                    "announce_date": job.announce_date,
+                    "contact_method": job.contact_method,
+                    # 人員相關欄位
                     "person_kind": job.person_kind,
                     "number_of": job.number_of,
                     "reserve_num": job.reserve_num,
-                    # Add formatted fields
+                    # 格式化欄位
                     "rank_display": format_rank_display(job.rank),
-                    # "place" is overwritten below with formatted value, take care
-                    
                     "history_count": result_history_count,
                     "comment_count": result_comment_count,
-                    
-                    # Original mapping included these formatted dates
-                    "date_from": format_roc_date(job.date_from),
-                    "date_to": format_roc_date(job.date_to),
                 }
-                # Overwrite place with formatted value as per original logic
-                job_dict["place"] = format_place(job.work_place_type)
                 
                 jobs_with_comments.append(job_dict)
 
@@ -307,9 +302,9 @@ class JobService:
                 "yesterday_date": roc_yesterday
             }
             
-            if page > 1:
-                _query_cache[cache_key] = response_data
-            
+            # 所有頁面結果都加入快取（包含第 1 頁，避免首頁頻繁查詢 DB）
+            _query_cache[cache_key] = response_data
+
             return response_data
             
         except Exception as e:
@@ -380,11 +375,13 @@ class JobService:
             # 處理留言資料
             comments = JobService._process_comments(raw_comments)
             
-            # 比較日期是否過期
+            # 比較日期是否過期（使用台北時區，避免 UTC 伺服器跨日誤判）
             from app.Utils.FormatUtils import convert_to_gregorian_date
             job_date_to_gregorian = convert_to_gregorian_date(job.date_to)
-            current_date = datetime.today().strftime("%Y-%m-%d")
-            is_expired = current_date > job_date_to_gregorian
+            current_date = datetime.now(_TAIPEI_TZ).strftime("%Y-%m-%d")
+            # 若 date_to 為空或無效格式，convert_to_gregorian_date 回傳空字串，
+            # 此時應視為「不確定」而非「已過期」，故需確認日期字串有效才比較
+            is_expired = bool(job_date_to_gregorian) and current_date > job_date_to_gregorian
             
             if not from_url:
                 from_url = f'/Active_job_openings'
