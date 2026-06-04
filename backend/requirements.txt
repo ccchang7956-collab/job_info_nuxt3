@@ -46,7 +46,6 @@ jedi==0.19.2
 Jinja2==3.1.4
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
-line-bot-sdk==3.17.1
 MarkupSafe==3.0.2
 matplotlib-inline==0.1.7
 mistune==3.0.2
@@ -74,10 +73,8 @@ pydantic==2.9.2
 pydantic-settings==2.7.1
 pydantic_core==2.23.4
 Pygments==2.18.0
-PyJWT==2.10.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
-python-jose==3.3.0
 python-multipart==0.0.20
 pytz==2024.2
 pyzmq==26.2.0
@@ -106,5 +103,4 @@ webencodings==0.5.1
 wrapt==1.17.2
 yarg==0.1.9
 yarl==1.20.0
-bleach==6.2.0
 gunicorn==23.0.0
