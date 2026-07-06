@@ -821,7 +821,7 @@ useHead({
           <NuxtLink 
             v-for="place in ['臺北市', '新北市', '基隆市', '桃園市', '新竹縣', '新竹市', '苗栗縣', '臺中市', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '嘉義市', '臺南市', '高雄市', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '澎湖縣', '金門縣', '連江縣']" 
             :key="place" 
-            :to="`/places/${place}`" 
+            :to="`/places/${encodeURIComponent(place)}`" 
             class="px-2.5 py-1 bg-slate-50 hover:bg-primary-50 hover:text-primary-700 text-slate-600 text-sm rounded-lg border border-slate-100 transition-colors"
           >
             {{ place }}
@@ -834,7 +834,7 @@ useHead({
           <NuxtLink 
             v-for="sys in ['綜合行政', '人事行政', '經建行政', '會計審計', '地政', '社勞行政', '文教行政', '社會工作', '法制', '交通行政', '土木工程', '電機工程', '資訊處理', '農業技術', '測量製圖', '建築工程', '機械工程', '都市計畫']" 
             :key="sys" 
-            :to="`/sysnams/${sys}`" 
+            :to="`/sysnams/${encodeURIComponent(sys)}`" 
             class="px-2.5 py-1 bg-slate-50 hover:bg-primary-50 hover:text-primary-700 text-slate-600 text-sm rounded-lg border border-slate-100 transition-colors"
           >
             {{ sys }}

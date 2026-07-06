@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import type { JobListResponse } from '@/types'
 
@@ -8,9 +8,31 @@ const sysnamName = computed(() => String(route.params.sysnam || '').trim())
 const siteUrl = useSiteUrl()
 const pageUrl = computed(() => `${siteUrl.replace(/\/$/, '')}/sysnams/${encodeURIComponent(sysnamName.value.toLowerCase())}`)
 
+const currentPage = ref(1)
+const perPage = ref(20)
+
 const { data, error } = await useFetch<JobListResponse>('/api/jobs', {
-  query: computed(() => ({ sysnam: sysnamName.value, per_page: 20 }))
+  key: `jobs-sysnam-${route.params.sysnam}`,
+  query: computed(() => ({
+    sysnam: sysnamName.value,
+    page: currentPage.value,
+    per_page: perPage.value
+  }))
 })
+
+// Reset to page 1 when sysnam changes
+watch(sysnamName, () => {
+  currentPage.value = 1
+})
+
+const changePage = (page: number) => {
+  if (page >= 1 && page <= (data.value?.total_pages || 1)) {
+    currentPage.value = page
+    if (import.meta.client) {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+}
 
 useSeoMeta({
   title: () => `最新 ${sysnamName.value} 職系公務員職缺列表｜事求人職缺查詢 - 開放事求人`,
@@ -35,7 +57,21 @@ useHead(() => ({
           { '@type': 'ListItem', 'position': 2, 'name': `${sysnamName.value} 職缺`, 'item': pageUrl.value }
         ]
       })
-    }
+    },
+    ...(data.value?.jobs && data.value.jobs.length > 0 ? [{
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        'numberOfItems': data.value.jobs.length,
+        'itemListElement': data.value.jobs.map((job, idx) => ({
+          '@type': 'ListItem',
+          'position': idx + 1,
+          'url': `${siteUrl.replace(/\/$/, '')}/job/${job.id}`,
+          'name': `${job.org_name || job.org || ''} - ${job.title || ''}`
+        }))
+      })
+    }] : [])
   ]
 }))
 </script>
@@ -94,6 +130,16 @@ useHead(() => ({
       <div class="md:hidden grid grid-cols-1 gap-4">
         <JobCard v-for="job in data.jobs" :key="job.id" :job="job" />
       </div>
+
+      <!-- Pagination -->
+      <Pagination
+        class="mt-8"
+        :currentPage="currentPage"
+        :totalPages="data.total_pages"
+        :perPage="perPage"
+        @update:currentPage="changePage"
+        @update:perPage="(val) => { perPage = val; currentPage = 1 }"
+      />
     </div>
   </div>
 </template>

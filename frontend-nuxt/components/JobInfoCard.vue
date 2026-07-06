@@ -35,10 +35,16 @@ const historyJobs = computed(() => {
 
 // 職缺資訊欄位定義
 const jobInfoFields = computed(() => {
-  const cleanPlace = String(props.job.place || props.job.work_address || '臺北市')
+  let cleanPlace = String(props.job.place || props.job.work_address || '臺北市')
     .replace(/^[\s,]*\d*-?/, '')
     .split(',')[0]
     .trim()
+    .replace('台', '臺')
+
+  const match = cleanPlace.match(/^[^縣市]+[縣市]/)
+  if (match) {
+    cleanPlace = match[0]
+  }
 
   const sysnamValue = props.job.sysnam ? String(props.job.sysnam).trim() : ''
 

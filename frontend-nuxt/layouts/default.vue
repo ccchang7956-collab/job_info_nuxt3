@@ -214,23 +214,23 @@ useHead({
             <div>
               <span class="font-bold text-slate-600 block mb-2">依熱門縣市瀏覽：</span>
               <div class="flex flex-wrap gap-x-3 gap-y-1.5">
-                <NuxtLink to="/places/臺北市" class="hover:text-primary-600">臺北市</NuxtLink>
-                <NuxtLink to="/places/新北市" class="hover:text-primary-600">新北市</NuxtLink>
-                <NuxtLink to="/places/桃園市" class="hover:text-primary-600">桃園市</NuxtLink>
-                <NuxtLink to="/places/臺中市" class="hover:text-primary-600">臺中市</NuxtLink>
-                <NuxtLink to="/places/臺南市" class="hover:text-primary-600">臺南市</NuxtLink>
-                <NuxtLink to="/places/高雄市" class="hover:text-primary-600">高雄市</NuxtLink>
+                <NuxtLink to="/places/%E8%87%BA%E5%8C%97%E5%B8%82" class="hover:text-primary-600">臺北市</NuxtLink>
+                <NuxtLink to="/places/%E6%96%B0%E5%8C%9B%E5%B8%82" class="hover:text-primary-600">新北市</NuxtLink>
+                <NuxtLink to="/places/%E6%A1%83%E5%9C%92%E5%B8%82" class="hover:text-primary-600">桃園市</NuxtLink>
+                <NuxtLink to="/places/%E8%87%BA%E4%B8%AD%E5%B8%82" class="hover:text-primary-600">臺中市</NuxtLink>
+                <NuxtLink to="/places/%E8%87%BA%E5%8D%97%E5%B8%82" class="hover:text-primary-600">臺南市</NuxtLink>
+                <NuxtLink to="/places/%E9%AB%98%E9%9B%84%E5%B8%82" class="hover:text-primary-600">高雄市</NuxtLink>
               </div>
             </div>
             <div>
               <span class="font-bold text-slate-600 block mb-2">依熱門職系瀏覽：</span>
               <div class="flex flex-wrap gap-x-3 gap-y-1.5">
-                <NuxtLink to="/sysnams/綜合行政" class="hover:text-primary-600">綜合行政</NuxtLink>
-                <NuxtLink to="/sysnams/人事行政" class="hover:text-primary-600">人事行政</NuxtLink>
-                <NuxtLink to="/sysnams/會計審計" class="hover:text-primary-600">會計審計</NuxtLink>
-                <NuxtLink to="/sysnams/土木工程" class="hover:text-primary-600">土木工程</NuxtLink>
-                <NuxtLink to="/sysnams/資訊處理" class="hover:text-primary-600">資訊處理</NuxtLink>
-                <NuxtLink to="/sysnams/電機工程" class="hover:text-primary-600">電機工程</NuxtLink>
+                <NuxtLink to="/sysnams/%E7%B6%9C%E5%90%88%E8%A1%8C%E6%94%BF" class="hover:text-primary-600">綜合行政</NuxtLink>
+                <NuxtLink to="/sysnams/%E4%BA%BA%E4%BA%8B%E8%A1%8C%E6%94%BF" class="hover:text-primary-600">人事行政</NuxtLink>
+                <NuxtLink to="/sysnams/%E6%9C%83%E8%A8%88%E5%AF%A9%E8%A8%88" class="hover:text-primary-600">會計審計</NuxtLink>
+                <NuxtLink to="/sysnams/%E5%9C%8F%E6%9C%A8%E5%B7%A5%E7%A8%8B" class="hover:text-primary-600">土木工程</NuxtLink>
+                <NuxtLink to="/sysnams/%E8%B3%87%E8%A8%8A%E8%99%95%E7%90%86" class="hover:text-primary-600">資訊處理</NuxtLink>
+                <NuxtLink to="/sysnams/%E9%9B%BB%E6%A9%9F%E5%B7%A5%E7%A8%8B" class="hover:text-primary-600">電機工程</NuxtLink>
               </div>
             </div>
           </div>
