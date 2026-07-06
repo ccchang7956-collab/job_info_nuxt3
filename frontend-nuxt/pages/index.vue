@@ -831,7 +831,7 @@ useHead({
     />
 
     <!-- FAQ Section -->
-    <section aria-label="常見問題" class="mt-12 border-t border-slate-200 pt-10">
+    <section id="faq" aria-label="常見問題" class="mt-12 border-t border-slate-200 pt-10">
       <h2 class="text-xl font-bold text-slate-800 mb-6 text-center">常見問題 FAQ</h2>
       <div class="max-w-3xl mx-auto space-y-4">
         <details class="group bg-white rounded-xl border border-slate-200 p-4 [&_summary::-webkit-details-marker]:hidden">
