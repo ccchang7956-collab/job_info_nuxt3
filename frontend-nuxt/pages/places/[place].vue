@@ -27,11 +27,11 @@ useHead(() => ({
   script: [
     {
       type: 'application/ld+json',
-      innerHTML: JSON.stringify({
+      children: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         'itemListElement': [
-          { '@type': 'ListItem', 'position': 1, 'name': '首頁', 'item': `${siteUrl}/` },
+          { '@type': 'ListItem', 'position': 1, 'name': '首頁', 'item': `${siteUrl.replace(/\/$/, '')}/` },
           { '@type': 'ListItem', 'position': 2, 'name': `${placeName.value} 職缺`, 'item': pageUrl.value }
         ]
       })
