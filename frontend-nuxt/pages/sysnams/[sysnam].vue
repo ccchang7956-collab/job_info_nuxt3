@@ -11,14 +11,9 @@ const pageUrl = computed(() => `${siteUrl.replace(/\/$/, '')}/sysnams/${encodeUR
 const currentPage = ref(1)
 const perPage = ref(20)
 
-const { data, error } = await useFetch<JobListResponse>('/api/jobs', {
-  key: `jobs-sysnam-${route.params.sysnam}`,
-  query: computed(() => ({
-    sysnam: sysnamName.value,
-    page: currentPage.value,
-    per_page: perPage.value
-  }))
-})
+const { data, error } = await useFetch<JobListResponse>(
+  () => `/api/jobs?sysnam=${encodeURIComponent(sysnamName.value)}&page=${currentPage.value}&per_page=${perPage.value}`
+)
 
 // Reset to page 1 when sysnam changes
 watch(sysnamName, () => {
