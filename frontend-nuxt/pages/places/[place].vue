@@ -6,7 +6,7 @@ import type { JobListResponse } from '@/types'
 const route = useRoute()
 const placeName = computed(() => String(route.params.place || '').trim())
 const siteUrl = useSiteUrl()
-const pageUrl = computed(() => `${siteUrl}/places/${placeName.value}`)
+const pageUrl = computed(() => `${siteUrl}/places/${encodeURIComponent(placeName.value)}`)
 
 const { data, error } = await useFetch<JobListResponse>('/api/jobs', {
   query: { places: placeName.value, per_page: 20 }
@@ -19,10 +19,10 @@ useSeoMeta({
   robots: 'index,follow',
   ogTitle: () => `最新 ${placeName.value} 公務人員職缺列表 - 開放事求人`,
   ogDescription: () => `即時同步 ${placeName.value} 各政府機關與學校之最新公務員職缺。`,
-  ogUrl: pageUrl.value,
+  ogUrl: () => pageUrl.value,
 })
 
-useHead({
+useHead(() => ({
   link: [{ rel: 'canonical', href: pageUrl.value }],
   script: [
     {
@@ -37,7 +37,7 @@ useHead({
       })
     }
   ]
-})
+}))
 </script>
 
 <template>
@@ -60,6 +60,9 @@ useHead({
 
     <div v-if="error" class="bg-red-50 p-6 rounded-xl text-center text-red-600">無法載入職缺資料，請稍後再試。</div>
     <div v-else-if="!data" class="text-center py-12 text-slate-400">讀取中...</div>
+    <div v-else-if="!data.jobs || data.jobs.length === 0" class="text-center py-12 text-slate-500 bg-white rounded-xl border border-slate-200">
+      目前無最新職缺
+    </div>
     <div v-else>
       <!-- 桌機版表格與手機版卡片列表 (共享 layouts/components 邏輯) -->
       <div class="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
