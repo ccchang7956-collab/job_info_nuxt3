@@ -9,7 +9,6 @@ const siteUrl = useSiteUrl()
 const pageUrl = computed(() => `${siteUrl.replace(/\/$/, '')}/sysnams/${encodeURIComponent(sysnamName.value.toLowerCase())}`)
 
 const { data, error } = await useFetch<JobListResponse>('/api/jobs', {
-  key: `jobs-sysnam-${sysnamName.value}`,
   query: computed(() => ({ sysnam: sysnamName.value, per_page: 20 }))
 })
 
