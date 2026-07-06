@@ -27,6 +27,15 @@ export default {
                     900: '#1a3e5c',
                     950: '#11283d',
                 },
+            },
+            animation: {
+                'fade-in': 'fadeIn 0.3s ease-out',
+            },
+            keyframes: {
+                fadeIn: {
+                    '0%': { opacity: '0', transform: 'translateY(-4px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
+                }
             }
         },
     },
