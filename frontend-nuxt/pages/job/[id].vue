@@ -147,9 +147,9 @@ useSeoMeta({
   keywords: () => job.value 
     ? ['事求人', '人事行政總處事求人', '公務員職缺', '政府職缺', jobOrganizationName.value, jobTitleText.value, cleanValue(job.value.sysnam), '開放事求人'].filter(Boolean).join(', ')
     : '事求人, 公務員職缺, 政府職缺',
-  // 只有確認職缺已過期才設 noindex；API 失敗（job.value=null）時保持 index
-  // 避免後端短暫錯誤導致 Googlebot 看到 noindex 而永久拒絕收錄
-  robots: () => job.value ? 'index,follow' : 'noindex,follow',
+  // 只有當確定查無此職缺且無 API 錯誤（例如真正的 404）時才設 noindex
+  // 避免後端短暫網絡抖動或 API 錯誤導致 Googlebot 看到 noindex 而永久將網頁移出索引 (De-index)
+  robots: () => (fetchError.value || job.value) ? 'index,follow' : 'noindex,follow',
   ogTitle: () => job.value 
     ? `開放事求人｜${jobOrganizationName.value}(${jobTitleText.value})｜職缺詳情`
     : '職缺詳細資料',
