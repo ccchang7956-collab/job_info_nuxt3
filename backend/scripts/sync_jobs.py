@@ -596,8 +596,21 @@ def _push_indexnow_and_invalidate_cache(new_jobs: list, db_path: str):
         logging.info("INDEXNOW_KEY not set, skipping IndexNow push.")
         return
 
+    # Add root folder to sys.path to allow importing from app
+    import sys
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir) # backend/
+    if project_root not in sys.path:
+        sys.path.append(project_root)
+
+    from app.Utils.FormatUtils import format_place
+    from urllib.parse import quote
+
     # 從已插入的職缺中提取 ID（從 view_url 取 id 或直接用 rowid）
     job_ids = []
+    places_set = set()
+    sysnams_set = set()
+
     for job in new_jobs:
         # view_url 格式通常為 https://web3.dgpa.gov.tw/want03front/AP/...?id=XXXXX
         view_url = job.get("view_url", "")
@@ -611,12 +624,33 @@ def _push_indexnow_and_invalidate_cache(new_jobs: list, db_path: str):
             if match:
                 job_ids.append(match.group(1))
 
+        # 提取縣市
+        place_type = job.get("work_place_type")
+        if place_type:
+            formatted_place = format_place(place_type)
+            # 去除行政區保留縣市名 (例如: 臺北市信義區 -> 臺北市)
+            match_place = re.match(r'^[^縣市]+[縣市]', formatted_place)
+            if match_place:
+                places_set.add(match_place.group(0))
+
+        # 提取職系
+        sysnam = job.get("sysnam")
+        if sysnam and sysnam != "無":
+            sysnams_set.add(sysnam)
+
     if not job_ids:
         logging.info("No job IDs found for IndexNow push.")
         return
 
     # 構建 URL 列表
-    urls = [f"{site_domain}/job/{job_id}" for job_id in job_ids[:500]]  # 最多 500 筆
+    urls = [f"{site_domain}/job/{job_id}" for job_id in job_ids[:400]]  # 職缺 ID 限制 400 筆，預留空間給分類頁面
+    for p in places_set:
+        urls.append(f"{site_domain}/places/{quote(p.lower())}")
+    for s in sysnams_set:
+        urls.append(f"{site_domain}/sysnams/{quote(s.lower())}")
+
+    # 去重且最多限額 500 筆
+    urls = list(set(urls))[:500]
 
     host = re.sub(r'^https?://', '', site_domain)
     payload = {
