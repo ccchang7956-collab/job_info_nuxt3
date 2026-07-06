@@ -603,7 +603,7 @@ def _push_indexnow_and_invalidate_cache(new_jobs: list, db_path: str):
     if project_root not in sys.path:
         sys.path.append(project_root)
 
-    from app.Utils.FormatUtils import format_place
+    from app.Utils.FormatUtils import format_place, normalize_place
     from urllib.parse import quote
 
     # 從已插入的職缺中提取 ID（從 view_url 取 id 或直接用 rowid）
@@ -628,10 +628,11 @@ def _push_indexnow_and_invalidate_cache(new_jobs: list, db_path: str):
         place_type = job.get("work_place_type")
         if place_type:
             formatted_place = format_place(place_type)
-            # 去除行政區保留縣市名 (例如: 臺北市信義區 -> 臺北市)
-            match_place = re.match(r'^[^縣市]+[縣市]', formatted_place)
-            if match_place:
-                places_set.add(match_place.group(0))
+            # 支援多個工作地點，以逗號分割並逐一提取與進行台/臺標準化
+            for part in formatted_place.split(','):
+                match_place = re.match(r'^[^縣市]+[縣市]', part.strip())
+                if match_place:
+                    places_set.add(normalize_place(match_place.group(0)))
 
         # 提取職系
         sysnam = job.get("sysnam")
@@ -649,8 +650,8 @@ def _push_indexnow_and_invalidate_cache(new_jobs: list, db_path: str):
     for s in sysnams_set:
         urls.append(f"{site_domain}/sysnams/{quote(s.lower())}")
 
-    # 去重且最多限額 500 筆
-    urls = list(set(urls))[:500]
+    # 有序去重且最多限額 500 筆
+    urls = list(dict.fromkeys(urls))[:500]
 
     host = re.sub(r'^https?://', '', site_domain)
     payload = {
