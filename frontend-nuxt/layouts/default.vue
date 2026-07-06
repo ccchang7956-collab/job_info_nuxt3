@@ -210,6 +210,30 @@ useHead({
     
     <footer class="bg-white border-t border-slate-200 text-slate-600 py-8 mt-auto">
       <div class="container mx-auto px-4 text-center text-sm space-y-3 flex flex-col items-center">
+          <div class="border-b border-slate-200 pb-6 mb-6 w-full max-w-5xl text-left grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-slate-500">
+            <div>
+              <span class="font-bold text-slate-600 block mb-2">依熱門縣市瀏覽：</span>
+              <div class="flex flex-wrap gap-x-3 gap-y-1.5">
+                <NuxtLink to="/places/臺北市" class="hover:text-primary-600">臺北市</NuxtLink>
+                <NuxtLink to="/places/新北市" class="hover:text-primary-600">新北市</NuxtLink>
+                <NuxtLink to="/places/桃園市" class="hover:text-primary-600">桃園市</NuxtLink>
+                <NuxtLink to="/places/臺中市" class="hover:text-primary-600">臺中市</NuxtLink>
+                <NuxtLink to="/places/臺南市" class="hover:text-primary-600">臺南市</NuxtLink>
+                <NuxtLink to="/places/高雄市" class="hover:text-primary-600">高雄市</NuxtLink>
+              </div>
+            </div>
+            <div>
+              <span class="font-bold text-slate-600 block mb-2">依熱門職系瀏覽：</span>
+              <div class="flex flex-wrap gap-x-3 gap-y-1.5">
+                <NuxtLink to="/sysnams/綜合行政" class="hover:text-primary-600">綜合行政</NuxtLink>
+                <NuxtLink to="/sysnams/人事行政" class="hover:text-primary-600">人事行政</NuxtLink>
+                <NuxtLink to="/sysnams/會計審計" class="hover:text-primary-600">會計審計</NuxtLink>
+                <NuxtLink to="/sysnams/土木工程" class="hover:text-primary-600">土木工程</NuxtLink>
+                <NuxtLink to="/sysnams/資訊處理" class="hover:text-primary-600">資訊處理</NuxtLink>
+                <NuxtLink to="/sysnams/電機工程" class="hover:text-primary-600">電機工程</NuxtLink>
+              </div>
+            </div>
+          </div>
         <p>
           © {{ currentYear }} 本網站使用
           <a href="https://data.gov.tw/" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 underline">政府資料開放平臺</a>

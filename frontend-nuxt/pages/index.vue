@@ -812,6 +812,37 @@ useHead({
       </div>
     </section>
 
+    <!-- 快速分類導覽 (SEO 內部連結) -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <h3 class="text-lg font-bold text-slate-800 mb-4">快速分類導覽</h3>
+      <div class="mb-4">
+        <h4 class="text-sm font-bold text-slate-500 mb-2">依機關所在地（縣市）</h4>
+        <div class="flex flex-wrap gap-2">
+          <NuxtLink 
+            v-for="place in ['臺北市', '新北市', '基隆市', '桃園市', '新竹縣', '新竹市', '苗栗縣', '臺中市', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '嘉義市', '臺南市', '高雄市', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '澎湖縣', '金門縣', '連江縣']" 
+            :key="place" 
+            :to="`/places/${place}`" 
+            class="px-2.5 py-1 bg-slate-50 hover:bg-primary-50 hover:text-primary-700 text-slate-600 text-sm rounded-lg border border-slate-100 transition-colors"
+          >
+            {{ place }}
+          </NuxtLink>
+        </div>
+      </div>
+      <div>
+        <h4 class="text-sm font-bold text-slate-500 mb-2">依熱門職系</h4>
+        <div class="flex flex-wrap gap-2">
+          <NuxtLink 
+            v-for="sys in ['綜合行政', '人事行政', '經建行政', '會計審計', '地政', '社勞行政', '文教行政', '社會工作', '法制', '交通行政', '土木工程', '電機工程', '資訊處理', '農業技術', '測量製圖', '建築工程', '機械工程', '都市計畫']" 
+            :key="sys" 
+            :to="`/sysnams/${sys}`" 
+            class="px-2.5 py-1 bg-slate-50 hover:bg-primary-50 hover:text-primary-700 text-slate-600 text-sm rounded-lg border border-slate-100 transition-colors"
+          >
+            {{ sys }}
+          </NuxtLink>
+        </div>
+      </div>
+    </div>
+
     <!-- Modals -->
     <SysnamModal 
       v-model="filters.sysnam" 
