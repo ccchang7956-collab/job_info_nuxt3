@@ -9,6 +9,7 @@ const siteUrl = useSiteUrl()
 const pageUrl = computed(() => `${siteUrl.replace(/\/$/, '')}/places/${encodeURIComponent(placeName.value.toLowerCase())}`)
 
 const { data, error } = await useFetch<JobListResponse>('/api/jobs', {
+  key: `jobs-place-${placeName.value}`,
   query: computed(() => ({ places: placeName.value, per_page: 20 }))
 })
 
