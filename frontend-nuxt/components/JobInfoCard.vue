@@ -34,7 +34,11 @@ const historyJobs = computed(() => {
 })
 
 // 職缺資訊欄位定義
-const jobInfoFields = computed(() => [
+const jobInfoFields = computed(() => {
+  const placeMatch = String(props.job.work_place_type || '').match(/^[^縣市]+[縣市]/)
+  const placeValue = placeMatch ? placeMatch[0] : (props.job.work_place_type || '臺北市')
+
+  return [
   { icon: CalendarIcon, label: '公告日期', value: props.job.date_from },
   { icon: CalendarDaysIcon, label: '有效期間', value: `${props.job.date_from} ~ ${props.job.date_to}` },
   { icon: BuildingOffice2Icon, label: '徵才機關', value: props.job.org_name }, // Use org_name instead of org if that fits types. Job interface has org and org_name? Checked Job interface: has org, no org_name. Wait, checked Job interface again in Step 3267:
@@ -116,13 +120,27 @@ const jobInfoFields = computed(() => [
   // I should expand `Job` interface to include all these fields as optional.
   
   { icon: AcademicCapIcon, label: '職務列等', value: props.job.rank },
-  { icon: BriefcaseIcon, label: '職系', value: props.job.sysnam },
+  { 
+    icon: BriefcaseIcon, 
+    label: '職系', 
+    value: props.job.sysnam,
+    isRouterLink: true,
+    linkUrl: `/sysnams/${props.job.sysnam}`,
+    customClass: 'inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors'
+  },
   { icon: UserIcon, label: '人員區分', value: props.job.person_kind || '-' },
   { icon: UserPlusIcon, label: '正取', value: props.job.number_of || '-' },
   { icon: UsersIcon, label: '候補', value: props.job.reserve_num || '-' },
-  { icon: MapPinIcon, label: '工作地點', value: props.job.work_place_type },
+  { 
+    icon: MapPinIcon, 
+    label: '工作地點', 
+    value: props.job.work_place_type,
+    isRouterLink: true,
+    linkUrl: `/places/${placeValue}`,
+    customClass: 'text-primary-600 hover:underline hover:text-primary-700 font-medium'
+  },
   { icon: HomeIcon, label: '地址', value: props.job.work_address, isLink: true, linkUrl: `https://www.google.com/maps/search/?q=${props.job.work_address}` },
-])
+]})
 </script>
 
 <template>
@@ -163,6 +181,14 @@ const jobInfoFields = computed(() => [
             >
               {{ field.value }}
             </a>
+          </template>
+          <template v-else-if="field.isRouterLink">
+            <NuxtLink 
+              :to="field.linkUrl" 
+              :class="field.customClass || 'text-primary-600 hover:underline hover:text-primary-700 break-words'"
+            >
+              {{ field.value }}
+            </NuxtLink>
           </template>
           <template v-else>
             {{ field.value || '-' }}
