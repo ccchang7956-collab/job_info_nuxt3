@@ -10,6 +10,8 @@ import asyncio
 import httpx
 from typing import Optional, List
 from xml.sax.saxutils import escape
+from urllib.parse import quote
+import re
 
 # Cache sitemap for 30 minutes (1800 seconds)
 # 縮短快cache，讓失效 URL 更快實際被清除，减少 Googlebot 抓到 404 的機率
@@ -26,6 +28,19 @@ STATIC_PAGE_LASTMOD = {
     "/about": "2025-12-30",
     "/privacy-policy": "2025-06-01",
 }
+
+# 台灣 22 縣市
+PLACES = [
+    '臺北市', '新北市', '基隆市', '桃園市', '新竹縣', '新竹市', '苗栗縣',
+    '臺中市', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '嘉義市', '臺南市',
+    '高雄市', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '澎湖縣', '金門縣', '連江縣'
+]
+
+# 熱門職系
+SYSNAMS = [
+    '綜合行政', '人事行政', '經建行政', '會計審計', '地政', '社勞行政', '文教行政', '社會工作', '法制', '交通行政',
+    '土木工程', '電機工程', '資訊處理', '農業技術', '測量製圖', '建築工程', '機械工程', '都市計畫'
+]
 
 # IndexNow API 設定
 INDEXNOW_KEY = os.getenv("INDEXNOW_KEY", "")
@@ -119,30 +134,21 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             {"path": "/privacy-policy", "priority": "0.3", "changefreq": "yearly"},
         ]
 
+        today_str = datetime.now().strftime("%Y-%m-%d")
+
         # 台灣 22 縣市
-        places = [
-            '臺北市', '新北市', '基隆市', '桃園市', '新竹縣', '新竹市', '苗栗縣',
-            '臺中市', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '嘉義市', '臺南市',
-            '高雄市', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '澎湖縣', '金門縣', '連江縣'
-        ]
-        for p in places:
-            static_routes.append({"path": f"/places/{p}", "priority": "0.9", "changefreq": "daily"})
+        for p in PLACES:
+            static_routes.append({"path": f"/places/{quote(p)}", "priority": "0.9", "changefreq": "daily", "lastmod": today_str})
 
         # 熱門職系
-        sysnams = [
-            '綜合行政', '人事行政', '經建行政', '會計審計', '地政', '社勞行政', '文教行政', '社會工作', '法制', '交通行政',
-            '土木工程', '電機工程', '資訊處理', '農業技術', '測量製圖', '建築工程', '機械工程', '都市計畫'
-        ]
-        for s in sysnams:
-            static_routes.append({"path": f"/sysnams/{s}", "priority": "0.9", "changefreq": "daily"})
-
-        today_str = datetime.now().strftime("%Y-%m-%d")
+        for s in SYSNAMS:
+            static_routes.append({"path": f"/sysnams/{quote(s)}", "priority": "0.9", "changefreq": "daily", "lastmod": today_str})
 
         xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
         xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
 
         for route in static_routes:
-            lastmod = STATIC_PAGE_LASTMOD.get(route["path"], today_str)
+            lastmod = route.get("lastmod") or STATIC_PAGE_LASTMOD.get(route["path"], "2025-12-30")
             xml_parts.append('<url>')
             xml_parts.append(f'<loc>{escape(base_url + route["path"])}</loc>')
             xml_parts.append(f'<lastmod>{lastmod}</lastmod>')
@@ -329,10 +335,15 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             from datetime import date
             today = date.today().isoformat()
             base_url = SITE_DOMAIN
-            no_today_lastmod = not any(
-                f"<loc>{escape(base_url + path)}</loc>\n<lastmod>{today}</lastmod>" in static_content
-                for path in required_paths
-            )
+            
+            no_today_lastmod = True
+            for path in required_paths:
+                escaped_loc = re.escape(escape(base_url + path))
+                pattern = rf"<loc>{escaped_loc}</loc>\s*<lastmod>{re.escape(today)}</lastmod>"
+                if re.search(pattern, static_content):
+                    no_today_lastmod = False
+                    break
+
             results["sitemap_static"] = {
                 "ok": found_paths and no_today_lastmod,
                 "content_length": len(static_content),
