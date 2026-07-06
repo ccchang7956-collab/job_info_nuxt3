@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
+import { ArrowLeftIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import type { JobDetailResponse } from '@/types'
 
 const route = useRoute()
@@ -149,7 +149,7 @@ useSeoMeta({
     : '事求人, 公務員職缺, 政府職缺',
   // 只有確認職缺已過期才設 noindex；API 失敗（job.value=null）時保持 index
   // 避免後端短暫錯誤導致 Googlebot 看到 noindex 而永久拒絕收錄
-  robots: () => (job.value && isJobExpired.value) ? 'noindex,follow' : 'index,follow',
+  robots: () => job.value ? 'index,follow' : 'noindex,follow',
   ogTitle: () => job.value 
     ? `開放事求人｜${jobOrganizationName.value}(${jobTitleText.value})｜職缺詳情`
     : '職缺詳細資料',
@@ -288,6 +288,23 @@ onUnmounted(() => {
         </li>
       </ol>
     </nav>
+
+    <!-- Expired Warning Banner -->
+    <div v-if="job && isJobExpired" class="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm animate-fade-in">
+      <div class="flex items-center gap-3 text-amber-800">
+        <ExclamationTriangleIcon class="w-6 h-6 flex-shrink-0" />
+        <div>
+          <p class="font-bold">此職缺已截止報名</p>
+          <p class="text-sm text-amber-700 mt-0.5">本職缺已於 {{ job.date_to }} 截止收件，僅保留歷史資料供參考。</p>
+        </div>
+      </div>
+      <NuxtLink 
+        to="/" 
+        class="inline-flex items-center justify-center px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
+      >
+        查看最新職缺列表
+      </NuxtLink>
+    </div>
 
     <!-- Loading State -->
     <LoadingSpinner v-if="!job && !error" message="正在載入職缺詳細資料..." />
