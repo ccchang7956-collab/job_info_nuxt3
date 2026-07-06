@@ -829,5 +829,43 @@ useHead({
       :isOpen="isRankModalOpen" 
       @close="isRankModalOpen = false" 
     />
+
+    <!-- FAQ Section -->
+    <section aria-label="常見問題" class="mt-12 border-t border-slate-200 pt-10">
+      <h2 class="text-xl font-bold text-slate-800 mb-6 text-center">常見問題 FAQ</h2>
+      <div class="max-w-3xl mx-auto space-y-4">
+        <details class="group bg-white rounded-xl border border-slate-200 p-4 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer focus:outline-none select-none">
+            <span class="font-semibold text-slate-800">如何搜尋公務員職缺？</span>
+            <ChevronDownIcon class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
+          </summary>
+          <p class="mt-3 text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">在開放事求人首頁使用關鍵字搜尋，可依機關、職系、職稱、地點等條件篩選，快速找到適合的公務員職缺。</p>
+        </details>
+
+        <details class="group bg-white rounded-xl border border-slate-200 p-4 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer focus:outline-none select-none">
+            <span class="font-semibold text-slate-800">開放事求人的資料來源是什麼？</span>
+            <ChevronDownIcon class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
+          </summary>
+          <p class="mt-3 text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">資料來源為政府資料開放平臺之「行政院人事行政總處事求人機關徵才資料」，每日自動同步更新，確保資料即時性。</p>
+        </details>
+
+        <details class="group bg-white rounded-xl border border-slate-200 p-4 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer focus:outline-none select-none">
+            <span class="font-semibold text-slate-800">什麼是重複開缺？</span>
+            <ChevronDownIcon class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
+          </summary>
+          <p class="mt-3 text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">當相同機關、相同職稱的職缺重複出現時，系統會標示為「重複開缺」，幫助您判斷該職位可能較不穩定或流動率較高。</p>
+        </details>
+
+        <details class="group bg-white rounded-xl border border-slate-200 p-4 [&_summary::-webkit-details-marker]:hidden">
+          <summary class="flex items-center justify-between cursor-pointer focus:outline-none select-none">
+            <span class="font-semibold text-slate-800">可以在手機上使用嗎？</span>
+            <ChevronDownIcon class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
+          </summary>
+          <p class="mt-3 text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">是的，開放事求人支援 PWA（漸進式網頁應用程式），可以安裝到手機桌面像 App 一樣使用，並支援離線瀏覽已查看過的職缺。</p>
+        </details>
+      </div>
+    </section>
   </main>
 </template>
