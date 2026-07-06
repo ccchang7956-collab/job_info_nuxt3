@@ -104,14 +104,13 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
 
     @staticmethod
     async def get_sitemap_static() -> str:
-        """生成靜態頁面 Sitemap XML。"""
+        """生成靜態及長青分類頁面的 Sitemap XML。"""
         cache_key = "sitemap_static"
         if cache_key in sitemap_cache:
             return sitemap_cache[cache_key]
 
         base_url = SITE_DOMAIN
-
-        # 靜態路由設定（priority 和 changefreq）
+        
         static_routes = [
             {"path": "/", "priority": "1.0", "changefreq": "daily"},
             {"path": "/comments", "priority": "0.7", "changefreq": "daily"},
@@ -120,11 +119,30 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             {"path": "/privacy-policy", "priority": "0.3", "changefreq": "yearly"},
         ]
 
+        # 台灣 22 縣市
+        places = [
+            '臺北市', '新北市', '基隆市', '桃園市', '新竹縣', '新竹市', '苗栗縣',
+            '臺中市', '彰化縣', '南投縣', '雲林縣', '嘉義縣', '嘉義市', '臺南市',
+            '高雄市', '屏東縣', '宜蘭縣', '花蓮縣', '臺東縣', '澎湖縣', '金門縣', '連江縣'
+        ]
+        for p in places:
+            static_routes.append({"path": f"/places/{p}", "priority": "0.9", "changefreq": "daily"})
+
+        # 熱門職系
+        sysnams = [
+            '綜合行政', '人事行政', '經建行政', '會計審計', '地政', '社勞行政', '文教行政', '社會工作', '法制', '交通行政',
+            '土木工程', '電機工程', '資訊處理', '農業技術', '測量製圖', '建築工程', '機械工程', '都市計畫'
+        ]
+        for s in sysnams:
+            static_routes.append({"path": f"/sysnams/{s}", "priority": "0.9", "changefreq": "daily"})
+
+        today_str = datetime.now().strftime("%Y-%m-%d")
+
         xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
         xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
 
         for route in static_routes:
-            lastmod = STATIC_PAGE_LASTMOD.get(route["path"], "2025-12-30")
+            lastmod = STATIC_PAGE_LASTMOD.get(route["path"], today_str)
             xml_parts.append('<url>')
             xml_parts.append(f'<loc>{escape(base_url + route["path"])}</loc>')
             xml_parts.append(f'<lastmod>{lastmod}</lastmod>')
@@ -133,7 +151,6 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             xml_parts.append('</url>')
 
         xml_parts.append('</urlset>')
-
         result = "\n".join(xml_parts)
         sitemap_cache[cache_key] = result
         return result
@@ -308,10 +325,14 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             static_content = await SeoService.get_sitemap_static()
             required_paths = ["/", "/about", "/comments", "/charts", "/privacy-policy"]
             found_paths = all(path in static_content for path in required_paths)
-            # 確認 lastmod 不是今天
+            # 確保主要靜態頁面 lastmod 不是今天（允許分類/職系等長青頁面為今天）
             from datetime import date
             today = date.today().isoformat()
-            no_today_lastmod = today not in static_content
+            base_url = SITE_DOMAIN
+            no_today_lastmod = not any(
+                f"<loc>{escape(base_url + path)}</loc>\n<lastmod>{today}</lastmod>" in static_content
+                for path in required_paths
+            )
             results["sitemap_static"] = {
                 "ok": found_paths and no_today_lastmod,
                 "content_length": len(static_content),
