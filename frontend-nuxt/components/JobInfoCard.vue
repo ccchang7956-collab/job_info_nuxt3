@@ -35,8 +35,7 @@ const historyJobs = computed(() => {
 
 // 職缺資訊欄位定義
 const jobInfoFields = computed(() => {
-  const placeMatch = String(props.job.work_place_type || '').match(/^[^縣市]+[縣市]/)
-  const placeValue = placeMatch ? placeMatch[0] : (props.job.work_place_type || '臺北市')
+  const placeValue = String(props.job.place || props.job.work_address || '臺北市').split(',')[0].trim()
 
   return [
   { icon: CalendarIcon, label: '公告日期', value: props.job.date_from },
@@ -125,7 +124,7 @@ const jobInfoFields = computed(() => {
     label: '職系', 
     value: props.job.sysnam,
     isRouterLink: true,
-    linkUrl: `/sysnams/${props.job.sysnam}`,
+    linkUrl: `/sysnams/${props.job.sysnam.toLowerCase()}`,
     customClass: 'inline-flex items-center px-2.5 py-1 rounded text-sm font-bold bg-primary-50 text-primary-700 border border-primary-200 hover:bg-primary-100 transition-colors'
   },
   { icon: UserIcon, label: '人員區分', value: props.job.person_kind || '-' },
@@ -134,9 +133,9 @@ const jobInfoFields = computed(() => {
   { 
     icon: MapPinIcon, 
     label: '工作地點', 
-    value: props.job.work_place_type,
+    value: props.job.place || props.job.work_place_type || '臺北市',
     isRouterLink: true,
-    linkUrl: `/places/${placeValue}`,
+    linkUrl: `/places/${placeValue.toLowerCase()}`,
     customClass: 'text-primary-600 hover:underline hover:text-primary-700 font-medium'
   },
   { icon: HomeIcon, label: '地址', value: props.job.work_address, isLink: true, linkUrl: `https://www.google.com/maps/search/?q=${props.job.work_address}` },
