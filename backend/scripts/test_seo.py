@@ -138,7 +138,11 @@ def test_sitemap_static(base_url: str) -> bool:
         urls = root.findall('sm:url', ns)
         ok(f"靜態 sitemap 含 {len(urls)} 筆 URL")
 
-        required_paths = ['/', '/comments', '/charts', '/about', '/privacy-policy']
+        required_paths = [
+            '/', '/comments', '/charts', '/about', '/privacy-policy',
+            '/places/%E8%87%BA%E5%8C%97%E5%B8%82',  # 臺北市
+            '/sysnams/%E7%B6%9C%E5%90%88%E8%A1%8C%E6%94%BF'  # 綜合行政
+        ]
         found_paths = set()
         static_lastmods = []
 
@@ -286,6 +290,8 @@ def test_page_meta(base_url: str) -> bool:
         ("/", "開放事求人"),
         ("/about", "關於本站"),
         ("/charts", "統計"),
+        ("/places/%E8%87%BA%E5%8C%97%E5%B8%82", "臺北市"),
+        ("/sysnams/%E7%B6%9C%E5%90%88%E8%A1%8C%E6%94%BF", "綜合行政"),
     ]
 
     for path, expected_title_fragment in pages:
