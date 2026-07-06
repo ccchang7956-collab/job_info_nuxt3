@@ -87,6 +87,7 @@ export default defineNuxtConfig({
         { name: 'google-site-verification', content: 'NqVWpaQNA2zQaG0iXjwamdwnSy0BX-GZ4Og4sWFKTGY' },
         { name: 'robots', content: 'index,follow' },
         { name: 'language', content: 'zh-TW' },
+        { name: 'author', content: '開放事求人' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: '開放事求人' },
         { property: 'og:image', content: `${siteUrl}/og-image.png` },
@@ -102,6 +103,9 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
+        // hreflang — 告知 Google 本站語言/地區，避免與其他語言版本混淆
+        { rel: 'alternate', hreflang: 'zh-TW', href: siteUrl },
+        { rel: 'alternate', hreflang: 'x-default', href: siteUrl },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         // 預連接 API 伺服器 - 加速資料載入
@@ -138,6 +142,10 @@ export default defineNuxtConfig({
 
     // Sitemap proxy - 讓 Googlebot 直接從後端取得最新 Sitemap
     '/sitemap.xml': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/sitemap.xml` },
+
+    // Sitemap Index 子 sitemap 代理
+    '/sitemap-static.xml': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/sitemap-static.xml` },
+    '/sitemap-jobs-**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/sitemap-jobs-**` },
 
     // LINE Bot webhook
     '/line_ai_bot/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/line_ai_bot/**` },

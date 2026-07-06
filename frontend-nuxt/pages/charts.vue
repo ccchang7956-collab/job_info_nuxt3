@@ -238,9 +238,9 @@ useHead({
           <div class="p-2 bg-primary-100 rounded-lg">
             <ChartBarIcon class="w-8 h-8 text-primary-600" />
           </div>
-          統計圖表
+          公務員職缺統計圖表
         </h1>
-        <p class="text-slate-500 text-lg">瀏覽所有職缺的統計數據</p>
+        <p class="text-slate-500 text-lg">視覺化分析人事行政總處事求人資料，包含各機關開缺排行、職系分布與地區統計</p>
       </div>
     </div>
 

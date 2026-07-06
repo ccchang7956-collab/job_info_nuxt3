@@ -241,9 +241,10 @@ useHead({
           <div class="p-2 bg-primary-100 rounded-lg">
             <ChatBubbleLeftRightIcon class="w-8 h-8 text-primary-600" />
           </div>
-          看留言
+          公務員職缺留言討論
         </h1>
-        <p class="text-slate-500 text-lg">瀏覽所有職缺的留言討論</p>
+        <p class="text-slate-500 text-lg">瀏覽公務員職缺的留言討論，分享職場心得與應徵情報</p>
+
       </div>
       <div class="inline-flex items-center gap-2 bg-white px-5 py-3 rounded-xl border border-slate-200 shadow-sm">
         <span class="text-slate-600 font-medium">總留言</span>

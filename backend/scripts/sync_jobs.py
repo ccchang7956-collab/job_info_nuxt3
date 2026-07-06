@@ -557,3 +557,85 @@ if __name__ == "__main__":
 
     overall_end_time = datetime.now()
     logging.info(f"--- 職缺同步作業執行完畢 (總耗時: {overall_end_time - overall_start_time}) ---")
+
+    # =========================================================================
+    # Step 3: IndexNow 推送 + Sitemap 快取失效
+    # 當有新職缺入庫時，主動通知搜尋引擎並清除 sitemap 快取
+    # =========================================================================
+    if new_jobs_inserted_list:
+        _push_indexnow_and_invalidate_cache(new_jobs_inserted_list, db_path)
+
+
+def _push_indexnow_and_invalidate_cache(new_jobs: list, db_path: str):
+    """推送新職缺 URL 到 IndexNow，並呼叫後端 API 清除 sitemap 快取。"""
+    import re
+    try:
+        # 從 db_path 往上找 .env（backend/ 目錄）
+        backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(db_path)))
+        dotenv_path = os.path.join(backend_dir, '.env')
+        load_dotenv(dotenv_path=dotenv_path, verbose=False)
+    except Exception:
+        pass
+
+    indexnow_key = os.getenv("INDEXNOW_KEY", "")
+    site_domain = os.getenv("SITE_DOMAIN", "https://opendgpa.shibaalin.com").rstrip("/")
+    backend_url = os.getenv("BACKEND_URL", "http://localhost:8002")
+
+    # ── 清除 sitemap 快取 ──────────────────────────────────────────────────
+    try:
+        resp = requests.post(f"{backend_url}/api/seo/invalidate-cache", timeout=10)
+        if resp.status_code == 200:
+            logging.info("Sitemap cache invalidated via API.")
+        else:
+            logging.warning(f"Sitemap cache invalidation returned {resp.status_code}")
+    except Exception as e:
+        logging.warning(f"Could not invalidate sitemap cache: {e}")
+
+    # ── IndexNow 推送 ──────────────────────────────────────────────────────
+    if not indexnow_key:
+        logging.info("INDEXNOW_KEY not set, skipping IndexNow push.")
+        return
+
+    # 從已插入的職缺中提取 ID（從 view_url 取 id 或直接用 rowid）
+    job_ids = []
+    for job in new_jobs:
+        # view_url 格式通常為 https://web3.dgpa.gov.tw/want03front/AP/...?id=XXXXX
+        view_url = job.get("view_url", "")
+        # 優先用 id 欄位（若有）
+        job_id = job.get("id")
+        if job_id:
+            job_ids.append(job_id)
+        elif view_url:
+            # 嘗試從 view_url 提取 id 參數
+            match = re.search(r'[?&]id=(\d+)', view_url, re.IGNORECASE)
+            if match:
+                job_ids.append(match.group(1))
+
+    if not job_ids:
+        logging.info("No job IDs found for IndexNow push.")
+        return
+
+    # 構建 URL 列表
+    urls = [f"{site_domain}/job/{job_id}" for job_id in job_ids[:500]]  # 最多 500 筆
+
+    host = re.sub(r'^https?://', '', site_domain)
+    payload = {
+        "host": host,
+        "key": indexnow_key,
+        "keyLocation": f"{site_domain}/{indexnow_key}.txt",
+        "urlList": urls
+    }
+
+    try:
+        resp = requests.post(
+            "https://api.indexnow.org/IndexNow",
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=20
+        )
+        if resp.status_code in (200, 202):
+            logging.info(f"IndexNow: successfully pushed {len(urls)} URLs (status={resp.status_code})")
+        else:
+            logging.warning(f"IndexNow push returned {resp.status_code}: {resp.text[:200]}")
+    except Exception as e:
+        logging.warning(f"IndexNow push failed: {e}")

@@ -171,7 +171,7 @@ async def add_security_headers(request: Request, call_next):
         elif path.startswith("/Active_job_openings/"):
             response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
         # Sitemap / robots.txt：可以快取較長時間
-        elif path in ("/sitemap.xml", "/robots.txt"):
+        elif path in ("/sitemap.xml", "/robots.txt") or path.startswith("/sitemap-"):
             response.headers["Cache-Control"] = "public, max-age=1800"
         # 其他 API 路徑：不快取
         elif path.startswith("/api/"):
