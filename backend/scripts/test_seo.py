@@ -141,7 +141,9 @@ def test_sitemap_static(base_url: str) -> bool:
         required_paths = [
             '/', '/comments', '/charts', '/about', '/privacy-policy',
             '/places/%E8%87%BA%E5%8C%97%E5%B8%82',  # 臺北市
-            '/sysnams/%E7%B6%9C%E5%90%88%E8%A1%8C%E6%94%BF'  # 綜合行政
+            '/places/%E9%AB%98%E9%9B%84%E5%B8%82',  # 高雄市
+            '/sysnams/%E7%B6%9C%E5%90%88%E8%A1%8C%E6%94%BF',  # 綜合行政
+            '/sysnams/%E8%B3%87%E8%A8%8A%E8%99%95%E7%90%86'  # 資訊處理
         ]
         found_paths = set()
         static_lastmods = []
@@ -290,8 +292,6 @@ def test_page_meta(base_url: str) -> bool:
         ("/", "開放事求人"),
         ("/about", "關於本站"),
         ("/charts", "統計"),
-        ("/places/%E8%87%BA%E5%8C%97%E5%B8%82", "臺北市"),
-        ("/sysnams/%E7%B6%9C%E5%90%88%E8%A1%8C%E6%94%BF", "綜合行政"),
     ]
 
     for path, expected_title_fragment in pages:
@@ -385,6 +385,82 @@ def test_duplicate_schemas(base_url: str) -> bool:
     return passed
 
 
+def test_evergreen_pages(base_url: str) -> bool:
+    """測試長青分類網頁的前端渲染與 SEO 標籤。"""
+    section("9. 長青分類頁面 (Evergreen Landing Pages) 驗證")
+    passed = True
+
+    frontend_url = base_url.replace(":8002", ":3000").replace(":8002", "")
+
+    test_cases = [
+        ("/places/%E8%87%BA%E5%8C%97%E5%B8%82", "臺北市"),
+        ("/places/%E9%AB%98%E9%9B%84%E5%B8%82", "高雄市"),
+        ("/sysnams/%E7%B6%9C%E5%90%88%E8%A1%8C%E6%94%BF", "綜合行政"),
+        ("/sysnams/%E8%B3%87%E8%A8%8A%E8%99%95%E7%90%86", "資訊處理"),
+    ]
+
+    for path, name in test_cases:
+        try:
+            url = f"{frontend_url}{path}"
+            r = requests.get(url, timeout=15)
+            if r.status_code != 200:
+                fail(f"{path} 返回 {r.status_code}")
+                passed = False
+                continue
+
+            # 1. 驗證 Title
+            title_match = re.search(r'<title[^>]*>([^<]+)</title>', r.text)
+            if title_match and name in title_match.group(1):
+                ok(f"{path} → title 包含 '{name}': {title_match.group(1).strip()[:60]}")
+            else:
+                fail(f"{path} → title 未包含 '{name}'")
+                passed = False
+
+            # 2. 驗證 Canonical URL 指向且全小寫百分比編碼
+            expected_canonical = f"https://opendgpa.shibaalin.com{path}".lower()
+            canonical_match = re.search(r'rel=["\']canonical["\'][^>]*href=["\']([^"\']+)["\']', r.text)
+            if not canonical_match:
+                canonical_match = re.search(r'href=["\']([^"\']+)["\'][^>]*rel=["\']canonical["\']', r.text)
+            
+            if canonical_match:
+                actual_canonical = canonical_match.group(1).lower()
+                if actual_canonical == expected_canonical:
+                    ok(f"{path} → Canonical URL 正確: {actual_canonical}")
+                else:
+                    fail(f"{path} → Canonical URL 錯誤: 期望 {expected_canonical}，實際 {actual_canonical}")
+                    passed = False
+            else:
+                fail(f"{path} → 未找到 Canonical URL")
+                passed = False
+
+            # 3. 驗證結構化資料 BreadcrumbList
+            ld_scripts = re.findall(
+                r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+                r.text, re.DOTALL
+            )
+            has_breadcrumb = False
+            for script in ld_scripts:
+                try:
+                    data = json.loads(script.strip())
+                    if data.get("@type") == "BreadcrumbList":
+                        has_breadcrumb = True
+                        break
+                except json.JSONDecodeError:
+                    pass
+
+            if has_breadcrumb:
+                ok(f"{path} → 含有 BreadcrumbList 結構化資料")
+            else:
+                fail(f"{path} → 缺少 BreadcrumbList 結構化資料")
+                passed = False
+
+        except Exception as e:
+            fail(f"{path} 驗證時發生異常: {e}")
+            passed = False
+
+    return passed
+
+
 def main():
     parser = argparse.ArgumentParser(description="SEO 改善驗證腳本")
     parser.add_argument(
@@ -414,6 +490,7 @@ def main():
         "indexnow_key": test_indexnow_key_file(base_url),
         "page_meta": test_page_meta(base_url),
         "duplicate_schemas": test_duplicate_schemas(base_url),
+        "evergreen_pages": test_evergreen_pages(base_url),
     }
 
     # Sitemap Index 測試（特殊處理，需要子 sitemap 列表）
