@@ -6,10 +6,10 @@ import type { JobListResponse } from '@/types'
 const route = useRoute()
 const sysnamName = computed(() => String(route.params.sysnam || '').trim())
 const siteUrl = useSiteUrl()
-const pageUrl = computed(() => `${siteUrl}/sysnams/${encodeURIComponent(sysnamName.value)}`)
+const pageUrl = computed(() => `${siteUrl.replace(/\/$/, '')}/sysnams/${encodeURIComponent(sysnamName.value.toLowerCase())}`)
 
 const { data, error } = await useFetch<JobListResponse>('/api/jobs', {
-  query: { sysnam: sysnamName.value, per_page: 20 }
+  query: computed(() => ({ sysnam: sysnamName.value, per_page: 20 }))
 })
 
 useSeoMeta({
