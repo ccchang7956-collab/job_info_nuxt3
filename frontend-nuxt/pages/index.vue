@@ -277,6 +277,13 @@ watch(() => route.query, (newQuery, oldQuery) => {
 
 const siteUrl = useSiteUrl()
 const homeUrl = `${siteUrl}/`
+const listingCanonical = computed(() => {
+  if (hasActiveFilters.value || sortField.value !== 'date_from' || sortOrder.value !== 'desc') return homeUrl
+  const query = new URLSearchParams()
+  if (pagination.value.current_page > 1) query.set('page', String(pagination.value.current_page))
+  if (perPage.value !== 15) query.set('per_page', String(perPage.value))
+  return query.size ? `${homeUrl}?${query}` : homeUrl
+})
 
 // SEO
 useSeoMeta({
@@ -286,7 +293,7 @@ useSeoMeta({
   robots: 'index,follow',
   ogTitle: '開放事求人 - 人事行政總處事求人開放資料｜公務員職缺查詢',
   ogDescription: '最即時的人事行政總處事求人開放資料查詢平台。提供公務員職缺搜尋、歷史開缺、留言討論、統計圖表。',
-  ogUrl: homeUrl,
+  ogUrl: () => listingCanonical.value,
   ogType: 'website',
 })
 
@@ -294,7 +301,7 @@ useSeoMeta({
 // 注意：WebSite 和 Organization schema 已移至 layouts/default.vue 統一管理，避免每頁重複
 useHead({
   link: [
-    { rel: 'canonical', href: homeUrl }
+    { rel: 'canonical', href: listingCanonical }
   ],
   script: [
     {

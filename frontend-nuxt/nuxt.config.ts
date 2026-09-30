@@ -21,6 +21,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    backendUrl: process.env.BACKEND_URL || 'http://localhost:8002',
     public: {
       // Cloudflare Turnstile 金鑰
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
@@ -145,7 +146,8 @@ export default defineNuxtConfig({
 
     // Sitemap Index 子 sitemap 代理
     '/sitemap-static.xml': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/sitemap-static.xml` },
-    '/sitemap-jobs-**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/sitemap-jobs-**` },
+    // 職缺子 sitemap 由 server/middleware/job-sitemap.ts 處理。
+    // Nitro 的萬用字元只匹配完整路徑片段，/sitemap-jobs-** 不會匹配檔名。
 
     // LINE Bot webhook
     '/line_ai_bot/**': { proxy: `${process.env.BACKEND_URL || 'http://localhost:8002'}/line_ai_bot/**` },

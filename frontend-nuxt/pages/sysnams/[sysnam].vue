@@ -1,28 +1,26 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import type { JobListResponse } from '@/types'
 
 const route = useRoute()
 const sysnamName = computed(() => String(route.params.sysnam || '').trim())
 const siteUrl = useSiteUrl()
-const pageUrl = computed(() => `${siteUrl.replace(/\/$/, '')}/sysnams/${encodeURIComponent(sysnamName.value.toLowerCase())}`)
-
-const currentPage = ref(1)
-const perPage = ref(20)
+const { currentPage, perPage, paginationQuery, updatePagination } = useListingPagination()
+const pageUrl = computed(() => {
+  const baseUrl = `${siteUrl}/sysnams/${encodeURIComponent(sysnamName.value)}`
+  return paginationQuery.value ? `${baseUrl}?${paginationQuery.value}` : baseUrl
+})
 
 const { data, error } = await useFetch<JobListResponse>(
   () => `/api/jobs?sysnam=${encodeURIComponent(sysnamName.value)}&page=${currentPage.value}&per_page=${perPage.value}`
 )
-
-// Reset to page 1 when sysnam changes
-watch(sysnamName, () => {
-  currentPage.value = 1
-})
+const isPageOutOfRange = computed(() => !!data.value && currentPage.value > Math.max(1, data.value.total_pages))
+if (import.meta.server && isPageOutOfRange.value) setResponseStatus(404)
 
 const changePage = (page: number) => {
-  if (page >= 1 && page <= (data.value?.total_pages || 1)) {
-    currentPage.value = page
+  if (page !== currentPage.value && page >= 1 && page <= (data.value?.total_pages || 1)) {
+    updatePagination(page)
     if (import.meta.client) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
@@ -33,7 +31,7 @@ useSeoMeta({
   title: () => `最新 ${sysnamName.value} 職系公務員職缺列表｜事求人職缺查詢 - 開放事求人`,
   description: () => `最即時的 ${sysnamName.value} 職系公務人員事求人職缺資訊。彙整全國各級政府機關招募${sysnamName.value}職系公務員最新開缺。`,
   keywords: () => `事求人, 公務員職缺, ${sysnamName.value}, ${sysnamName.value}職缺, 開放事求人`,
-  robots: 'index,follow',
+  robots: () => isPageOutOfRange.value ? 'noindex,follow' : 'index,follow',
   ogTitle: () => `最新 ${sysnamName.value} 職系公務員職缺列表 - 開放事求人`,
   ogDescription: () => `即時同步全國各級政府機關最新 ${sysnamName.value} 職系公務員職缺。`,
   ogUrl: () => pageUrl.value,
@@ -88,7 +86,10 @@ useHead(() => ({
       </p>
     </div>
 
-    <div v-if="error" class="bg-red-50 p-6 rounded-xl text-center text-red-600">無法載入職缺資料，請稍後再試。</div>
+    <div v-if="isPageOutOfRange" class="bg-white p-6 rounded-xl text-center text-slate-500">
+      這個頁碼沒有職缺，請<NuxtLink :to="route.path" class="text-primary-600 underline">返回第一頁</NuxtLink>。
+    </div>
+    <div v-else-if="error" class="bg-red-50 p-6 rounded-xl text-center text-red-600">無法載入職缺資料，請稍後再試。</div>
     <div v-else-if="!data" class="text-center py-12 text-slate-400">讀取中...</div>
     <div v-else-if="!data.jobs || data.jobs.length === 0" class="text-center py-12 text-slate-500 bg-white rounded-xl border border-slate-200">
       目前無最新職缺
@@ -133,7 +134,7 @@ useHead(() => ({
         :totalPages="data.total_pages"
         :perPage="perPage"
         @update:currentPage="changePage"
-        @update:perPage="(val) => { perPage = val; currentPage = 1 }"
+        @update:perPage="(val) => updatePagination(1, val)"
       />
     </div>
   </div>

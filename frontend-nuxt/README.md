@@ -1,5 +1,20 @@
 # Nuxt Minimal Starter
 
+## SEO regression checks
+
+Run `npm run test:seo` to start temporary Nuxt and fixture backend servers and check sitemap routing, SSR pagination, and canonical URLs. These tests do not use the production site or database. Optional browser checks are skipped unless `SEO_TEST_PLAYWRIGHT_PATH` points to an existing Playwright module; no new browser dependency is required for the HTTP checks.
+
+For a production-server check, build with the fixture backend URL, then run:
+
+```bash
+BACKEND_URL=http://127.0.0.1:18002 npm run build
+SEO_TEST_PRODUCTION=1 npm run test:seo
+```
+
+This build uses a local test backend. Rebuild with the real `BACKEND_URL` before deploying; Docker Compose supplies its existing `http://backend:8002` build argument automatically.
+
+Deployment notes are in [the indexing audit](../docs/GOOGLE_SEARCH_INDEXING_AUDIT_2026-09-30.md). Job sitemap requests are handled by Nuxt, so this fix does not require an Nginx configuration change.
+
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Setup

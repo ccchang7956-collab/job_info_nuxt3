@@ -7,6 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
+    "test:seo": "node --test tests/seo.test.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
