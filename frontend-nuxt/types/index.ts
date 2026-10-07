@@ -38,6 +38,7 @@ export interface Job {
     place: string
     date_from: string
     date_to: string
+    announce_date?: string
     link: string
     history_count: number
     comment_count: number

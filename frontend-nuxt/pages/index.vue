@@ -152,6 +152,7 @@ initFromUrl()
 const { data: initialData, error: initialError } = await useFetch<JobListResponse>('/api/jobs', {
   query: buildParams()
 })
+useSeoFetchStatus(initialError)
 
 if (initialData.value) {
   jobs.value = initialData.value.jobs
@@ -331,7 +332,7 @@ useHead({
             'name': '什麼是重複開缺？',
             'acceptedAnswer': {
               '@type': 'Answer',
-              'text': '當相同機關、相同職稱的職缺重複出現時，系統會標示為「重複開缺」，幫助您判斷該職位可能較不穩定或流動率較高。'
+              'text': '系統依相同機關與工作內容的歷史公告顯示「曾開缺」，方便比較徵才時間與資格變化。再次公告可能有多種原因，不能單憑公告次數判定流動率或工作穩定性。'
             }
           },
           {
@@ -893,7 +894,7 @@ useHead({
             <span class="font-semibold text-slate-800">什麼是重複開缺？</span>
             <ChevronDownIcon class="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
           </summary>
-          <p class="mt-3 text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">當相同機關、相同職稱的職缺重複出現時，系統會標示為「重複開缺」，幫助您判斷該職位可能較不穩定或流動率較高。</p>
+          <p class="mt-3 text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">系統依相同機關與工作內容的歷史公告顯示「曾開缺」，方便比較徵才時間與資格變化。再次公告可能有多種原因，不能單憑公告次數判定流動率或工作穩定性。</p>
         </details>
 
         <details class="group bg-white rounded-xl border border-slate-200 p-4 [&_summary::-webkit-details-marker]:hidden">

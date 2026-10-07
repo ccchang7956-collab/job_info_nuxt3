@@ -13,8 +13,7 @@ const siteUrl = useSiteUrl()
 const jobUrl = `${siteUrl}/job/${jobId}`
 
 // SSR Data Fetching
-// 注意：不設 cache: 'no-store'，讓 nuxt.config 的 swr: 120 快取生效
-// swr: 120 讓後端有足夠時間暖好快取，Googlebot 第一次抓取時能得到完整 HTML
+// 等候資料完成後再輸出 SSR HTML；SWR 僅負責快取回應。
 // 留言刷新時使用 refresh() 強制更新即可
 const { data, error: fetchError, refresh } = await useFetch<JobDetailResponse>(`/api/Active_job_openings/${jobId}`)
 
@@ -26,13 +25,18 @@ const duplicates = computed(() => data.value?.duplicates || [])
 const error = ref<string | null>(null)
 if (fetchError.value) {
   const err = fetchError.value
-  if (err.statusCode) {
-    setResponseStatus(err.statusCode)
+  if (err.statusCode === 404) {
+    setResponseStatus(404)
+    error.value = '找不到這筆職缺。'
+  } else if (err.statusCode) {
+    useSeoFetchStatus(fetchError)
     error.value = `無法取得職缺詳細資料 (${err.statusCode}): ${err.statusMessage || err.message}`
   } else {
+    useSeoFetchStatus(fetchError)
     error.value = `無法取得職缺詳細資料: ${err.message}`
   }
 }
+if (!fetchError.value && !job.value) setResponseStatus(404)
 
 // 留言提交成功後呼叫 refresh() 強制重取最新資料（包含新留言）
 
@@ -134,8 +138,8 @@ const employmentType = computed(() => {
   const source = normalizeText(`${job.value?.type || ''} ${job.value?.person_kind || ''} ${job.value?.title || ''}`)
   if (/兼職|兼任|部分工時|工讀/.test(source)) return 'PART_TIME'
   if (/臨時|代理/.test(source)) return 'TEMPORARY'
-  if (/約僱|約用|約聘|聘用|聘僱|僱用/.test(source)) return 'CONTRACTOR'
-  return 'FULL_TIME'
+  if (/全職|專任/.test(source)) return 'FULL_TIME'
+  return undefined
 })
 
 // SEO
@@ -147,9 +151,8 @@ useSeoMeta({
   keywords: () => job.value 
     ? ['事求人', '人事行政總處事求人', '公務員職缺', '政府職缺', jobOrganizationName.value, jobTitleText.value, cleanValue(job.value.sysnam), '開放事求人'].filter(Boolean).join(', ')
     : '事求人, 公務員職缺, 政府職缺',
-  // 只有當確定查無此職缺且無 API 錯誤（例如真正的 404）時才設 noindex
-  // 避免後端短暫網絡抖動或 API 錯誤導致 Googlebot 看到 noindex 而永久將網頁移出索引 (De-index)
-  robots: () => (fetchError.value || job.value) ? 'index,follow' : 'noindex,follow',
+  // 真正不存在的頁面不索引；暫時故障回 5xx，保留索引許可。
+  robots: () => fetchError.value?.statusCode === 404 || (!fetchError.value && !job.value) ? 'noindex,follow' : 'index,follow',
   ogTitle: () => job.value 
     ? `開放事求人｜${jobOrganizationName.value}(${jobTitleText.value})｜職缺詳情`
     : '職缺詳細資料',
@@ -187,8 +190,7 @@ useHead(() => {
     'employmentType': employmentType.value,
     'hiringOrganization': {
       '@type': 'Organization',
-      'name': jobOrganizationName.value || '未提供機關名稱',
-      'sameAs': 'https://web3.dgpa.gov.tw/want03front/AP/WANTF00001.ASPX'
+      'name': jobOrganizationName.value || '未提供機關名稱'
     },
     'jobLocation': {
       '@type': 'Place',
@@ -200,7 +202,6 @@ useHead(() => {
         'addressCountry': 'TW'
       }
     },
-    'jobBenefits': '政府機關公務員職位，享有公務人員保障與福利',
     'industry': '政府機關',
     'occupationalCategory': cleanValue(job.value.sysnam) || '公務人員',
     'responsibilities': normalizeMultilineText(job.value.work_item) || undefined,

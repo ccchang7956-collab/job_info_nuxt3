@@ -26,13 +26,13 @@ def get_roc_dates() -> Tuple[str, str]:
     Returns: (roc_today, roc_yesterday)
     """
     cache_key = "roc_dates"
+    today = datetime.now(_TAIPEI_TZ)
     if cache_key in _date_cache:
         cached = _date_cache[cache_key]
         # 檢查是否仍為同一天
-        if cached["date"] == datetime.now().date():
+        if cached["date"] == today.date():
             return cached["roc_today"], cached["roc_yesterday"]
     
-    today = datetime.now()
     yesterday = today - timedelta(days=1)
     roc_year_today = today.year - 1911
     roc_year_yesterday = yesterday.year - 1911

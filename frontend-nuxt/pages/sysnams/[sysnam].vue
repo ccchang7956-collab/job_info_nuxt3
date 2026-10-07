@@ -6,6 +6,9 @@ import type { JobListResponse } from '@/types'
 const route = useRoute()
 const sysnamName = computed(() => String(route.params.sysnam || '').trim())
 const siteUrl = useSiteUrl()
+const { data: categories, error: categoryError } = await useFetch<{ places: string[]; sysnams: string[] }>('/api/metadata/categories')
+useSeoFetchStatus(categoryError)
+const isInvalidCategory = computed(() => !!categories.value && !categories.value.sysnams.includes(sysnamName.value))
 const { currentPage, perPage, paginationQuery, updatePagination } = useListingPagination()
 const pageUrl = computed(() => {
   const baseUrl = `${siteUrl}/sysnams/${encodeURIComponent(sysnamName.value)}`
@@ -16,7 +19,9 @@ const { data, error } = await useFetch<JobListResponse>(
   () => `/api/jobs?sysnam=${encodeURIComponent(sysnamName.value)}&page=${currentPage.value}&per_page=${perPage.value}`
 )
 const isPageOutOfRange = computed(() => !!data.value && currentPage.value > Math.max(1, data.value.total_pages))
-if (import.meta.server && isPageOutOfRange.value) setResponseStatus(404)
+useSeoFetchStatus(error)
+if (import.meta.server && isInvalidCategory.value && !categoryError.value) setResponseStatus(404)
+else if (import.meta.server && isPageOutOfRange.value && !categoryError.value && !error.value) setResponseStatus(404)
 
 const changePage = (page: number) => {
   if (page !== currentPage.value && page >= 1 && page <= (data.value?.total_pages || 1)) {
@@ -31,7 +36,7 @@ useSeoMeta({
   title: () => `最新 ${sysnamName.value} 職系公務員職缺列表｜事求人職缺查詢 - 開放事求人`,
   description: () => `最即時的 ${sysnamName.value} 職系公務人員事求人職缺資訊。彙整全國各級政府機關招募${sysnamName.value}職系公務員最新開缺。`,
   keywords: () => `事求人, 公務員職缺, ${sysnamName.value}, ${sysnamName.value}職缺, 開放事求人`,
-  robots: () => isPageOutOfRange.value ? 'noindex,follow' : 'index,follow',
+  robots: () => !categoryError.value && !error.value && (isInvalidCategory.value || isPageOutOfRange.value) ? 'noindex,follow' : 'index,follow',
   ogTitle: () => `最新 ${sysnamName.value} 職系公務員職缺列表 - 開放事求人`,
   ogDescription: () => `即時同步全國各級政府機關最新 ${sysnamName.value} 職系公務員職缺。`,
   ogUrl: () => pageUrl.value,
@@ -86,15 +91,20 @@ useHead(() => ({
       </p>
     </div>
 
-    <div v-if="isPageOutOfRange" class="bg-white p-6 rounded-xl text-center text-slate-500">
+    <div v-if="categoryError || error" class="bg-red-50 p-6 rounded-xl text-center text-red-600">無法載入職缺資料，請稍後再試。</div>
+    <div v-else-if="isInvalidCategory" class="bg-white p-6 rounded-xl text-center text-slate-500">
+      找不到這個分類，請<NuxtLink to="/" class="text-primary-600 underline">返回首頁</NuxtLink>。
+    </div>
+    <div v-else-if="isPageOutOfRange" class="bg-white p-6 rounded-xl text-center text-slate-500">
       這個頁碼沒有職缺，請<NuxtLink :to="route.path" class="text-primary-600 underline">返回第一頁</NuxtLink>。
     </div>
-    <div v-else-if="error" class="bg-red-50 p-6 rounded-xl text-center text-red-600">無法載入職缺資料，請稍後再試。</div>
     <div v-else-if="!data" class="text-center py-12 text-slate-400">讀取中...</div>
     <div v-else-if="!data.jobs || data.jobs.length === 0" class="text-center py-12 text-slate-500 bg-white rounded-xl border border-slate-200">
+      <ListingSummary :data="data" :name="sysnamName" />
       目前無最新職缺
     </div>
     <div v-else>
+      <ListingSummary :data="data" :name="sysnamName" />
       <div class="hidden md:block bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
         <table class="w-full text-left border-collapse">
           <thead>

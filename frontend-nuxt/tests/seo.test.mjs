@@ -16,6 +16,7 @@ let frontend
 let baseURL
 let logs = ''
 let browser
+const failures = new Set()
 
 const xml = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://opendgpa.shibaalin.com/job/1001</loc></url></urlset>'
 const backend = createServer((req, res) => {
@@ -32,13 +33,36 @@ const backend = createServer((req, res) => {
       : xml)
   }
   res.setHeader('Content-Type', 'application/json')
+  if (failures.has(url.pathname) || url.searchParams.get('org') === '故障') {
+    res.writeHead(503)
+    return res.end(JSON.stringify({ message: 'Temporary backend failure' }))
+  }
+  if (url.pathname === '/metadata/categories') return res.end(JSON.stringify({
+    places: ['臺北市', '澎湖縣'], sysnams: ['綜合行政', '人事行政', '冷門職系']
+  }))
+  if (url.pathname.startsWith('/job_openings_chart')) return res.end(JSON.stringify({
+    month: url.searchParams.get('month') || '11510', month_options: [{ value: '11510', label: '115年10月' }, { value: '11509', label: '115年9月' }],
+    org_names: ['統計測試機關', '第二機關'], sys_names: ['統計測試職系', '第二職系'], job_counts: [12, 8]
+  }))
+  if (url.pathname.startsWith('/Active_job_openings/')) {
+    if (url.pathname.endsWith('/999999')) {
+      res.writeHead(404)
+      return res.end(JSON.stringify({ message: 'Not found' }))
+    }
+    return res.end(JSON.stringify({ job: {
+      id: 9001, org_name: '歷史測試機關', title: '約聘人員', sysnam: '綜合行政',
+      date_from: '115/01/01', date_to: '115/01/08', announce_date: '115/01/01',
+      work_quality: '須具相關經驗', work_item: '辦理行政業務', contact_method: '依公告報名',
+      work_address: '臺北市', place: '臺北市'
+    }, comments: [], duplicates: [] }))
+  }
   if (url.pathname === '/metadata/last-update') return res.end(JSON.stringify({ date: '115/09/30' }))
   if (url.pathname !== '/') return res.end('{}')
   const page = Number(url.searchParams.get('page') || 1)
   const perPage = Number(url.searchParams.get('per_page') || 15)
   const offset = (page - 1) * perPage
   const totalCount = url.searchParams.get('places') === '澎湖縣'
-    || url.searchParams.get('sysnam') === '人事行政' ? 0 : 60
+    || ['人事行政', '冷門職系'].includes(url.searchParams.get('sysnam')) ? 0 : 60
   const jobs = Array.from({ length: Math.max(0, Math.min(perPage, totalCount - offset)) }, (_, i) => ({
     id: 1001 + offset + i, org: '測試機關', title: `職缺 ${offset + i + 1}`,
     sysnam: '綜合行政', rank: '5', rank_display: '5等', place: '臺北市',
@@ -86,7 +110,8 @@ before(async () => {
   if (!ready) throw new Error(`Nuxt did not start:\n${logs}`)
   if (process.env.SEO_TEST_PLAYWRIGHT_PATH) {
     const { chromium } = await import(pathToFileURL(process.env.SEO_TEST_PLAYWRIGHT_PATH).href)
-    browser = await chromium.launch({ headless: true, channel: process.env.SEO_TEST_BROWSER_CHANNEL || undefined })
+    browser = await chromium.launch({ headless: true, channel: process.env.SEO_TEST_BROWSER_CHANNEL || undefined,
+      executablePath: process.env.SEO_TEST_BROWSER_EXECUTABLE || undefined })
   }
 })
 
@@ -179,6 +204,97 @@ test('home filter canonical remains the homepage', async () => {
 
 test('sitemap handling leaves ordinary pages working', async () => {
   assert.match(await html('/about'), /關於/)
+})
+
+test('charts contain real statistics and methodology in SSR HTML', async () => {
+  const body = await html('/charts')
+  assert.match(body, /<table/)
+  assert.match(body, /統計測試機關/)
+  assert.match(body, /115年10月/)
+  assert.match(body, /合計 20 筆/)
+  assert.match(body, /並非全國職缺佔比/)
+})
+
+test('category SSR contains the full result count and source', async () => {
+  const body = await html(place)
+  assert.match(body, /<strong>60<\/strong>/)
+  assert.match(body, /公告筆數不等於招募人數/)
+})
+
+for (const path of ['/places/不存在縣市', '/sysnams/不存在職系']) {
+  test(`${path} is a genuine 404`, async () => {
+    const response = await fetch(`${baseURL}${path}`)
+    assert.equal(response.status, 404)
+    assert.match(await response.text(), /noindex,follow/)
+  })
+}
+
+test('a non-popular valid category with no open jobs stays indexable', async () => {
+  assert.match(await html('/sysnams/冷門職系'), /name="robots" content="index,follow"/)
+})
+
+for (const [path, endpoint] of [[place, '/'], [sysnam, '/'], ['/charts', '/job_openings_chart'], [place, '/metadata/categories'], [`${place}?page=999`, '/metadata/categories'], ['/job/9002', '/Active_job_openings/9002']]) {
+  test(`${path} returns 503 on ${endpoint} failure without noindex`, async () => {
+    failures.add(endpoint)
+    try {
+      const response = await fetch(`${baseURL}${path}`)
+      assert.equal(response.status, 503)
+      assert.match(response.headers.get('cache-control'), /no-store/)
+      assert.doesNotMatch(await response.text(), /name="robots" content="noindex/)
+    } finally { failures.delete(endpoint) }
+  })
+}
+
+test('charts hydrate with SSR data and retain tab and month controls', {
+  skip: !process.env.SEO_TEST_PLAYWRIGHT_PATH
+}, async () => {
+  const context = await browser.newContext({ serviceWorkers: 'block' })
+  await context.route('**/*', route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort())
+  const page = await context.newPage()
+  const errors = []
+  page.on('pageerror', error => errors.push(error.message))
+  try {
+    await page.goto(`${baseURL}/charts`)
+    await page.waitForFunction(() => document.querySelector('table')?.textContent.includes('統計測試機關'))
+    await page.getByRole('button', { name: '職系開缺數', exact: true }).click()
+    await page.waitForFunction(() => document.querySelector('table')?.textContent.includes('統計測試職系'))
+    await page.getByRole('combobox').last().selectOption('11509')
+    await page.waitForFunction(() => document.body.textContent.includes('115年9月職系開缺數'))
+    assert.equal(errors.length, 0, errors.join('\n'))
+  } finally { await context.close() }
+})
+
+test('homepage API failure returns 503 instead of a successful empty page', async () => {
+  const response = await fetch(`${baseURL}/?org=故障`)
+  assert.equal(response.status, 503)
+  assert.match(response.headers.get('cache-control'), /no-store/)
+})
+
+test('a job URL immediately recovers after API failure within the SWR window', async () => {
+  assert.match(await html('/job/9002'), /歷史測試機關/)
+})
+
+test('expired jobs remain indexable with accurate schema', async () => {
+  const body = await html('/job/9001')
+  assert.match(body, /此職缺已截止報名/)
+  assert.match(body, /name="robots" content="index,follow"/)
+  const schemas = [...body.matchAll(/<script\b[^>]*type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs)].map(match => JSON.parse(match[1]))
+  const posting = schemas.find(schema => schema['@type'] === 'JobPosting')
+  assert.equal(posting.validThrough, '2026-01-08T23:59:59+08:00')
+  assert.equal(posting.hiringOrganization.sameAs, undefined)
+  assert.equal(posting.jobBenefits, undefined)
+  assert.equal(posting.employmentType, undefined)
+  assert.doesNotMatch(body, /hreflang=/)
+})
+
+test('missing jobs return 404 and noindex', async () => {
+  const response = await fetch(`${baseURL}/job/999999`)
+  assert.equal(response.status, 404)
+  assert.match(await response.text(), /name="robots" content="noindex,follow"/)
+})
+
+test('logs allow crawling so Google can read their noindex directive', async () => {
+  assert.doesNotMatch(await html('/robots.txt'), /Disallow:\s*\/logs/)
 })
 
 for (const path of [`/places/${encodeURIComponent('澎湖縣')}`, `/sysnams/${encodeURIComponent('人事行政')}`]) {

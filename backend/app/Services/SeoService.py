@@ -1,6 +1,5 @@
 from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import datetime, timedelta
 from cachetools import TTLCache
 from app.Models.Models import JobAllData
 from app.Utils.FormatUtils import convert_to_gregorian_date
@@ -18,16 +17,6 @@ import re
 sitemap_cache = TTLCache(maxsize=10, ttl=1800)
 
 SITE_DOMAIN = os.getenv("SITE_DOMAIN", "https://opendgpa.shibaalin.com").rstrip("/")
-
-# 靜態頁面的最後修改日期（固定值，不隨每次呼叫變動）
-# 避免 Google 每次都誤認為「有新內容」，降低信任度
-STATIC_PAGE_LASTMOD = {
-    "/": "2025-12-30",
-    "/comments": "2025-12-30",
-    "/charts": "2025-12-30",
-    "/about": "2025-12-30",
-    "/privacy-policy": "2025-06-01",
-}
 
 # 台灣 22 縣市
 PLACES = [
@@ -57,7 +46,6 @@ class SeoService:
 Content-Signal: search=yes,ai-input=yes,ai-train=yes
 Allow: /
 Disallow: /admin/
-Disallow: /logs
 
 Sitemap: {SITE_DOMAIN}/sitemap.xml
 LLMs: {SITE_DOMAIN}/llms.txt
@@ -96,10 +84,8 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
         xml_parts.append('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
 
         # 靜態頁面 sitemap
-        static_lastmod = max(STATIC_PAGE_LASTMOD.values())
         xml_parts.append('<sitemap>')
         xml_parts.append(f'<loc>{escape(base_url)}/sitemap-static.xml</loc>')
-        xml_parts.append(f'<lastmod>{static_lastmod}</lastmod>')
         xml_parts.append('</sitemap>')
 
         # 職缺 sitemap（從 DB 取得總數計算頁數）
@@ -134,24 +120,23 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             {"path": "/privacy-policy", "priority": "0.3", "changefreq": "yearly"},
         ]
 
-        today_str = datetime.now().strftime("%Y-%m-%d")
 
         # 台灣 22 縣市
         for p in PLACES:
-            static_routes.append({"path": f"/places/{quote(p)}", "priority": "0.9", "changefreq": "daily", "lastmod": today_str})
+            static_routes.append({"path": f"/places/{quote(p)}", "priority": "0.9", "changefreq": "daily"})
 
         # 熱門職系
         for s in SYSNAMS:
-            static_routes.append({"path": f"/sysnams/{quote(s)}", "priority": "0.9", "changefreq": "daily", "lastmod": today_str})
+            static_routes.append({"path": f"/sysnams/{quote(s)}", "priority": "0.9", "changefreq": "daily"})
 
         xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>']
         xml_parts.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
 
         for route in static_routes:
-            lastmod = route.get("lastmod") or STATIC_PAGE_LASTMOD.get(route["path"], "2025-12-30")
             xml_parts.append('<url>')
             xml_parts.append(f'<loc>{escape(base_url + route["path"])}</loc>')
-            xml_parts.append(f'<lastmod>{lastmod}</lastmod>')
+            # These pages have no reliable content modification timestamp.
+            # Omitting lastmod is preferable to inventing a daily/static date.
             xml_parts.append(f'<changefreq>{route["changefreq"]}</changefreq>')
             xml_parts.append(f'<priority>{route["priority"]}</priority>')
             xml_parts.append('</url>')
@@ -172,17 +157,15 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
         offset = (page - 1) * SITEMAP_PAGE_SIZE
 
         try:
-            today = datetime.now()
-            tomorrow = today + timedelta(days=1)
-            roc_year_tomorrow = tomorrow.year - 1911
-            roc_tomorrow = f"{roc_year_tomorrow}{tomorrow.strftime('%m%d')}"
+            from app.Services.JobService import get_roc_dates
+            roc_today, _ = get_roc_dates()
 
             # 先取總數（只做一次，快取結果）
             if "jobs_total_count" not in sitemap_cache:
                 from sqlalchemy import func
                 count_stmt = (
                     select(func.count(JobAllData.id))
-                    .where(JobAllData.date_to >= roc_tomorrow)
+                    .where(JobAllData.date_to >= roc_today)
                 )
                 count_result = await db.execute(count_stmt)
                 total_count = count_result.scalar() or 0
@@ -199,8 +182,8 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
 
             stmt = (
                 select(JobAllData.id, JobAllData.announce_date, JobAllData.date_from)
-                .where(JobAllData.date_to >= roc_tomorrow)
-                .order_by(desc(JobAllData.date_from))
+                .where(JobAllData.date_to >= roc_today)
+                .order_by(desc(JobAllData.date_from), desc(JobAllData.id))
                 .limit(SITEMAP_PAGE_SIZE)
                 .offset(offset)
             )
@@ -230,7 +213,7 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
 
         except Exception as e:
             logging.error(f"Error generating sitemap jobs page {page}: {e}")
-            return None
+            raise
 
     @staticmethod
     async def get_sitemap_xml(db: AsyncSession) -> str:
@@ -331,24 +314,11 @@ LLMs-full: {SITE_DOMAIN}/llms-full.txt
             static_content = await SeoService.get_sitemap_static()
             required_paths = ["/", "/about", "/comments", "/charts", "/privacy-policy"]
             found_paths = all(path in static_content for path in required_paths)
-            # 確保主要靜態頁面 lastmod 不是今天（允許分類/職系等長青頁面為今天）
-            from datetime import date
-            today = date.today().isoformat()
-            base_url = SITE_DOMAIN
-            
-            no_today_lastmod = True
-            for path in required_paths:
-                escaped_loc = re.escape(escape(base_url + path))
-                pattern = rf"<loc>{escaped_loc}</loc>\s*<lastmod>{re.escape(today)}</lastmod>"
-                if re.search(pattern, static_content):
-                    no_today_lastmod = False
-                    break
-
             results["sitemap_static"] = {
-                "ok": found_paths and no_today_lastmod,
+                "ok": found_paths,
                 "content_length": len(static_content),
                 "all_paths_present": found_paths,
-                "lastmod_is_fixed": no_today_lastmod,
+                "has_lastmod": "<lastmod>" in static_content,
             }
         except Exception as e:
             results["sitemap_static"] = {"ok": False, "error": str(e)}

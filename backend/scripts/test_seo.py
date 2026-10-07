@@ -169,9 +169,9 @@ def test_sitemap_static(base_url: str) -> bool:
         today = date.today().isoformat()
         dynamic_lastmods = [lm for lm in static_lastmods if lm == today]
         if dynamic_lastmods:
-            warn(f"{len(dynamic_lastmods)} 個靜態頁面的 lastmod 是今天 ({today})，建議改為固定日期")
+            warn(f"{len(dynamic_lastmods)} 個頁面的 lastmod 是今天 ({today})，請確認有實質內容更新；無可靠時間時可省略")
         else:
-            ok(f"靜態頁面 lastmod 均為固定日期（非今天），正確！")
+            ok("未發現今天的 lastmod；仍須確認已提供的日期對應實質內容更新")
 
     except Exception as e:
         fail(f"sitemap-static.xml 存取失敗: {e}")

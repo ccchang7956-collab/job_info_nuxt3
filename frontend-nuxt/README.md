@@ -15,6 +15,8 @@ This build uses a local test backend. Rebuild with the real `BACKEND_URL` before
 
 Deployment notes are in [the indexing audit](../docs/GOOGLE_SEARCH_INDEXING_AUDIT_2026-09-30.md). Job sitemap requests are handled by Nuxt, so this fix does not require an Nginx configuration change.
 
+The latest [SEO / GEO changes and deployment notes](../docs/SEO_GEO_CHANGES_2026-10-07.md) cover SSR statistics, category validation, error status/cache handling, and the optional Google Indexing API preview tool. Deploy frontend and backend together for the new category metadata endpoint.
+
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## Setup

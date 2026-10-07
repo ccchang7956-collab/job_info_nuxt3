@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, type Component } from 'vue'
+import { ref, computed, type Component } from 'vue'
 import { 
   ChartBarIcon, 
   BuildingOfficeIcon,
@@ -52,9 +52,12 @@ interface Tab {
 const activeTab = ref('org')
 const loading = ref(false)
 const error = ref<string | null>(null)
-const rawData = ref<ChartDataResponse | null>(null)
-const monthOptions = ref<ChartMonthOption[]>([])
-const selectedMonth = ref('')
+const { data: initialData, error: initialError } = await useFetch<ChartDataResponse>('/api/job_openings_chart')
+useSeoFetchStatus(initialError)
+const rawData = ref<ChartDataResponse | null>(initialData.value || null)
+if (initialError.value) error.value = '無法取得圖表資料，請稍後再試。'
+const monthOptions = ref<ChartMonthOption[]>(initialData.value?.month_options || [])
+const selectedMonth = ref(initialData.value?.month || '')
 const chartType = ref('horizontalBar') // Default to horizontalBar
 
 const tabs: Tab[] = [
@@ -89,7 +92,9 @@ const chartOptions = computed<ChartOptions>(() => {
   }
 })
 
+let chartRequest = 0
 const fetchChartData = async () => {
+  const request = ++chartRequest
   loading.value = true
   error.value = null
   rawData.value = null
@@ -104,6 +109,7 @@ const fetchChartData = async () => {
     }
     
     const response = await $fetch<ChartDataResponse>(tab.endpoint, { params })
+    if (request !== chartRequest) return
     rawData.value = response
     
     if (response.month_options) {
@@ -115,10 +121,11 @@ const fetchChartData = async () => {
       }
     }
   } catch (err) {
+    if (request !== chartRequest) return
     error.value = '無法取得圖表資料'
     console.error(err)
   } finally {
-    loading.value = false
+    if (request === chartRequest) loading.value = false
   }
 }
 
@@ -186,7 +193,7 @@ const chartData = computed<ChartData<'bar' | 'line' | 'pie' | 'doughnut'>>(() =>
 
 // Computed Data for Table
 const tableData = computed(() => {
-  if (!chartData.value || !chartData.value.labels || !chartData.value.datasets[0].data) return []
+  if (!chartData.value.labels || !chartData.value.datasets[0]?.data) return []
   
   const labels = chartData.value.labels as string[]
   const data = chartData.value.datasets[0].data as number[]
@@ -203,9 +210,8 @@ const tableData = computed(() => {
   })
 })
 
-onMounted(() => {
-  fetchChartData()
-})
+const monthLabel = computed(() => monthOptions.value.find(option => option.value === rawData.value?.month)?.label || rawData.value?.month || '')
+const listedCount = computed(() => tableData.value.reduce((total, row) => total + row.value, 0))
 
 const pageUrl = useAbsoluteUrl('/charts')
 
@@ -315,6 +321,16 @@ useHead({
     </div>
 
     <div v-else-if="rawData" class="space-y-6">
+      <section v-if="activeTab !== 'comments'" class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+        <h2 class="font-bold text-slate-800 mb-2">{{ monthLabel }}{{ getChartTitle() }}</h2>
+        <p class="text-slate-600">本表列出 {{ tableData.length }} 個項目，合計 {{ listedCount }} 筆公告計數。</p>
+        <p class="mt-2 text-sm text-slate-500">
+          機關、職系與地點排行顯示前 10 名；佔比以表內項目合計計算，並非全國職缺佔比。
+          開缺數為公告筆數，包含該月份已截止公告，不等於招募人數；多地點公告可能分別計入不同地點。
+          每日開缺依公告日期統計，其餘排行依報名起始日期統計。
+        </p>
+        <p class="mt-2 text-sm text-slate-500">資料來源：<a href="https://data.gov.tw/dataset/7229" target="_blank" rel="noopener noreferrer" class="text-primary-600 underline">人事行政總處事求人開放資料</a>。</p>
+      </section>
       
       <!-- Chart Rendering -->
       <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 min-h-[500px]">
@@ -354,7 +370,7 @@ useHead({
       </div>
 
       <!-- Data Table -->
-      <div v-if="activeTab !== 'comments' && activeTab !== 'daily' && tableData.length > 0" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div v-if="activeTab !== 'comments' && tableData.length > 0" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-4 border-b border-slate-100 bg-slate-50">
           <h3 class="font-bold text-slate-800">詳細數據表格</h3>
         </div>
@@ -365,7 +381,7 @@ useHead({
                 <th class="px-6 py-4 font-bold rounded-tl-lg">排名</th>
                 <th class="px-6 py-4 font-bold">名稱</th>
                 <th class="px-6 py-4 font-bold text-right">開缺數</th>
-                <th class="px-6 py-4 font-bold text-right rounded-tr-lg">佔比</th>
+                <th class="px-6 py-4 font-bold text-right rounded-tr-lg">表內佔比</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">

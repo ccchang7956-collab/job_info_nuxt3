@@ -104,9 +104,6 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
-        // hreflang — 告知 Google 本站語言/地區，避免與其他語言版本混淆
-        { rel: 'alternate', hreflang: 'zh-TW', href: siteUrl },
-        { rel: 'alternate', hreflang: 'x-default', href: siteUrl },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         // 預連接 API 伺服器 - 加速資料載入
@@ -132,7 +129,7 @@ export default defineNuxtConfig({
 
   routeRules: {
     // SSR + SWR Caching - 職缺詳細頁
-    // swr: 120 讓後端有足夠時間暖好快取，避免 Googlebot 第一次抓到空殼頁
+    // SSR 等候 useFetch 完成；SWR 快取成功 HTML，錯誤回應由 error-cache plugin 禁止 CDN 快取
     '/job/**': { swr: 120 },
 
     // Special case: Home page jobs fetch maps to backend root

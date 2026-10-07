@@ -2,7 +2,6 @@
 User-agent: *
 Content-Signal: search=yes,ai-input=yes,ai-train=yes
 Allow: /
-Disallow: /logs
 
 # 歡迎 AI 爬蟲（ChatGPT、Claude、Google Gemini）
 User-agent: GPTBot
