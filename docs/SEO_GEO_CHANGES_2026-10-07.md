@@ -1,6 +1,14 @@
 # SEO / GEO 修正與部署
 
-本次使用者授權後已完成程式碼修改與本機驗證。正式站尚未部署，尚未操作 Search Console 或向 Google 發送通知。原始診斷與使用者提供的 20 筆樣本见 [稽核報告](SEO_GEO_AUDIT_2026-10-07.md)。
+本次使用者授權後已完成程式碼修改、本機驗證及正式部署。尚未操作 Search Console 或向 Google 發送通知。原始診斷與使用者提供的 20 筆樣本见 [稽核報告](SEO_GEO_AUDIT_2026-10-07.md)。
+
+## 已完成正式部署
+
+2026-10-07：程式碼 commit `539ea18` 已推送到 origin/main。使用正式 Compose 設定重建 frontend、backend、backend-cron，更新三個容器並重啟 nginx；四個服務均運行，驗收時重啟次數為 0。資料庫仍使用原來同一份掛載檔案，未執行 migration。
+
+新後端映像的 6 項隔離測試通過，Google auth 依賴可匯入。本機 Nginx 入口與正式網域的首頁、SSR 統計、分類摘要及第二頁、歷史 index、無效分類與不存在職缺的 404／noindex、分類 API，以及 sitemap index 列出的所有子 sitemap 均通過 GET 驗收。
+
+部署初期公開 robots.txt 曾交替取得新舊內容；源站始終提供新版，最後一次公開完整驗收也取得新版。若其他 CDN 節點仍提供旧版本，可針對 robots.txt 清除快取或等待快取更新；公開回應的 Cache-Control 為 max-age=14400。未使用 Cloudflare API 執行 purge。舊映像保留在各服務的 `pre-seo-539ea18` 標籤供回復。
 
 ## 已完成
 
